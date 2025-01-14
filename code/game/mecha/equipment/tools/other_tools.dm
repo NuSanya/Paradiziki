@@ -688,26 +688,18 @@
 		occupant_message(span_notice("Вы перестаёте удерживать [holding], и начинаете удерживать [target]..."))
 		chassis.visible_message(span_warning("[capitalize(chassis.declent_ru(NOMINATIVE))] перестаёт удерживать [holding] и начинает удерживать [target]."))
 		stop_supressing(holding)
-		set_supress_effect(target)
-		if(!do_after_cooldown(target))
-			qdel(supress_effect)
-			supress_effect = null
-			return FALSE
-		if(!prisoner)
-			change_alert(CAGE_STAGE_ONE)
-		supress(target)
 	else
 		occupant_message(span_notice("Вы начинаете удерживать [target]..."))
 		chassis.visible_message(span_warning(span_warning("[capitalize(chassis.declent_ru(NOMINATIVE))] начинает удерживать [target].")))
-		supress_effect = new(target.loc)
-		set_supress_effect(target)
-		if(!do_after_cooldown(target))
-			qdel(supress_effect)
-			supress_effect = null
-			return FALSE
-		if(!prisoner)
-			change_alert(CAGE_STAGE_ONE)
-		supress(target)
+
+	set_supress_effect(target)
+	if(!do_after_cooldown(target))
+		qdel(supress_effect)
+		supress_effect = null
+		return FALSE
+	if(!prisoner)
+		change_alert(CAGE_STAGE_ONE)
+	supress(target)
 
 /obj/item/mecha_parts/mecha_equipment/cage/proc/handcuff_action(mob/living/carbon/target)
 	occupant_message(span_notice("Вы начинаете сковывать [target]..."))
@@ -746,10 +738,11 @@
 	update_equip_info()
 	occupant_message(span_notice("[target] успешно помещ[genderize_ru(target.gender, "ён", "ена", "ено", "ены")] в клетку."))
 	chassis.visible_message(span_warning("[chassis] загружает [target] в клетку."))
-	log_message("[target] loaded.")
+	log_message("[target] loaded in SCS-3 Cage.")
 
 /obj/item/mecha_parts/mecha_equipment/cage/proc/supress(mob/living/carbon/target)
 	RegisterSignal(target, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved))
+	add_attack_logs(chassis.occupant, target, "started supressing with SCS-3 Cage")
 	holding = target
 	target.add_traits(list(TRAIT_IMMOBILIZED, TRAIT_FLOORED), MECH_SUPRESSED_TRAIT)
 	target.move_resist = MOVE_FORCE_STRONG
@@ -757,6 +750,7 @@
 
 /obj/item/mecha_parts/mecha_equipment/cage/proc/stop_supressing(mob/living/carbon/target)
 	UnregisterSignal(target, COMSIG_MOVABLE_MOVED)
+	add_attack_logs(chassis.occupant, target, "stopped supressing with SCS-3 Cage")
 	holding = null
 	target.remove_traits(list(TRAIT_IMMOBILIZED, TRAIT_FLOORED), MECH_SUPRESSED_TRAIT)
 	target.move_resist = MOVE_FORCE_DEFAULT
