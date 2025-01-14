@@ -412,8 +412,7 @@
 			last_message = world.time
 		return FALSE
 
-	if(locate(/obj/item/mecha_parts/mecha_equipment/cage) in equipment)
-		var/obj/item/mecha_parts/mecha_equipment/cage/H = locate(/obj/item/mecha_parts/mecha_equipment/cage) in equipment
+	for(var/obj/item/mecha_parts/mecha_equipment/cage/H in equipment)
 		if(H.holding)
 			occupant_message(span_notice("Вы перестаёте удерживать [H.holding]."))
 			H.stop_supressing(H.holding)
@@ -1442,8 +1441,7 @@
 	occupant.clear_alert("mechaport")
 	occupant.clear_alert("mechaport_d")
 
-	if(locate(/obj/item/mecha_parts/mecha_equipment/cage) in equipment)
-		var/obj/item/mecha_parts/mecha_equipment/cage/H = locate(/obj/item/mecha_parts/mecha_equipment/cage) in equipment
+	for(var/obj/item/mecha_parts/mecha_equipment/cage/H in equipment)
 		if(H.holding)
 			occupant_message(span_notice("Вы перестаёте удерживать [H.holding]."))
 			H.stop_supressing(H.holding)
