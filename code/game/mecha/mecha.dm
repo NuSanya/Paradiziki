@@ -217,7 +217,7 @@
 	if(user.incapacitated())
 		return
 	if(phasing)
-		occupant_message(span_warning("Нельзя взаимодействовать с объектами, пока [declent_ru(ACCUSATIVE)] в фазовом режиме"))
+		occupant_message(span_warning("Нельзя взаимодействовать с объектами, пока [declent_ru(NOMINATIVE)] находится в режиме фазового перехода!"))
 		return
 	if(state)
 		occupant_message(span_warning("Включены протоколы технического обслуживания."))
