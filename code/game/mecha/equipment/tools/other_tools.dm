@@ -805,7 +805,7 @@
 		occupant_message(span_warning("[target] не помест[pluralize_ru(target.gender, "ит", "ят")]ся в клетку, так как [target] прикова[genderize_ru(target.gender, "н", "на", "но", "ны")] к [target.buckled.declent_ru(DATIVE)]!"))
 		return FALSE
 	if(target.has_buckled_mobs())
-		occupant_message(span_warning("[target] не помест[pluralize_ru(target.gender, "ит", "ят")]ся в клетку, пока на [genderize_ru(target.gender, "нём", "ней", "нём", "них")] висит слайм!
+		occupant_message(span_warning("[target] не помест[pluralize_ru(target.gender, "ит", "ят")]ся в клетку, пока на [genderize_ru(target.gender, "нём", "ней", "нём", "них")] висит слайм!"))
 		return FALSE
 	if(prisoner)
 		occupant_message(span_warning("Клетка уже занята!"))
