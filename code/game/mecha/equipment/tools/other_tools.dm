@@ -871,12 +871,12 @@
 	name = "Mech claws"
 	desc = "Пара мощных механических клешней. Такие могут запросто схватить гуманоида, не дав ему возможности выбраться."
 	ru_names = list(
-	    NOMINATIVE = "Механические когти",
-	    GENITIVE = "Механических когтей",
-	    DATIVE = "Механическим когтям",
-	    ACCUSATIVE = "Механические когти",
-	    INSTRUMENTAL = "Механическими когтями",
-	    PREPOSITIONAL = "Механических когтях"
+	    NOMINATIVE = "Механические клешни",
+	    GENITIVE = "Механических клешней",
+	    DATIVE = "Механическим клешням",
+	    ACCUSATIVE = "Механические клешни",
+	    INSTRUMENTAL = "Механическими клешнями",
+	    PREPOSITIONAL = "Механических клешней"
 	)
 	icon = 'icons/misc/supress_effect.dmi'
 	icon_state = "effect_on_doll"
