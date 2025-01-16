@@ -204,8 +204,6 @@
 			. += span_warning("Он вот-вот развалится.")
 	if(equipment && equipment.len)
 		. += span_notice("Он экипирован следующими модулями:")
-	if(equipment && equipment.len)
-		. += span_notice("It's equipped with:")
 		for(var/obj/item/mecha_parts/mecha_equipment/ME in equipment)
 			. += span_notice("[bicon(ME)] [ME]")
 
