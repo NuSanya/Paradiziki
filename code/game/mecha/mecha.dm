@@ -201,9 +201,9 @@
 		if(25 to 45)
 			. += span_notice("Он тяжело повреждён.")
 		else
-			. += span_warning("Он распадается на части.")
+			. += span_warning("Он вот-вот развалится.")
 	if(equipment && equipment.len)
-		. += span_notice("Он экипирован:")
+		. += span_notice("Он экипирован следующими модулями:")
 	if(equipment && equipment.len)
 		. += span_notice("It's equipped with:")
 		for(var/obj/item/mecha_parts/mecha_equipment/ME in equipment)
@@ -219,7 +219,7 @@
 	if(user.incapacitated())
 		return
 	if(phasing)
-		occupant_message(span_warning("Нельзя взаимодействовать с объектами, пока [src.declent_ru(ACCUSATIVE)] в фазовом режиме"))
+		occupant_message(span_warning("Нельзя взаимодействовать с объектами, пока [declent_ru(ACCUSATIVE)] в фазовом режиме"))
 		return
 	if(state)
 		occupant_message(span_warning("Включены протоколы технического обслуживания."))
@@ -377,11 +377,11 @@
 		return FALSE
 	if(user != occupant) //While not "realistic", this piece is player friendly.
 		user.forceMove(get_turf(src))
-		to_chat(user, span_notice("Вы выбираетесь из [src.declent_ru(GENITIVE)]."))
+		to_chat(user, span_notice("Вы выбираетесь из [declent_ru(GENITIVE)]."))
 		return FALSE
 	if(connected_port)
 		if(world.time - last_message > 20)
-			occupant_message(span_warning("Нельзя двигаться, пока [src.declent_ru(ACCUSATIVE)] подключен к коннектору!"))
+			occupant_message(span_warning("Нельзя двигаться, пока [declent_ru(NOMINATIVE)] подключён к коннектору!"))
 			last_message = world.time
 		return FALSE
 	if(state)
@@ -403,18 +403,18 @@
 		return FALSE
 	if(defence_mode)
 		if(world.time - last_message > 20)
-			occupant_message(span_danger("Нельзя двигаться, пока в режиме защиты."))
+			occupant_message(span_danger("Нельзя двигаться, пока активен защитный режим!"))
 			last_message = world.time
 		return FALSE
 	if(zoom_mode)
 		if(world.time - last_message > 20)
-			occupant_message(span_danger("Нельзя двигаться, пока в режиме прицеливания."))
+			occupant_message(span_danger("Нельзя двигаться, пока активен режим прицеливания!"))
 			last_message = world.time
 		return FALSE
 
 	for(var/obj/item/mecha_parts/mecha_equipment/cage/H in equipment)
 		if(H.holding)
-			occupant_message(span_notice("Вы перестаёте удерживать [H.holding]."))
+			occupant_message(span_notice("Вы перестаёте удерживать [H.holding.declent_ru(ACCUSATIVE)]."))
 			H.stop_supressing(H.holding)
 
 	//Turns strafe OFF if not enough energy to step (with actuator module only)
@@ -504,7 +504,7 @@
 			leg_overload_mode = FALSE
 			step_in = initial(step_in)
 			step_energy_drain = initial(step_energy_drain)
-			occupant_message("<font color='red'>Превышен предел повреждения приводов ног. Отключение перегрузки.</font>")
+			occupant_message("<font color='red'>Превышен предел повреждения нижнего привода. Отключение режима перегрузки.</font>")
 
 /obj/mecha/proc/mechturn(direction)
 	dir = direction

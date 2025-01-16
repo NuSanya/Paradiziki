@@ -703,14 +703,14 @@
 
 /obj/item/mecha_parts/mecha_equipment/cage/proc/handcuff_action(mob/living/carbon/target)
 	occupant_message(span_notice("Вы начинаете сковывать [target]..."))
-	chassis.visible_message(span_warning("[chassis] начинает сковывать [target]."))
+	chassis.visible_message(span_warning("[capitalize(chassis.declent_ru(NOMINATIVE))] начинает сковывать [target]."))
 	if(!do_after_cooldown(target))
 		return FALSE
 	if(!prisoner)
 		change_alert(CAGE_STAGE_TWO)
 	target.apply_restraints(new /obj/item/restraints/handcuffs, ITEM_SLOT_HANDCUFFED, TRUE)
 	occupant_message(span_notice("Вы успешно сковали [target]..."))
-	chassis.visible_message(span_warning("[chassis] успешно сковал [target]."))
+	chassis.visible_message(span_warning("[capitalize(chassis.declent_ru(NOMINATIVE))] успешно сковал [target]."))
 	add_attack_logs(chassis.occupant, target, "shackled")
 
 /obj/item/mecha_parts/mecha_equipment/cage/proc/insert_action(mob/living/carbon/target)
@@ -723,8 +723,8 @@
 				break
 
 	change_state("mecha_cage_activate")
-	occupant_message(span_notice(" Вы начинаете помещать [target] внутрь клетки..."))
-	chassis.visible_message(span_warning("[chassis] начинает помещать [target] внутрь клетки."))
+	occupant_message(span_notice("Вы начинаете помещать [target] внутрь клетки..."))
+	chassis.visible_message(span_warning("[capitalize(chassis.declent_ru(NOMINATIVE))] начинает помещать [target] внутрь клетки."))
 	if(!do_after_cooldown(target))
 		change_state("mecha_cage")
 		return FALSE
@@ -737,7 +737,7 @@
 	RegisterSignal(target, COMSIG_MOVABLE_MOVED, PROC_REF(on_escape))
 	update_equip_info()
 	occupant_message(span_notice("[target] успешно помещ[genderize_ru(target.gender, "ён", "ена", "ено", "ены")] в клетку."))
-	chassis.visible_message(span_warning("[chassis] загружает [target] в клетку."))
+	chassis.visible_message(span_warning("[capitalize(chassis.declent_ru(NOMINATIVE))] поместил [target] в клетку."))
 	log_message("[target] loaded in SCS-3 Cage.")
 
 /obj/item/mecha_parts/mecha_equipment/cage/proc/supress(mob/living/carbon/target)
@@ -766,7 +766,7 @@
 
 /obj/item/mecha_parts/mecha_equipment/cage/proc/on_escape(mob/living/carbon/target)
 	SIGNAL_HANDLER
-	occupant_message(span_warning("[prisoner] сбежа[genderize_ru(target.gender, "л", "ла", "ло", "ли")]."))
+	occupant_message(span_warning("[prisoner] сбежа[genderize_ru(prisoner.gender, "л", "ла", "ло", "ли")]."))
 	log_message("[prisoner] escaped from mech cage.")
 	prisoner = null
 	if(holding)
@@ -805,7 +805,7 @@
 		occupant_message(span_warning("[target] не помест[pluralize_ru(target.gender, "ит", "ят")]ся в клетку, так как [target] прикова[genderize_ru(target.gender, "н", "на", "но", "ны")] к [target.buckled.declent_ru(DATIVE)]!"))
 		return FALSE
 	if(target.has_buckled_mobs())
-		occupant_message(span_warning("[target] не помест[pluralize_ru(target.gender, "ится", "ятся")] в клетку из-за слизня, обволакивающего [genderize_ru(target.gender, "его", "её", "его", "их")]!"))
+		occupant_message(span_warning("[target] не помест[pluralize_ru(target.gender, "ит", "ят")]ся в клетку, пока на [genderize_ru(target.gender, "нём", "ней", "нём", "них")] висит слайм!
 		return FALSE
 	if(prisoner)
 		occupant_message(span_warning("Клетка уже занята!"))
@@ -830,7 +830,7 @@
 		occupant_message("[prisoner] извлеч[genderize_ru(prisoner.gender, "ён", "ена", "ено", "ены")].")
 		log_message("[prisoner] извлеч[genderize_ru(prisoner.gender, "ён", "ена", "ено", "ены")].")
 	else
-		occupant_message("[prisoner] сбежа[genderize_ru(prisoner.gender, "л", "ла", "ло", "ли")].")
+		occupant_message("[prisoner] сбежа[genderize_ru(prisoner.gender, "л", "ла", "ло", "ли")] из клетки.")
 		log_message("[prisoner] сбежа[genderize_ru(prisoner.gender, "л", "ла", "ло", "ли")].")
 	prisoner = null
 	change_state("mecha_cage")
@@ -838,7 +838,7 @@
 
 /obj/item/mecha_parts/mecha_equipment/cage/can_detach()
 	if(prisoner || holding)
-		occupant_message(span_warning("Невозможно отсоединить [declent_ru(ACCUSATIVE)] - модуль работает!"))
+		occupant_message(span_warning("Невозможно отсоединить [declent_ru(ACCUSATIVE)] - модуль в работе!"))
 		return FALSE
 	return TRUE
 
@@ -847,7 +847,7 @@
 
 /obj/item/mecha_parts/mecha_equipment/cage/get_module_equip_info()
 	if(prisoner)
-		return " <br />\[Задержанн[genderize_ru(prisoner.gender, "ый", "ая", "ое", "ые")]: [prisoner] \]<br /><a href='byond://?src=[UID()];eject=1'>Eject</a>"
+		return " <br />\[Задержанный: [prisoner] \]<br /><a href='byond://?src=[UID()];eject=1'>Eject</a>"
 
 /obj/item/mecha_parts/mecha_equipment/cage/Topic(href,href_list)
 	..()
@@ -869,7 +869,7 @@
 
 /obj/effect/supress
 	name = "Mech claws"
-	desc = "Сейчас кого-то своруют..."
+	desc = "Пара мощных механических клешней. Такие могут запросто схватить гуманоида, не дав ему возможности выбраться."
 	ru_names = list(
 	    NOMINATIVE = "Механические когти",
 	    GENITIVE = "Механических когтей",
