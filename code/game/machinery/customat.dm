@@ -395,6 +395,7 @@
 		if(I.name in remembered_costs)
 			cost = remembered_costs[I.name]
 		insert(user, I, cost)
+		return
 
 	else if(fast_insert && (I.name in remembered_costs))
 		cost = remembered_costs[I.name]
