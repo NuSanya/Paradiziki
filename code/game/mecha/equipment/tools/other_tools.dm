@@ -828,10 +828,10 @@
 	prisoner.forceMove(get_turf(src))
 	if(!force)
 		occupant_message("[prisoner] извлеч[genderize_ru(prisoner.gender, "ён", "ена", "ено", "ены")].")
-		log_message("[prisoner] извлеч[genderize_ru(prisoner.gender, "ён", "ена", "ено", "ены")].")
+		log_message("[prisoner] ejected from SCS 3 Cage.")
 	else
 		occupant_message("[prisoner] сбежа[genderize_ru(prisoner.gender, "л", "ла", "ло", "ли")] из клетки.")
-		log_message("[prisoner] сбежа[genderize_ru(prisoner.gender, "л", "ла", "ло", "ли")].")
+		log_message("[prisoner] escaped from SCS 3 Cage.")
 	prisoner = null
 	change_state("mecha_cage")
 	update_equip_info()
