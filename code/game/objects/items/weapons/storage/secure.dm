@@ -104,7 +104,7 @@
 	emagged = TRUE
 	locked = FALSE
 	playsound(loc, "sparks", 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
-	flick_overlay_view(image(icon, src, icon_sparking), 1 SECONDS)
+	flick_overlay_view(mutable_appearance(icon, icon_sparking), 1 SECONDS)
 	addtimer(CALLBACK(src, TYPE_PROC_REF(/atom, update_icon)), 1 SECONDS)
 
 	if(istype(weapon, /obj/item/melee/energy/blade))
@@ -225,7 +225,7 @@
 	w_class = WEIGHT_CLASS_BULKY
 	max_w_class = WEIGHT_CLASS_NORMAL
 	max_combined_w_class = 21
-	attack_verb = list("bashed", "battered", "bludgeoned", "thrashed", "whacked")
+	attack_verb = list("ударил", "огрел")
 
 /obj/item/storage/secure/briefcase/attack_hand(mob/user)
 	if((loc == user) && locked)

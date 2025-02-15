@@ -1286,12 +1286,12 @@
 	// we will register on turf to avoid image changes with attacked_atom transforms
 	var/turf/image_loc = get_turf(attacked_atom)
 	if(visual_effect_icon)
-		attack_image = image('icons/effects/effects.dmi', image_loc, visual_effect_icon, attacked_atom.layer + 0.1)
+		attack_image = image(icon = 'icons/effects/effects.dmi', icon_state = visual_effect_icon)
 		if(ismob(src) && ismob(attacked_atom))
 			var/mob/attacker = src
 			attack_image.color = attacker.a_intent == INTENT_HARM ? "#ff0000" : "#ffffff"
 	else if(used_item)
-		attack_image = image(icon = used_item, loc = image_loc, layer = attacked_atom.layer + 0.1)
+		attack_image = image(icon = used_item)
 		// Scale the icon.
 		attack_image.transform *= 0.4
 		// The icon should not rotate.
@@ -1324,10 +1324,10 @@
 		if(viewer.client && (viewer.client.prefs.toggles2 & PREFTOGGLE_2_ITEMATTACK))
 			viewing += viewer.client
 
-	flick_overlay(attack_image, viewing, 0.7 SECONDS)
+	var/atom/movable/flick_visual/attack = attacked_atom.flick_overlay_view(attack_image, 0.7 SECONDS)
 	var/matrix/initial_transform = new(transform)
 	// And animate the attack!
-	animate(attack_image, alpha = 175, transform = initial_transform.Scale(0.75), pixel_x = 0, pixel_y = 0, pixel_z = 0, time = 0.3 SECONDS)
+	animate(attack, alpha = 175, transform = initial_transform.Scale(0.75), pixel_x = 0, pixel_y = 0, pixel_z = 0, time = 0.3 SECONDS)
 	animate(time = 0.1 SECONDS)
 	animate(alpha = 0, time = 0.3 SECONDS, easing = (CIRCULAR_EASING|EASE_OUT))
 
@@ -1438,4 +1438,29 @@
 */
 /atom/movable/proc/keybind_face_direction(direction)
 	setDir(direction)
+
+
+/**
+ * Adds the deadchat_plays component to this atom with simple movement commands.
+ *
+ * Returns the component added.
+ * Arguments:
+ * * mode - Either DEADCHAT_ANARCHY_MODE or DEADCHAT_DEMOCRACY_MODE passed to the deadchat_control component. See [/datum/component/deadchat_control] for more info.
+ * * cooldown - The cooldown between command inputs passed to the deadchat_control component. See [/datum/component/deadchat_control] for more info.
+ */
+/atom/movable/proc/deadchat_plays(mode = DEADCHAT_ANARCHY_MODE, cooldown = 12 SECONDS)
+	return AddComponent(/datum/component/deadchat_control/cardinal_movement, mode, list(), cooldown)
+
+/// Easy way to remove the component when the fun has been played out
+/atom/movable/proc/stop_deadchat_plays()
+	var/datum/component/deadchat_control/comp = GetComponent(/datum/component/deadchat_control)
+	if(!QDELETED(comp))
+		qdel(comp)
+
+/atom/movable/vv_get_dropdown()
+	. = ..()
+	if(!GetComponent(/datum/component/deadchat_control))
+		.["Give deadchat control"] = "?_src_=vars;grantdeadchatcontrol=[UID()]"
+	else
+		.["Remove deadchat control"] = "?_src_=vars;removedeadchatcontrol=[UID()]"
 

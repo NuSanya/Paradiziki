@@ -144,7 +144,7 @@
 			H.clear_alert(ALERT_NOT_ENOUGH_OXYGEN)
 
 	//Exhale
-	breath.oxygen -= gas_breathed
+	breath.oxygen = max(breath.oxygen - gas_breathed, 0)
 	breath.carbon_dioxide += gas_breathed
 	gas_breathed = 0
 
@@ -308,60 +308,6 @@
 	var/obj/S = ..()
 	S.reagents.add_reagent("salbutamol", 5)
 	return S
-
-/obj/item/organ/internal/lungs/plasmaman
-	name = "plasma filter"
-	desc = "A spongy rib-shaped mass for filtering plasma from the air."
-	icon = 'icons/obj/species_organs/plasmaman.dmi'
-	icon_state = "lungs"
-
-	safe_oxygen_min = 0 //We don't breath this
-	safe_toxins_min = 16 //We breathe THIS!
-	safe_toxins_max = 0
-
-/obj/item/organ/internal/lungs/vox
-	name = "Vox lungs"
-	desc = "They're filled with dust....wow."
-	icon = 'icons/obj/species_organs/vox.dmi'
-	icon_state = "lungs"
-
-	safe_oxygen_min = 0 //We don't breathe this
-	safe_oxygen_max = 0.05 //This is toxic to us
-	safe_nitro_min = 16 //We breathe THIS!
-	oxy_damage_type = TOX //And it poisons us
-
-/obj/item/organ/internal/lungs/drask
-	icon = 'icons/obj/species_organs/drask.dmi'
-
-	cold_message = "an invigorating coldness"
-	cold_level_1_damage = -COLD_GAS_DAMAGE_LEVEL_1 //They heal when the air is cold
-	cold_level_2_damage = -COLD_GAS_DAMAGE_LEVEL_2
-	cold_level_3_damage = -COLD_GAS_DAMAGE_LEVEL_3
-	cold_damage_types = list(BRUTE = 0.5, BURN = 0.25)
-
-	var/cooling_start_temp = DRASK_LUNGS_COOLING_START_TEMP
-	var/cooling_stop_temp = DRASK_LUNGS_COOLING_STOP_TEMP
-
-/obj/item/organ/internal/lungs/drask/insert(mob/living/carbon/target, special = ORGAN_MANIPULATION_DEFAULT)
-	. = ..()
-
-	if(!.)
-		return FALSE
-
-	RegisterSignal(owner, COMSIG_HUMAN_EARLY_HANDLE_ENVIRONMENT, PROC_REF(regulate_temperature))
-
-/obj/item/organ/internal/lungs/drask/proc/regulate_temperature(mob/living/source, datum/gas_mixture/environment)
-	SIGNAL_HANDLER
-	
-	if(source.stat == DEAD)
-		return
-
-	if(owner.bodytemperature > cooling_start_temp && environment.temperature <= cooling_stop_temp)
-		owner.adjust_bodytemperature(-5)
-
-/obj/item/organ/internal/lungs/drask/remove(mob/living/user, special = ORGAN_MANIPULATION_DEFAULT)
-	UnregisterSignal(owner, COMSIG_HUMAN_EARLY_HANDLE_ENVIRONMENT)
-	return ..()
 
 /obj/item/organ/internal/lungs/cybernetic
 	name = "cybernetic lungs"

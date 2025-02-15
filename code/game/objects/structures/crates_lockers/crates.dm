@@ -77,12 +77,8 @@
 	for(var/atom/movable/O in get_turf(src))
 		if(itemcount >= storage_capacity)
 			break
-		if(O.density || O.anchored || istype(O,/obj/structure/closet) || isobserver(O))
+		if(O.density || O.anchored || istype(O,/obj/structure/closet) || isobserver(O) || O.has_buckled_mobs())
 			continue
-		if(istype(O, /obj/structure/bed)) //This is only necessary because of rollerbeds and swivel chairs.
-			var/obj/structure/bed/B = O
-			if(B.has_buckled_mobs())
-				continue
 		O.forceMove(src)
 		itemcount++
 
@@ -268,7 +264,7 @@
 		locked = FALSE
 		broken = TRUE
 		playsound(loc, "sparks", 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
-		flick_overlay_view(image(icon, src, overlay_sparking), sparking_duration)
+		flick_overlay_view(mutable_appearance(icon, overlay_sparking), sparking_duration)
 		addtimer(CALLBACK(src, TYPE_PROC_REF(/atom, update_icon)), sparking_duration)
 		if(user)
 			to_chat(user, span_notice("You unlock [src]."))
@@ -284,7 +280,7 @@
 	if(prob(50 / severity))
 		locked = !locked
 		playsound(loc, "sparks", 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
-		flick_overlay_view(image(icon, src, overlay_sparking), sparking_duration)
+		flick_overlay_view(mutable_appearance(icon, overlay_sparking), sparking_duration)
 		addtimer(CALLBACK(src, TYPE_PROC_REF(/atom, update_icon)), sparking_duration)
 
 	if(prob(20 / severity))

@@ -273,7 +273,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	else
 		return TRUE
 
-		
+
 /obj/item/blob_act(obj/structure/blob/B)
 	if(B && B.loc == loc && !QDELETED(src) && !(obj_flags & IGNORE_BLOB_ACT))
 		obj_destruction(MELEE)
@@ -288,19 +288,19 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	var/size
 	switch(src.w_class)
 		if(WEIGHT_CLASS_TINY)
-			size = "tiny"
+			size = "крохотного"
 		if(WEIGHT_CLASS_SMALL)
-			size = "small"
+			size = "маленького"
 		if(WEIGHT_CLASS_NORMAL)
-			size = "normal-sized"
+			size = "среднего"
 		if(WEIGHT_CLASS_BULKY)
-			size = "bulky"
+			size = "большого"
 		if(WEIGHT_CLASS_HUGE)
-			size = "huge"
+			size = "огромного"
 		if(WEIGHT_CLASS_GIGANTIC)
-			size = "gigantic"
+			size = "гигантского"
 
-	. = ..(user, "", "It is a [size] item.")
+	. = ..(user, "", "Это предмет [size] размера.")
 
 	if(user.research_scanner || user.check_smart_brain()) //Mob has a research scanner active.
 		var/msg = "*--------* <BR>"
@@ -515,12 +515,12 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	return ..()
 
 
-/obj/item/proc/hit_reaction(mob/living/carbon/human/owner, atom/movable/hitby, attack_text = "the attack", final_block_chance = 0, damage = 0, attack_type = ITEM_ATTACK)
+/obj/item/proc/hit_reaction(mob/living/carbon/human/owner, atom/movable/hitby, attack_text = "атаку", final_block_chance = 0, damage = 0, attack_type = ITEM_ATTACK)
 	if (!block_type || !(block_type & attack_type))
 		final_block_chance = 0
 	var/signal_result = (SEND_SIGNAL(src, COMSIG_ITEM_HIT_REACT, owner, hitby, damage, attack_type) & COMPONENT_BLOCK_SUCCESSFUL) + prob(final_block_chance)
 	if(signal_result != 0)
-		owner.visible_message(span_danger("[owner] blocks [attack_text] with [src]!"))
+		owner.visible_message(span_danger("[owner] блокиру[pluralize_ru(owner.gender, "ет", "ют")] [attack_text] с помощью [declent_ru(GENITIVE)]!"))
 		return signal_result
 	return FALSE
 
@@ -540,6 +540,9 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 /obj/item/proc/talk_into(mob/M, var/text, var/channel=null)
 	return
 
+/// Generic get_heat proc. Returns 0 or number amount of heat an item gives.
+/obj/item/proc/get_heat()
+	return
 
 /**
  * When item is officially left user
@@ -915,7 +918,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	if(w_class < WEIGHT_CLASS_BULKY)
 		itempush = FALSE // too light to push anything
 
-	var/is_hot = is_hot(src)
 	var/volume = get_volume_by_throwforce_and_or_w_class()
 	var/impact_throwforce = throwforce
 
@@ -927,7 +929,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 		if(. && living.is_in_hands(src))
 			item_catched = TRUE
 
-		if(is_hot && !item_catched)
+		if(get_heat() && !item_catched)
 			living.IgniteMob()
 
 		if(impact_throwforce > 0 && !item_catched)
@@ -1231,7 +1233,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	if(get_turf(src) == get_turf(target))	// No need for pickup animation if item is on user or on the same turf
 		return
 
-	var/image/transfer_animation = image(icon = src, loc = src.loc, layer = MOB_LAYER + 0.1)
+	var/image/transfer_animation = image(icon = src, layer = ABOVE_MOB_LAYER)
 	SET_PLANE(transfer_animation, GAME_PLANE, loc)
 	transfer_animation.transform.Scale(0.75)
 	transfer_animation.appearance_flags = APPEARANCE_UI_IGNORE_ALPHA
@@ -1252,13 +1254,14 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 		target_y += 10
 		transfer_animation.pixel_x += 6 * (prob(50) ? 1 : -1)
 
-	flick_overlay_view(transfer_animation, 4)
-	var/matrix/animation_matrix = new(transfer_animation.transform)
+	var/atom/movable/flick_visual/pickup = src.loc.flick_overlay_view(transfer_animation, 0.4 SECONDS)
+	var/matrix/animation_matrix = new(pickup.transform)
 	animation_matrix.Turn(pick(-30, 30))
 	animation_matrix.Scale(0.65)
 
-	animate(transfer_animation, alpha = 175, pixel_x = target_x, pixel_y = target_y, time = 3, transform = animation_matrix, easing = CUBIC_EASING)
-	animate(alpha = 0, transform = matrix().Scale(0.7), time = 1)
+
+	animate(pickup, alpha = 175, pixel_x = target_x, pixel_y = target_y, time = 0.3 SECONDS, transform = animation_matrix, easing = CUBIC_EASING)
+	animate(alpha = 0, transform = matrix().Scale(0.7), time = 0.1 SECONDS)
 
 
 /obj/item/proc/do_drop_animation(atom/moving_from)
