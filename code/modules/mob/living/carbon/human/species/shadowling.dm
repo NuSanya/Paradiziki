@@ -21,6 +21,7 @@
 		TRAIT_NO_GUNS,
 		TRAIT_EMBEDIMMUNE,
 		TRAIT_NO_SLIP_ALL,
+		TRAIT_SHOCKIMMUNE
 	)
 	burn_mod = 1.25
 	heatmod = 1.5
