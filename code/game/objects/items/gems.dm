@@ -365,7 +365,7 @@
 		cooldown = TRUE
 		addtimer(CALLBACK(src, PROC_REF(reset_cooldown)),cooldown_time)
 	else
-		H.visible_message(span_notice("Для активации кристалла надо не двигаться."))
+		to_chat(user, span_warning("Для активации кристалла требуется время."))
 
 /obj/item/gem/void/proc/teleport(mob/living/L)
 	if(!is_teleport_allowed(L.z))
