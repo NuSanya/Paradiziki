@@ -360,18 +360,18 @@
 	if(do_after(user, 1 SECONDS, user))
 		var/mob/living/carbon/human/H = user
 		teleport(H)
-		H.adjustStaminaLoss(33)
 		H.visible_message(span_notice("[H] сжима[pluralize_ru(H.gender, "ет", "ют")] [declent_ru(ACCUSATIVE)] в руках!"))
 		cooldown = TRUE
 		addtimer(CALLBACK(src, PROC_REF(reset_cooldown)),cooldown_time)
 	else
 		to_chat(user, span_warning("Для активации кристалла требуется время."))
 
-/obj/item/gem/void/proc/teleport(mob/living/L)
+/obj/item/gem/void/proc/teleport(mob/living/carbon/human/L)
 	if(!is_teleport_allowed(L.z))
 		src.visible_message(span_warning("Кажется, [declent_ru(NOMINATIVE)] начинает дрожать!"))
-		return
+		return FALSE
 	do_teleport(L, get_turf(L), blink_range, asoundin = 'sound/effects/phasein.ogg')
+	L.adjustStaminaLoss(33)
 
 /obj/item/gem/void/proc/reset_cooldown()
 	cooldown = FALSE
