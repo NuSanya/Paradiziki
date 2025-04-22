@@ -22,6 +22,8 @@
 		return FALSE
 	if(isobj(target))
 		var/obj/O = target
+		if(istype(O, /obj/mecha) || istype(O, /obj/spacepod)) //no fun allowed
+			return FALSE
 		if(!O.anchored)
 			if(length(chassis.cargo) < chassis.cargo_capacity)
 				chassis.visible_message("[chassis] lifts [target] and starts to load it into cargo compartment.")
