@@ -357,11 +357,15 @@
 	if(cooldown)
 		to_chat(user, span_warning("Кристалл неподвижен. Может стоит немного подождать?"))
 		return
-	var/mob/living/carbon/human/H = user
-	teleport(H)
-	H.visible_message(span_notice("[H] сжима[pluralize_ru(H.gender, "ет", "ют")] [declent_ru(ACCUSATIVE)] в руках!"))
-	cooldown = TRUE
-	addtimer(CALLBACK(src, PROC_REF(reset_cooldown)),cooldown_time)
+	if(do_after(user, 1 SECONDS, user))
+		var/mob/living/carbon/human/H = user
+		teleport(H)
+		H.adjustStaminaLoss(33)
+		H.visible_message(span_notice("[H] сжима[pluralize_ru(H.gender, "ет", "ют")] [declent_ru(ACCUSATIVE)] в руках!"))
+		cooldown = TRUE
+		addtimer(CALLBACK(src, PROC_REF(reset_cooldown)),cooldown_time)
+	else
+		H.visible_message(span_notice("Для активации кристалла надо не двигаться."))
 
 /obj/item/gem/void/proc/teleport(mob/living/L)
 	if(!is_teleport_allowed(L.z))
