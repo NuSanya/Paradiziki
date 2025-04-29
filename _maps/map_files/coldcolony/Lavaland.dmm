@@ -2383,7 +2383,7 @@
 	},
 /area/mine/living_quarters)
 "wc" = (
-/obj/machinery/suit_storage_unit/mining_medic,
+/obj/machinery/suit_storage_unit/lavaland/mining_medic,
 /obj/structure/fishingrodcabinet{
 	pixel_x = 32
 	},

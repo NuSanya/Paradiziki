@@ -10044,7 +10044,7 @@
 /turf/simulated/floor/plasteel,
 /area/awaymission/UO71/eng)
 "wG" = (
-/obj/machinery/suit_storage_unit/mining,
+/obj/machinery/suit_storage_unit/lavaland/mining,
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/plasteel,
 /area/awaymission/UO71/mining)

@@ -3773,7 +3773,7 @@
 /obj/machinery/alarm{
 	pixel_y = 22
 	},
-/obj/machinery/suit_storage_unit/mining_medic,
+/obj/machinery/suit_storage_unit/lavaland/mining_medic,
 /turf/simulated/floor/plasteel{
 	dir = 9;
 	icon_state = "darkblue"

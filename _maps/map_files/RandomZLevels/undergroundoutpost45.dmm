@@ -10625,7 +10625,7 @@
 /turf/simulated/floor/plating,
 /area/awaymission/UO45/mining)
 "wb" = (
-/obj/machinery/suit_storage_unit/mining,
+/obj/machinery/suit_storage_unit/lavaland/mining,
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/plasteel,
 /area/awaymission/UO45/mining)

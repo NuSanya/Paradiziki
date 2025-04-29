@@ -116,12 +116,6 @@
 	magboots_type = /obj/item/clothing/shoes/magboots/atmos
 	req_access = list(ACCESS_ATMOSPHERICS)
 
-/obj/machinery/suit_storage_unit/mining
-	name = "mining suit storage unit"
-	suit_type    = /obj/item/clothing/suit/space/hardsuit/mining
-	mask_type    = /obj/item/clothing/mask/breath
-	req_access = list(ACCESS_MINING_STATION)
-
 /obj/machinery/suit_storage_unit/lavaland
 	name = "mining suit storage unit"
 	suit_type = /obj/item/clothing/suit/hooded/explorer
@@ -129,7 +123,13 @@
 	storage_type = /obj/item/gps/mining
 	req_access = list(ACCESS_MINING_STATION)
 
-/obj/machinery/suit_storage_unit/mining_medic
+/obj/machinery/suit_storage_unit/lavaland/mining
+	name = "mining suit storage unit"
+	suit_type    = /obj/item/clothing/suit/space/hardsuit/mining
+	mask_type    = /obj/item/clothing/mask/breath
+	req_access = list(ACCESS_MINING_STATION)
+
+/obj/machinery/suit_storage_unit/lavaland/mining_medic
 	name = "mining medical suit storage unit"
 	suit_type = /obj/item/clothing/suit/hooded/explorer/mining
 	mask_type = /obj/item/clothing/mask/gas/mining_medic
@@ -794,3 +794,29 @@
 	helmet_type  = /obj/item/clothing/head/helmet/space/eva/pirate/leader
 	mask_type    = /obj/item/clothing/mask/gas
 	storage_type = /obj/item/tank/internals/oxygen
+
+//special proc for mining related storages (because they don't just hold space suits)
+/obj/machinery/suit_storage_unit/lavaland/store_item(obj/item/I, mob/user)
+	. = FALSE
+	if(panel_open)
+		return .
+	if((istype(I, /obj/item/clothing/suit/hooded/explorer) || istype(I, /obj/item/clothing/suit/space)) && !suit)
+		. = user.drop_transfer_item_to_loc(I, src)
+		if(.)
+			suit = I
+	else if(istype(I, /obj/item/clothing/head/helmet) && !helmet)
+		. = user.drop_transfer_item_to_loc(I, src)
+		if(.)
+			helmet = I
+	else if(istype(I, /obj/item/clothing/mask) && !mask)
+		. = user.drop_transfer_item_to_loc(I, src)
+		if(.)
+			mask = I
+	else if(istype(I, /obj/item/clothing/shoes/magboots) && !magboots)
+		. = user.drop_transfer_item_to_loc(I, src)
+		if(.)
+			magboots = I
+	else if((istype(I, /obj/item/tank) || istype(I, /obj/item/gps/mining)) && !storage)
+		. = user.drop_transfer_item_to_loc(I, src)
+		if(.)
+			storage = I

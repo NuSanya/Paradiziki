@@ -205,8 +205,8 @@ GLOBAL_LIST_INIT(sinew_recipes, list ( \
 /obj/item/stack/sheet/animalhide/goliath_hide/afterattack(atom/target, mob/user, proximity_flag, params)
 	if(!proximity_flag)
 		return
-	var/uplatable_armor = is_type_in_typecache(target, override_unplatable_armor_typecache)
-	if(uplatable_armor)
+	var/unplatable_armor = is_type_in_typecache(target, override_unplatable_armor_typecache)
+	if(unplatable_armor)
 		balloon_alert(user, "нельзя улучшить!")
 		return
 	var/platable_armor_with_icon = is_type_in_typecache(target, goliath_platable_armor_with_icon_typecache)

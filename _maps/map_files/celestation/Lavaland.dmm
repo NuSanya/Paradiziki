@@ -3941,7 +3941,7 @@
 	dir = 8;
 	id = "inf"
 	},
-/obj/machinery/suit_storage_unit/mining_medic,
+/obj/machinery/suit_storage_unit/lavaland/mining_medic,
 /turf/simulated/floor/plasteel{
 	dir = 10;
 	icon_state = "darkyellow"
