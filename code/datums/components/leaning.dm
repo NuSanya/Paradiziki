@@ -78,7 +78,10 @@
 			new_x += leaning_offset
 
 	animate(src, 0.2 SECONDS, pixel_x = new_x, pixel_y = new_y)
-	ADD_TRAIT(src, TRAIT_UNDENSE, TRAIT_LEANING)
+
+	if(density == TRUE) //no point in giving the trait if we are already undense
+		ADD_TRAIT(src, TRAIT_UNDENSE, TRAIT_LEANING)
+
 	visible_message(
 		span_notice("[src] прислоня[pluralize_ru(gender, "ется", "ются")] к [lean_target.declent_ru(ACCUSATIVE)]."),
 		span_notice("Вы прислоняетесь к [lean_target.declent_ru(ACCUSATIVE)]."),
