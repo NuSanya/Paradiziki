@@ -121,6 +121,7 @@
 	UnregisterSignal(leaned_object, list(COMSIG_AIRLOCK_OPEN, COMSIG_VEHICLE_MOVE, COMSIG_MOVABLE_MOVED))
 	leaned_object = null
 	animate(src, 0.2 SECONDS, pixel_x = base_pixel_x + body_position_pixel_x_offset, pixel_y = base_pixel_y + body_position_pixel_y_offset)
+	REMOVE_TRAIT(src, TRAIT_UNDENSE, TRAIT_LEANING)
 	SEND_SIGNAL(src, COMSIG_LIVING_STOPPED_LEANING)
 
 /// You fall on your face if you get teleported while leaning
