@@ -20,8 +20,9 @@
 	need_mob_update = owner.adjustBruteLoss(0.1 * seconds_between_ticks, updating_health = FALSE)
 	need_mob_update += owner.adjustFireLoss(0.1 * seconds_between_ticks, updating_health = FALSE)
 	need_mob_update += owner.adjustToxLoss(0.08 * seconds_between_ticks, updating_health = FALSE, forced = TRUE)
-	if(need_mob_update)
-		owner.updatehealth()
+	if(!need_mob_update)
+		return
+	owner.updatehealth()
 
 /datum/status_effect/cultghost //is a cult ghost and can't use manifest runes
 	id = "cult_ghost"

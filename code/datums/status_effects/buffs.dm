@@ -16,8 +16,8 @@
 /atom/movable/screen/alert/status_effect/his_grace/MouseEntered(location,control,params)
 	desc = initial(desc)
 	var/datum/status_effect/his_grace/HG = attached_effect
-	desc += "<br><font size=3><b>Текущая кровожадность: [HG.bloodlust]</b></font>\
-	<br>Поглотит тебя на уровне кровожадности: <b>[HIS_GRACE_CONSUME_OWNER]</b>"
+	desc += "[span_fontsize3("Текущая кровожадность: [HG.bloodlust]")]\
+	Поглотит тебя на уровне кровожадности: [span_boldwarning("[HIS_GRACE_CONSUME_OWNER]")]"
 	return ..()
 
 /datum/status_effect/his_grace/on_apply()
@@ -53,10 +53,11 @@
 	human.SetSleeping(0)
 	human.SetSlowed(0)
 	human.SetConfused(0)
-	if(prob(3))
-		var/obj/item/organ/external/bodypart = safepick(human.check_fractures())
-		bodypart?.mend_fracture()
-		human.check_and_regenerate_organs()
+	if(prob(97))
+		return
+	var/obj/item/organ/external/bodypart = safepick(human.check_fractures())
+	bodypart?.mend_fracture()
+	human.check_and_regenerate_organs()
 
 /datum/status_effect/shadow_mend
 	id = "shadow_mend"

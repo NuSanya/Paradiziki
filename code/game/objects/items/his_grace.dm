@@ -37,17 +37,18 @@
 	var/ascend_bonus = 15
 
 /obj/item/his_grace/ui_action_click(mob/user, datum/action/action, leftclick)
-	if(user.has_status_effect(STATUS_EFFECT_HISGRACE))
-		var/obj/item/his_grace/M = user.get_active_hand()
-		if(istype(M))
-			var/prev_has = HAS_TRAIT_FROM(src, TRAIT_NODROP, HIS_GRACE_TRAIT)
-			if(prev_has)
-				REMOVE_TRAIT(src, TRAIT_NODROP, HIS_GRACE_TRAIT)
-			else
-				ADD_TRAIT(src, TRAIT_NODROP, HIS_GRACE_TRAIT)
-			to_chat(user, span_warning("[declent_ru(NOMINATIVE)] [prev_has ? "освобождает вашу руку" : "привязывается к вашей руке"]!"))
-	else
+	if(!user.has_status_effect(STATUS_EFFECT_HISGRACE))
 		to_chat(user, span_warning("Вы не совсем понимаете, что с этим делать."))
+		return
+	var/obj/item/his_grace/M = user.get_active_hand()
+	if(!istype(M))
+		return
+	var/prev_has = HAS_TRAIT_FROM(src, TRAIT_NODROP, HIS_GRACE_TRAIT)
+	if(prev_has)
+		REMOVE_TRAIT(src, TRAIT_NODROP, HIS_GRACE_TRAIT)
+	else
+		ADD_TRAIT(src, TRAIT_NODROP, HIS_GRACE_TRAIT)
+	to_chat(user, span_warning("[declent_ru(NOMINATIVE)] [prev_has ? "освобождает вашу руку" : "привязывается к вашей руке"]!"))
 
 /obj/item/his_grace/Initialize(mapload)
 	. = ..()
@@ -70,16 +71,12 @@
 
 /obj/item/his_grace/update_overlays()
 	. = ..()
-	if(ascended)
-		. += "triple_latch"
-	else if(awakened)
-		. += "single_latch_open"
-	else
-		. += "single_latch"
+	ascended ? (. += "triple_latch") : (awakened ? (. += "single_latch_open") : (. += "single_latch"))
 
 /obj/item/his_grace/attack_self(mob/living/user)
-	if(!awakened)
-		INVOKE_ASYNC(src, PROC_REF(awaken), user)
+	if(awakened)
+		return
+	INVOKE_ASYNC(src, PROC_REF(awaken), user)
 
 /obj/item/his_grace/attack(mob/living/M, mob/user, params, def_zone, skip_attack_anim = FALSE)
 	var/mob/living/carbon/CM
@@ -87,8 +84,8 @@
 		CM = M
 	if(awakened && (M.stat || CM?.IsStamcrited() || CM?.health <= HEALTH_THRESHOLD_CRIT)) //change because carbons on paradise are very lively
 		consume(M)
-	else
-		..()
+		return
+	..()
 
 /obj/item/his_grace/CtrlClick(mob/user)
 	//you can't pull his grace
@@ -96,27 +93,28 @@
 
 /obj/item/his_grace/examine(mob/user)
 	. = ..()
-	if(awakened)
-		switch(bloodthirst)
-			if(HIS_GRACE_SATIATED to HIS_GRACE_PECKISH)
-				. += span_his_grace("[declent_ru(NOMINATIVE)] не очень голоден. Пока что.")
-			if(HIS_GRACE_PECKISH to HIS_GRACE_HUNGRY)
-				. += span_his_grace("[declent_ru(NOMINATIVE)] слегка проголодался.")
-			if(HIS_GRACE_HUNGRY to HIS_GRACE_FAMISHED)
-				. += span_his_grace("[declent_ru(NOMINATIVE)] уже довольно голоден.")
-			if(HIS_GRACE_FAMISHED to HIS_GRACE_STARVING)
-				. += span_his_grace("[declent_ru(NOMINATIVE)] уже не скрывает, как пускает слюни при виде вас. Будьте осторожны.")
-			if(HIS_GRACE_STARVING to HIS_GRACE_CONSUME_OWNER)
-				. += span_his_grace("Вы играете с огнём. [declent_ru(NOMINATIVE)] в шаге от того, чтобы вас сожрать.")
-			if(HIS_GRACE_CONSUME_OWNER to HIS_GRACE_FALL_ASLEEP)
-				. += span_his_grace("[declent_ru(NOMINATIVE)] яростно трясётся, на сводя с вас глаз.")
-	else
+	if(!awakened)
 		. += span_his_grace("Защёлка [declent_ru(GENITIVE)] закрыта.")
+		return
+	switch(bloodthirst)
+		if(HIS_GRACE_SATIATED to HIS_GRACE_PECKISH)
+			. += span_his_grace("[declent_ru(NOMINATIVE)] не очень голоден. Пока что.")
+		if(HIS_GRACE_PECKISH to HIS_GRACE_HUNGRY)
+			. += span_his_grace("[declent_ru(NOMINATIVE)] слегка проголодался.")
+		if(HIS_GRACE_HUNGRY to HIS_GRACE_FAMISHED)
+			. += span_his_grace("[declent_ru(NOMINATIVE)] уже довольно голоден.")
+		if(HIS_GRACE_FAMISHED to HIS_GRACE_STARVING)
+			. += span_his_grace("[declent_ru(NOMINATIVE)] уже не скрывает, как пускает слюни при виде вас. Будьте осторожны.")
+		if(HIS_GRACE_STARVING to HIS_GRACE_CONSUME_OWNER)
+			. += span_his_grace("Вы играете с огнём. [declent_ru(NOMINATIVE)] в шаге от того, чтобы вас сожрать.")
+		if(HIS_GRACE_CONSUME_OWNER to HIS_GRACE_FALL_ASLEEP)
+			. += span_his_grace("[declent_ru(NOMINATIVE)] яростно трясётся, на сводя с вас глаз.")
 
 /obj/item/his_grace/relaymove(mob/living/user, direction) //Allows changelings, etc. to climb out of Him after they revive, provided He isn't active
-	if(!awakened)
-		user.forceMove(get_turf(src))
-		user.visible_message(span_warning("[user] выкарабкивается из [declent_ru(GENITIVE)]!"), span_notice("Вы выбираетесь из [declent_ru(GENITIVE)]!"))
+	if(awakened)
+		return
+	user.forceMove(get_turf(src))
+	user.visible_message(span_warning("[user] выкарабкивается из [declent_ru(GENITIVE)]!"), span_notice("Вы выбираетесь из [declent_ru(GENITIVE)]!"))
 
 /obj/item/his_grace/process(seconds_per_tick)
 	if(!bloodthirst)
@@ -154,16 +152,17 @@
 		return
 	var/mob/living/L = pick(targets)
 	step_to(src, L)
-	if(Adjacent(L))
-		if(!L.stat)
-			L.visible_message(span_warning("[declent_ru(NOMINATIVE)] бросается на [L]!"), span_his_grace("[declent_ru(NOMINATIVE)] бросается на вас!"))
-			do_attack_animation(L, null, src)
-			playsound(L, 'sound/weapons/smash.ogg', 50, TRUE)
-			playsound(L, 'sound/weapons/bladeslice.ogg', 50, TRUE)
-			L.adjustBruteLoss(force)
-			adjust_bloodthirst(-5) //Don't stop attacking they're right there!
-		else
-			consume(L)
+	if(!Adjacent(L))
+		return
+	if(L.stat)
+		consume(L)
+		return
+	L.visible_message(span_warning("[declent_ru(NOMINATIVE)] бросается на [L]!"), span_his_grace("[declent_ru(NOMINATIVE)] бросается на вас!"))
+	do_attack_animation(L, null, src)
+	playsound(L, 'sound/weapons/smash.ogg', 50, TRUE)
+	playsound(L, 'sound/weapons/bladeslice.ogg', 50, TRUE)
+	L.adjustBruteLoss(force)
+	adjust_bloodthirst(-5) //Don't stop attacking they're right there!
 
 /obj/item/his_grace/proc/awaken(mob/user) //Good morning, Mr. Grace.
 	if(awakened)
@@ -239,8 +238,9 @@
 	else
 		bloodthirst = HIS_GRACE_CONSUME_OWNER
 	for(var/mob/living/C in contents)
-		if(C.mind)
-			victims++
+		if(!C.mind)
+			continue
+		victims++
 	if(victims >= victims_needed)
 		ascend()
 	update_stats()
@@ -299,15 +299,16 @@
 	ascended = TRUE
 	update_appearance()
 	playsound(src, 'sound/effects/his_grace/his_grace_ascend.ogg', 100)
-	if(istype(master))
-		//master.update_held_items()
-		master.visible_message(span_his_grace("[span_big("Боги наблюдают за тобой.")]"))
-		name = "[master]'s mythical toolbox of three powers"
-		ru_names = list(
-			NOMINATIVE = "Мифический тулбокс трёх сил",
-			GENITIVE = "Мифического тулбокса трёх сил",
-			DATIVE = "Мифическому тулбоксу трёх сил",
-			ACCUSATIVE = "Мифический тулбокс трёх сил",
-			INSTRUMENTAL = "Мифическим тулбоксом трёх сил",
-			PREPOSITIONAL = "Мифическом тулбоксе трёх сил"
-		)
+	if(!istype(master))
+		return
+	//master.update_held_items()
+	master.visible_message(span_his_grace("[span_big("Боги наблюдают за тобой.")]"))
+	name = "[master]'s mythical toolbox of three powers"
+	ru_names = list(
+		NOMINATIVE = "Мифический тулбокс трёх сил",
+		GENITIVE = "Мифического тулбокса трёх сил",
+		DATIVE = "Мифическому тулбоксу трёх сил",
+		ACCUSATIVE = "Мифический тулбокс трёх сил",
+		INSTRUMENTAL = "Мифическим тулбоксом трёх сил",
+		PREPOSITIONAL = "Мифическом тулбоксе трёх сил"
+	)
