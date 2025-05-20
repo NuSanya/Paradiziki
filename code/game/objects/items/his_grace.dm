@@ -90,6 +90,7 @@
 	else
 		..()
 
+
 /obj/item/his_grace/CtrlClick(mob/user)
 	//you can't pull his grace
 	return NONE
