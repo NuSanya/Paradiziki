@@ -81,7 +81,7 @@
 	if(!awakened)
 		INVOKE_ASYNC(src, PROC_REF(awaken), user)
 
-/obj/item/his_grace/attack(mob/living/M, mob/user)
+/obj/item/his_grace/attack(mob/living/M, mob/user, params, def_zone, skip_attack_anim = FALSE)
 	var/mob/living/carbon/CM
 	if(ishuman(M))
 		CM = M
