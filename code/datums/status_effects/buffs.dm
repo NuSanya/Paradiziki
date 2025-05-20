@@ -1,5 +1,63 @@
 //Largely beneficial effects go here, even if they have drawbacks. An example is provided in Shadow Mend.
 
+/datum/status_effect/his_grace
+	id = "his_grace"
+	duration = -1
+	tick_interval = 0.4 SECONDS
+	alert_type = /atom/movable/screen/alert/status_effect/his_grace
+	var/bloodlust = 0
+
+/atom/movable/screen/alert/status_effect/his_grace
+	name = "His Grace"
+	desc = "Его Светлость голоден, и вы обязаны Его насытить."
+	icon_state = "his_grace"
+	alerttooltipstyle = "hisgrace"
+
+/atom/movable/screen/alert/status_effect/his_grace/MouseEntered(location,control,params)
+	desc = initial(desc)
+	var/datum/status_effect/his_grace/HG = attached_effect
+	desc += "<br><font size=3><b>Текущая кровожадность: [HG.bloodlust]</b></font>\
+	<br>Поглотит тебя на уровне кровожадности: <b>[HIS_GRACE_CONSUME_OWNER]</b>"
+	return ..()
+
+/datum/status_effect/his_grace/on_apply()
+	owner.add_status_effect_absorption(source = id, effect_type = list(STUN, WEAKEN, STAMCRIT, PARALYZE, KNOCKDOWN))
+	return ..()
+
+/datum/status_effect/his_grace/on_remove()
+	owner.remove_status_effect_absorption(source = id, effect_type = list(STUN, WEAKEN, STAMCRIT, PARALYZE, KNOCKDOWN))
+
+/datum/status_effect/his_grace/tick(seconds_between_ticks)
+	var/mob/living/carbon/human/human = owner
+	bloodlust = 0
+	var/graces = 0
+	var/obj/item/his_grace/HG = human.find_item(/obj/item/his_grace)
+	if(HG)
+		if(HG.bloodthirst > bloodlust)
+			bloodlust = HG.bloodthirst
+		if(HG.awakened)
+			graces++
+	if(!graces)
+		human.apply_status_effect(/datum/status_effect/his_wrath)
+		qdel(src)
+		return
+	var/update = NONE
+	update |= human.heal_overall_damage(5, 5, updating_health = FALSE, affect_robotic = TRUE)
+	update |= human.heal_damages(tox = 5, oxy = 5, updating_health = FALSE)
+	update |= human.adjustCloneLoss(-5, FALSE)
+	update |= human.setStaminaLoss(0, FALSE)
+	if(update)
+		human.updatehealth()
+	human.AdjustDizzy(-20 SECONDS)
+	human.AdjustDrowsy(-20 SECONDS)
+	human.SetSleeping(0)
+	human.SetSlowed(0)
+	human.SetConfused(0)
+	if(prob(3))
+		var/obj/item/organ/external/bodypart = safepick(human.check_fractures())
+		bodypart?.mend_fracture()
+		human.check_and_regenerate_organs()
+
 /datum/status_effect/shadow_mend
 	id = "shadow_mend"
 	duration = 30
