@@ -58,7 +58,7 @@ SUBSYSTEM_DEF(augury)
 			O.ManualFollow(biggest_doom)
 
 /datum/action/innate/augury
-	name = "Авто-отслеживание обломок"
+	name = "Авто-отслеживание обломков"
 	icon_icon = 'icons/obj/meteor.dmi'
 	button_icon_state = "flaming"
 

@@ -1,3 +1,7 @@
+#define MIN_ZOOM 1
+#define MAX_ZOOM 8
+#define MIN_TAB_INDEX 0
+#define MAX_TAB_INDEX 1
 GLOBAL_LIST_INIT(meteor_shields, list())
 GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 
@@ -6,7 +10,12 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 // Спутники активируются, создавая щит, который будет препятствовать прохождению неорганической материи.
 /datum/station_goal/station_shield
 	name = "Station Shield"
-	var/coverage_goal = 10000
+	var/coverage_goal = 75
+	var/last_coverage = 0
+	var/is_testing = FALSE
+	var/thrown = 0
+	var/list/defended = list()
+	var/list/collisions = list()
 
 /datum/station_goal/station_shield/get_report()
 	return {"<b>Сооружение щитов станции</b><br>
@@ -24,28 +33,39 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 	P.special_enabled = TRUE
 	supply_list.Add(P)
 	//Changes
-	var/list/station_levels = levels_by_trait(STATION_LEVEL)
+	var/list/station_levels = levels_by_trait(STATION_LEVEL) //change
 	coverage_goal = coverage_goal * station_levels.len
 
 /datum/station_goal/station_shield/check_completion()
 	if(..())
 		return TRUE
-	update_coverage()
-	if(length(GLOB.meteor_shielded_turfs) >= coverage_goal)
-		return TRUE
-	return FALSE
+	return last_coverage >= coverage_goal
 
-/datum/station_goal/station_shield/proc/update_coverage()
-	var/list/coverage = list()
-	for(var/obj/machinery/satellite/meteor_shield/shield_satt as anything in GLOB.meteor_shields)
-		if(!shield_satt.active || !is_station_level(shield_satt.z))
-			continue
-		for(var/obj/effect/abstract/meteor_shield_proxy/proxy in shield_satt.proxies)
-			for(var/turf/covered in view(shield_satt.kill_range, proxy))
-				coverage |= covered
-		for(var/turf/covered in view(shield_satt.kill_range, shield_satt))
-			coverage |= covered
-	GLOB.meteor_shielded_turfs = coverage
+/datum/station_goal/station_shield/proc/update_coverage(success, turf/where)
+	if(success)
+		defended += list(list("x" = where.x, "y" = where.y))
+	else
+		collisions += list(list("x" = where.x, "y" = where.y))
+	if(length(defended) > last_coverage)
+		last_coverage = length(defended)
+	if(length(defended) + length(collisions) >= 100)
+		last_coverage = length(defended)
+		is_testing = FALSE
+
+/datum/station_goal/station_shield/proc/simulate_meteors()
+	if(is_testing)
+		return FALSE
+	is_testing = TRUE
+	thrown = 0
+	defended = list()
+	collisions = list()
+	START_PROCESSING(SSprocessing, src)
+
+/datum/station_goal/station_shield/process()
+	spawn_meteor(list(/obj/effect/meteor/fake = 1))
+	thrown++
+	if(thrown >= 100)
+		return PROCESS_KILL
 
 /obj/item/circuitboard/computer/sat_control
 	board_name = "Контроллер сети спутников"
@@ -58,7 +78,20 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 	circuit = /obj/item/circuitboard/computer/sat_control
 	icon_screen = "accelerator"
 	icon_keyboard = "accelerator_key"
-	var/notice
+	/// A notice to display to the user.
+	var/notice = ""
+	/// The color to use for the notice.
+	var/notice_color = "white"
+	/// Before world.time reaches this, the notice will not automatically update to show the testing status.
+	var/freeze_notice_until = 0
+	/// The X offset of the UI map
+	var/offset_x = 0
+	/// The Y offset of the UI map
+	var/offset_y = 0
+	/// The zoom of the UI map
+	var/zoom = 1
+	/// The ID of the currently opened UI tab
+	var/tab_index = 0
 
 /obj/machinery/computer/sat_control/attack_hand(mob/user)
 	if(..())
@@ -71,6 +104,20 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 		ui = new(user, src, "SatelliteControl", name)
 		ui.open()
 
+/obj/machinery/computer/sat_control/ui_state(mob/user)
+	return GLOB.default_state
+
+/obj/machinery/computer/sat_control/ui_interact(mob/user, datum/tgui/ui = null)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "SatelliteControl", name)
+		ui.open()
+
+/obj/machinery/computer/sat_control/ui_assets(mob/user)
+	return list(
+		get_asset_datum(/datum/asset/simple/nanomaps)
+	)
+
 /obj/machinery/computer/sat_control/ui_data(mob/user)
 	var/list/data = list()
 
@@ -79,16 +126,32 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 		data["satellites"] += list(list(
 			"id" = S.id,
 			"active" = S.active,
-			"mode" = S.mode
+			"mode" = S.mode,
+			"x" = S.x,
+			"y" = S.y
 		))
+	update_notice()
 	data["notice"] = notice
+	data["notice_color"] = notice_color
+	data["zoom"] = zoom
+	data["offsetX"] = offset_x
+	data["offsetY"] = offset_y
+	data["tabIndex"] = tab_index
 
-	var/datum/station_goal/station_shield/G = locate() in SSticker.mode.station_goals
+	var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
 	if(G)
-		data["meteor_shield"] = 1
-		data["meteor_shield_coverage"] = length(GLOB.meteor_shielded_turfs)
-		data["meteor_shield_coverage_max"] = G.coverage_goal
-		data["meteor_shield_coverage_percentage"] = (length(GLOB.meteor_shielded_turfs) / G.coverage_goal) * 100
+		data["has_goal"] = 1
+		data["coverage"] = G.last_coverage
+		data["coverage_goal"] = G.coverage_goal
+		data["testing"] = G.is_testing
+		data["thrown"] = G.thrown
+		data["defended"] = G.defended
+		data["collisions"] = G.collisions
+		var/list/fake_meteors = list()
+		if(G.is_testing)
+			for(var/obj/effect/meteor/fake/meteor in GLOB.meteor_list)
+				fake_meteors += list(list("x" = meteor.x, "y" = meteor.y))
+		data["fake_meteors"] = fake_meteors
 	return data
 
 /obj/machinery/computer/sat_control/ui_act(action, params)
@@ -96,17 +159,64 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 		return
 
 	switch(action)
+		if("begin_test")
+			var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
+			if(G)
+				G.simulate_meteors()
 		if("toggle")
 			toggle(text2num(params["id"]))
 			. = TRUE
+		if("set_tab_index")
+			var/new_tab_index = text2num(params["tab_index"])
+			if(isnull(new_tab_index) || new_tab_index < MIN_TAB_INDEX || new_tab_index > MAX_TAB_INDEX)
+				return
+			tab_index = new_tab_index
+		if("set_zoom")
+			var/new_zoom = text2num(params["zoom"])
+			if(isnull(new_zoom) || new_zoom < MIN_ZOOM || new_zoom > MAX_ZOOM)
+				return
+			zoom = new_zoom
+		if("set_offset")
+			var/new_offset_x = text2num(params["offset_x"])
+			var/new_offset_y = text2num(params["offset_y"])
+			if(isnull(new_offset_x) || isnull(new_offset_y))
+				return
+			offset_x = new_offset_x
+			offset_y = new_offset_y
 
 /obj/machinery/computer/sat_control/proc/toggle(id)
 	for(var/obj/machinery/satellite/S in GLOB.machines)
-		if(S.id == id && are_zs_connected(src, S))
+		if(S.id == id)
 			if(!S.toggle())
-				notice = "Вы можете активировать только находящиеся в космосе спутники"
-			else
-				notice = null
+				notice = "Вы можете активировать только те спутники, что находятся в космосе"
+				notice_color = "red"
+				freeze_notice_until = world.time + 5 SECONDS
+
+/obj/machinery/computer/sat_control/proc/update_notice()
+	var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
+	if(!G)
+		return
+	if(freeze_notice_until >= world.time)
+		return
+
+	if(G.is_testing && G.thrown < 100)
+		notice = "Симулируем броски метеоров ([G.thrown]/100)..."
+		notice_color = "white"
+		return
+
+	var/total_meteors = length(G.defended) + length(G.collisions)
+	if(total_meteors == 0)
+		notice = "Проверка не запущена."
+		notice_color = "red"
+		return
+
+	if(G.is_testing)
+		notice = "Заканчивается симулирование ([total_meteors]/100)..."
+		notice_color = "white"
+		return
+
+	notice = "Проверка завершена. [100 - G.last_coverage] столкновений из 100 метеоров."
+	notice_color = (G.last_coverage > G.coverage_goal) ? "blue" : "red"
 
 
 /obj/machinery/satellite
@@ -176,23 +286,28 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 	/// A list of "proxy" objects used for multi-z coverage.
 	var/list/obj/effect/abstract/meteor_shield_proxy/proxies = list()
 
+/obj/machinery/satellite/meteor_shield/proc/space_los(meteor)
+	for(var/turf/T in get_line(src,meteor))
+		if(!isspaceturf(T))
+			return FALSE
+	return TRUE
+
 /obj/machinery/satellite/meteor_shield/examine(mob/user)
 	. = ..()
 	if(active)
-		. += span_notice("It is currently active. You can interact with it to shut it down.")
+		. += span_notice("В настоящее время он активен. Вы можете взаимодействовать с ним, чтобы отключить.")
 		if(emagged)
-			. += span_warning("Rather than the usual sounds of beeps and pings, it produces a weird and constant hiss of white noise…")
+			. += span_warning("Вместо обычных звуков писков и пингов, он издаёт странное и постоянное шипение белого шума…")
 		else
-			. += span_notice("It emits periodic beeps and pings as it communicates with the satellite network.")
+			. += span_notice("Он периодически издаёт писки и пинги, связываясь с сетью спутников.")
 	else
-		. += span_notice("It is currently disabled. You can interact with it to set it up.")
+		. += span_notice("В настоящее время он отключен. Вы можете взаимодействовать с ним, чтобы включить.")
 		if(emagged)
-			. += span_warning("But something seems off about it...?")
+			. += span_warning("Но что-то здесь не так...?")
 
 /obj/machinery/satellite/meteor_shield/Initialize(mapload)
 	. = ..()
 	GLOB.meteor_shields += src
-	AddComponent(/datum/component/proximity_monitor, kill_range)
 	setup_proxies()
 
 /obj/machinery/satellite/meteor_shield/Destroy()
@@ -200,34 +315,21 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 	if(active && emagged)
 		change_meteor_chance(0.5)
 	GLOB.meteor_shields -= src
-	var/datum/station_goal/station_shield/shield_goal = locate() in SSticker.mode.station_goals
-	if(shield_goal)
-		shield_goal.update_coverage()
 
-/obj/machinery/satellite/meteor_shield/HasProximity(atom/movable/AM)
-	shoot_meteor(AM)
-
-/obj/machinery/satellite/meteor_shield/proc/shoot_meteor(atom/movable/possible_danger)
-	if(!active || emagged)
+/obj/machinery/satellite/meteor_shield/process()
+	if(!active)
 		return
-	if(istype(possible_danger, /obj/effect/meteor))
-		var/obj/effect/meteor/meteor_to_destroy = possible_danger
-		if(meteor_to_destroy.z != z)
-			return
-		if(!space_los(meteor_to_destroy))
-			return
-		Beam(get_turf(meteor_to_destroy), icon_state = "sat_beam", time = 5, maxdistance = kill_range)
-		if(meteor_to_destroy.shield_defense(src))
-			new /obj/effect/temp_visual/explosion(meteor_to_destroy)
-			// INVOKE_ASYNC(src, PROC_REF(play_zap_sound), meteor_turf)
-			qdel(meteor_to_destroy)
-
-
-/obj/machinery/satellite/meteor_shield/proc/space_los(meteor)
-	for(var/turf/T as anything in get_line(src, meteor))
-		if(!isspaceturf(T))
-			return FALSE
-	return TRUE
+	for(var/obj/effect/M in GLOB.meteor_list)
+		if(M.z != z)
+			continue
+		if(get_dist(M, src) > kill_range)
+			continue
+		if(!emagged && space_los(M))
+			if(!istype(M, /obj/effect/meteor/fake))
+				Beam(get_turf(M), icon_state = "sat_beam", time = 5, maxdistance = kill_range)
+				if(istype(M, /obj/effect/meteor/gore))
+					new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(M))
+			qdel(M)
 
 /obj/machinery/satellite/meteor_shield/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents)
 	. = ..()
@@ -256,18 +358,13 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 	return ..()
 
 /obj/machinery/satellite/meteor_shield/toggle(user)
-	. = ..()
-	if(!.)
-		return
+	if(..(user))
+		return TRUE
 	if(emagged)
 		if(active)
 			change_meteor_chance(2)
 		else
 			change_meteor_chance(0.5)
-
-	var/datum/station_goal/station_shield/shield_goal = locate() in SSticker.mode.station_goals
-	if(shield_goal)
-		shield_goal.update_coverage()
 
 /obj/machinery/satellite/meteor_shield/proc/change_meteor_chance(mod = 1)
 	var/static/list/meteor_event_typecache
@@ -292,9 +389,10 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 	if(active)
 		change_meteor_chance(2)
 
+
 /obj/effect/abstract/meteor_shield_proxy
 	name = "Proxy Detector For Meteor Shield"
-	/// The meteor shield sat this is proxying - any HasProximity calls will be forwarded to it.
+	/// The meteor shield sat this is proxying.
 	var/obj/machinery/satellite/meteor_shield/parent
 
 /obj/effect/abstract/meteor_shield_proxy/Initialize(mapload, obj/machinery/satellite/meteor_shield/parent)
@@ -302,13 +400,10 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 	if(QDELETED(parent))
 		return INITIALIZE_HINT_QDEL
 	src.parent = parent
-	AddComponent(/datum/component/proximity_monitor, parent.kill_range)
 	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(on_parent_deleted))
 	RegisterSignal(parent, COMSIG_MOVABLE_Z_CHANGED, PROC_REF(on_parent_z_changed))
 	RegisterSignal(parent, COMSIG_QDELETING, PROC_REF(on_parent_moved))
 
-/obj/effect/abstract/meteor_shield_proxy/HasProximity(atom/movable/AM)
-	parent.shoot_meteor(AM)
 
 /obj/effect/abstract/meteor_shield_proxy/proc/on_parent_moved()
 	SIGNAL_HANDLER
@@ -324,3 +419,29 @@ GLOBAL_LIST_EMPTY_TYPED(meteor_shielded_turfs, /turf)
 /obj/effect/abstract/meteor_shield_proxy/proc/on_parent_deleted()
 	SIGNAL_HANDLER
 	qdel(src)
+
+/obj/effect/abstract/meteor_shield_proxy/proc/space_los(meteor)
+	for(var/turf/T in get_line(src,meteor))
+		if(!isspaceturf(T))
+			return FALSE
+	return TRUE
+
+/obj/effect/abstract/meteor_shield_proxy/process()
+	if(!parent.active)
+		return
+	for(var/obj/effect/M in GLOB.meteor_list)
+		if(M.z != z)
+			continue
+		if(get_dist(M, src) > parent.kill_range)
+			continue
+		if(!parent.emagged && space_los(M))
+			if(!istype(M, /obj/effect/meteor/fake))
+				Beam(get_turf(M), icon_state = "sat_beam", time = 5, maxdistance = parent.kill_range)
+				if(istype(M, /obj/effect/meteor/gore))
+					new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(M))
+			qdel(M)
+
+#undef MIN_ZOOM
+#undef MAX_ZOOM
+#undef MIN_TAB_INDEX
+#undef MAX_TAB_INDEX
