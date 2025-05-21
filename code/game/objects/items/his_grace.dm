@@ -28,6 +28,8 @@
 	actions_types = list(/datum/action/item_action/toggle)
 	drop_sound = 'sound/items/handling/toolbox_drop.ogg'
 	pickup_sound = 'sound/items/handling/toolbox_pickup.ogg'
+	COOLDOWN_DECLARE(choose_cooldown)
+	var/mob/living/chosen_target
 	var/awakened = FALSE
 	var/bloodthirst = HIS_GRACE_SATIATED
 	var/prev_bloodthirst = HIS_GRACE_SATIATED
@@ -239,18 +241,26 @@
 		targets += L
 	if(!LAZYLEN(targets))
 		return
+
 	var/mob/living/L = pick(targets)
-	step_to(src, L)
-	if(!Adjacent(L))
+	if(COOLDOWN_FINISHED(src, choose_cooldown))
+		chosen_target = L
+		COOLDOWN_START(src, choose_cooldown, 3 SECONDS)
+	else if(!(chosen_target in targets))
+		chosen_target = L
+		COOLDOWN_RESET(src, choose_cooldown)
+
+	step_to(src, chosen_target)
+	if(!Adjacent(chosen_target))
 		return
-	if(L.stat)
-		consume(L)
+	if(chosen_target.stat)
+		consume(chosen_target)
 		return
-	L.visible_message(span_warning("[declent_ru(NOMINATIVE)] бросается на [L]!"), span_his_grace("[declent_ru(NOMINATIVE)] бросается на вас!"))
-	do_attack_animation(L, null, src)
-	playsound(L, 'sound/weapons/smash.ogg', 50, TRUE)
-	playsound(L, 'sound/weapons/bladeslice.ogg', 50, TRUE)
-	L.adjustBruteLoss(force)
+	chosen_target.visible_message(span_warning("[declent_ru(NOMINATIVE)] бросается на [chosen_target]!"), span_his_grace("[declent_ru(NOMINATIVE)] бросается на вас!"))
+	do_attack_animation(chosen_target, null, src)
+	playsound(chosen_target, 'sound/weapons/smash.ogg', 50, TRUE)
+	playsound(chosen_target, 'sound/weapons/bladeslice.ogg', 50, TRUE)
+	chosen_target.adjustBruteLoss(force)
 	adjust_bloodthirst(-5) //Don't stop attacking they're right there!
 
 /obj/item/his_grace/proc/adjust_bloodthirst(amt)
@@ -319,4 +329,11 @@
 	if(!istype(master))
 		return
 	//master.update_held_items()
-	master.visible_message(span_his_grace("[span_big("Боги наблюдают за тобой.")]"))
+	master.visible_message(span_his_grace("[span_big("Боги заинтересовались тобой.")]"))
+	halo_effect(master)
+
+/obj/item/his_grace/proc/halo_effect(mob/living/carbon/human/owner)
+	var/mutable_appearance/new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "toolbox_halo", -ABOVE_MOB_LAYER)
+	new_halo_overlay.appearance_flags |= RESET_TRANSFORM
+	owner.overlays_standing[ABOVE_MOB_LAYER] = new_halo_overlay
+	owner.apply_overlay(ABOVE_MOB_LAYER)
