@@ -35,6 +35,7 @@
 	var/ascended = FALSE
 	var/victims_needed = 20
 	var/ascend_bonus = 15
+	var/rogue
 
 /obj/item/his_grace/ui_action_click(mob/user, datum/action/action, leftclick)
 	if(!user.has_status_effect(STATUS_EFFECT_HISGRACE))
@@ -65,13 +66,9 @@
 	return ..()
 
 /obj/item/his_grace/update_icon_state()
-	icon_state = ascended ? "gold" : "green"
+	icon_state = ascended ? "gold" : (awakened ? (rogue ? "green4" : "green3") : "green")
 	item_state = ascended ? "toolbox_gold" : "toolbox_green"
 	return ..()
-
-/obj/item/his_grace/update_overlays()
-	. = ..()
-	ascended ? (. += "triple_latch") : (awakened ? (. += "single_latch_open") : (. += "single_latch"))
 
 /obj/item/his_grace/attack_self(mob/living/user)
 	if(awakened)
@@ -128,14 +125,7 @@
 	if(!isnull(master) && istype(master, /mob/living) && master.is_in_hands(src)) //required type check
 		switch(bloodthirst)
 			if(HIS_GRACE_CONSUME_OWNER to HIS_GRACE_FALL_ASLEEP)
-				master.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] натравляется на [master]!"), span_his_grace("[declent_ru(NOMINATIVE)] натравляется на вас!"))
-				do_attack_animation(master, null, src)
-				master.emote("scream")
-				master.remove_status_effect(/datum/status_effect/his_grace)
-				REMOVE_TRAIT(src, TRAIT_NODROP, HIS_GRACE_TRAIT)
-				master.Paralyse(60 SECONDS)
-				master.adjustBruteLoss(master.maxHealth)
-				playsound(master, 'sound/effects/splat.ogg', 100, FALSE)
+				consume_owner(master)
 			else
 				master.apply_status_effect(/datum/status_effect/his_grace)
 		return
@@ -145,24 +135,7 @@
 	if(bloodthirst >= HIS_GRACE_FALL_ASLEEP)
 		drowse()
 		return
-	var/list/targets = list()
-	for(var/mob/living/L in oview(5, src))
-		targets += L
-	if(!LAZYLEN(targets))
-		return
-	var/mob/living/L = pick(targets)
-	step_to(src, L)
-	if(!Adjacent(L))
-		return
-	if(L.stat)
-		consume(L)
-		return
-	L.visible_message(span_warning("[declent_ru(NOMINATIVE)] бросается на [L]!"), span_his_grace("[declent_ru(NOMINATIVE)] бросается на вас!"))
-	do_attack_animation(L, null, src)
-	playsound(L, 'sound/weapons/smash.ogg', 50, TRUE)
-	playsound(L, 'sound/weapons/bladeslice.ogg', 50, TRUE)
-	L.adjustBruteLoss(force)
-	adjust_bloodthirst(-5) //Don't stop attacking they're right there!
+	attack_nearby()
 
 /obj/item/his_grace/proc/awaken(mob/user) //Good morning, Mr. Grace.
 	if(awakened)
@@ -219,6 +192,7 @@
 	armour_penetration = initial(armour_penetration)
 	awakened = FALSE
 	bloodthirst = 0
+	rogue = FALSE
 	update_appearance()
 
 /obj/item/his_grace/proc/consume(mob/living/meal) //Here's your dinner, Mr. Grace.
@@ -244,6 +218,40 @@
 	if(victims >= victims_needed)
 		ascend()
 	update_stats()
+
+/obj/item/his_grace/proc/consume_owner(mob/living/owner)
+	owner.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] натравляется на [owner]!"), span_his_grace("[declent_ru(NOMINATIVE)] натравляется на вас!"))
+	do_attack_animation(owner, null, src)
+	owner.emote("scream")
+	owner.remove_status_effect(/datum/status_effect/his_grace)
+	REMOVE_TRAIT(src, TRAIT_NODROP, HIS_GRACE_TRAIT)
+	owner.Paralyse(60 SECONDS)
+	owner.adjustBruteLoss(owner.maxHealth)
+	playsound(owner, 'sound/effects/splat.ogg', 100, FALSE)
+	rogue = TRUE
+	update_appearance()
+
+/obj/item/his_grace/proc/attack_nearby()
+	if(awakened)
+		rogue = TRUE
+	var/list/targets = list()
+	for(var/mob/living/L in oview(5, src))
+		targets += L
+	if(!LAZYLEN(targets))
+		return
+	var/mob/living/L = pick(targets)
+	step_to(src, L)
+	if(!Adjacent(L))
+		return
+	if(L.stat)
+		consume(L)
+		return
+	L.visible_message(span_warning("[declent_ru(NOMINATIVE)] бросается на [L]!"), span_his_grace("[declent_ru(NOMINATIVE)] бросается на вас!"))
+	do_attack_animation(L, null, src)
+	playsound(L, 'sound/weapons/smash.ogg', 50, TRUE)
+	playsound(L, 'sound/weapons/bladeslice.ogg', 50, TRUE)
+	L.adjustBruteLoss(force)
+	adjust_bloodthirst(-5) //Don't stop attacking they're right there!
 
 /obj/item/his_grace/proc/adjust_bloodthirst(amt)
 	prev_bloodthirst = bloodthirst
@@ -295,15 +303,8 @@
 		return
 	var/mob/living/carbon/human/master = loc
 	force_bonus += ascend_bonus
-	desc = "Легендарный тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
-	ascended = TRUE
-	update_appearance()
-	playsound(src, 'sound/effects/his_grace/his_grace_ascend.ogg', 100)
-	if(!istype(master))
-		return
-	//master.update_held_items()
-	master.visible_message(span_his_grace("[span_big("Боги наблюдают за тобой.")]"))
 	name = "[master]'s mythical toolbox of three powers"
+	desc = "Легендарный тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
 	ru_names = list(
 		NOMINATIVE = "Мифический тулбокс трёх сил",
 		GENITIVE = "Мифического тулбокса трёх сил",
@@ -312,3 +313,10 @@
 		INSTRUMENTAL = "Мифическим тулбоксом трёх сил",
 		PREPOSITIONAL = "Мифическом тулбоксе трёх сил"
 	)
+	ascended = TRUE
+	update_appearance()
+	playsound(src, 'sound/effects/his_grace/his_grace_ascend.ogg', 100)
+	if(!istype(master))
+		return
+	//master.update_held_items()
+	master.visible_message(span_his_grace("[span_big("Боги наблюдают за тобой.")]"))

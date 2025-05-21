@@ -1241,17 +1241,18 @@ GLOBAL_LIST_EMPTY(damage_icon_parts)
 
 /mob/living/carbon/human/proc/update_halo_layer()
 	remove_overlay(HALO_LAYER)
+	var/mutable_appearance/new_halo_overlay
 
 	if(iscultist(src) && SSticker.mode.cult_ascendant)
 		var/istate = pick("halo1", "halo2", "halo3", "halo4", "halo5", "halo6")
-		var/mutable_appearance/new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', istate, -HALO_LAYER)
-		new_halo_overlay.appearance_flags |= RESET_TRANSFORM
-		overlays_standing[HALO_LAYER] = new_halo_overlay
+		new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', istate, -HALO_LAYER)
 	else if(isclocker(src) && SSticker.mode.crew_reveal)
-		var/mutable_appearance/new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "haloclock", -HALO_LAYER)
-		new_halo_overlay.appearance_flags |= RESET_TRANSFORM
-		overlays_standing[HALO_LAYER] = new_halo_overlay
+		new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "haloclock", -HALO_LAYER)
+	else
+		return
 
+	new_halo_overlay.appearance_flags |= RESET_TRANSFORM
+	overlays_standing[HALO_LAYER] = new_halo_overlay
 	apply_overlay(HALO_LAYER)
 
 
