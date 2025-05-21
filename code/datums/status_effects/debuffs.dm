@@ -17,8 +17,8 @@
 		qdel(src)
 		return
 	var/need_mob_update
-	need_mob_update = owner.adjustBruteLoss(0.1 * seconds_between_ticks, updating_health = FALSE)
-	need_mob_update += owner.adjustFireLoss(0.1 * seconds_between_ticks, updating_health = FALSE)
+	need_mob_update = owner.adjustBruteLoss(1 * seconds_between_ticks, updating_health = FALSE)
+	need_mob_update += owner.adjustFireLoss(1 * seconds_between_ticks, updating_health = FALSE)
 	need_mob_update += owner.adjustToxLoss(0.08 * seconds_between_ticks, updating_health = FALSE, forced = TRUE)
 	if(!need_mob_update)
 		return
