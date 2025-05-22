@@ -344,3 +344,54 @@
 		return
 	var/obj/item/his_grace/his_grace = user.find_item(/obj/item/his_grace)
 	return his_grace ? his_grace.ascended : FALSE
+
+
+//for thunderdome
+/obj/item/his_grace/no_sound
+
+/obj/item/his_grace/no_sound/awaken(mob/user) // no sound + no announce
+	if(awakened)
+		return
+	awakened = TRUE
+	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?."))
+	name = "His Grace"
+	desc = "Кровавый артефакт, рождённый скверной магией."
+	ru_names = list(
+		NOMINATIVE = "Его Светлость",
+		GENITIVE = "Его Светлости",
+		DATIVE = "Его Светлости",
+		ACCUSATIVE = "Его Светлость",
+		INSTRUMENTAL = "Его Светлостью",
+		PREPOSITIONAL = "Его Светлости"
+	)
+	gender = MALE
+	adjust_bloodthirst(1)
+	force_bonus = HIS_GRACE_FORCE_BONUS * LAZYLEN(contents)
+	armour_penetration = awakened_pen
+	update_appearance()
+	move_gracefully()
+	user.AddElement(/datum/element/halo_attach)
+
+/obj/item/his_grace/no_sound/ascend() //no sound + no msg
+	if(ascended)
+		return
+	var/mob/living/carbon/human/master = loc
+	force_bonus += ascend_bonus
+	name = "mythical toolbox of three powers"
+	desc = "Легендарный тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
+	ru_names = list(
+		NOMINATIVE = "Мифический тулбокс трёх сил",
+		GENITIVE = "Мифического тулбокса трёх сил",
+		DATIVE = "Мифическому тулбоксу трёх сил",
+		ACCUSATIVE = "Мифический тулбокс трёх сил",
+		INSTRUMENTAL = "Мифическим тулбоксом трёх сил",
+		PREPOSITIONAL = "Мифическом тулбоксе трёх сил"
+	)
+	ascended = TRUE
+	update_appearance()
+	if(!istype(master))
+		return
+	if(master.is_in_hands(src))
+		master.update_inv_l_hand()
+		master.update_inv_r_hand()
+	SEND_SIGNAL(master, COMSIG_MOB_HALO_GAINED)
