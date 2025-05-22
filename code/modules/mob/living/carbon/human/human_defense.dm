@@ -221,8 +221,14 @@ emp_act
 	return siemens_coefficient
 
 
-/mob/living/carbon/human/proc/check_reflect(def_zone) //Reflection checks for anything in your l_hand, r_hand, or wear_suit based on the reflection chance var of the object
-	if(wear_suit?.IsReflect(def_zone) == 1)
+/mob/living/carbon/human/proc/check_reflect(def_zone) //Reflection checks for anything in your l_hand, r_hand, head, shoes, gloves or wear_suit based on the reflection chance var of the object
+	if(wear_suit?.IsReflect(def_zone))
+		return 1
+	if(head?.IsReflect(def_zone))
+		return 1
+	if(shoes?.IsReflect(def_zone))
+		return 1
+	if(gloves?.IsReflect(def_zone))
 		return 1
 
 	if(l_hand)
