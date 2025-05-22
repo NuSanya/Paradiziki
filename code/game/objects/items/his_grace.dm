@@ -29,6 +29,7 @@
 	drop_sound = 'sound/items/handling/toolbox_drop.ogg'
 	pickup_sound = 'sound/items/handling/toolbox_pickup.ogg'
 	COOLDOWN_DECLARE(choose_cooldown)
+	var/cooldown = 3 SECONDS
 	var/mob/living/chosen_target
 	var/awakened = FALSE
 	var/awakened_pen = 50
@@ -242,18 +243,18 @@
 	if(awakened)
 		rogue = TRUE
 	var/list/targets = list()
+	var/list/adjacent_targets = list()
 	for(var/mob/living/L in oview(5, src))
-		targets += L
-	if(!LAZYLEN(targets))
+		(get_dist(src, L) <= 1) ? (adjacent_targets += L) : (targets += L)
+
+	if(!(LAZYLEN(targets) + LAZYLEN(adjacent_targets)))
 		return
 
-	var/mob/living/L = pick(targets)
-	if(COOLDOWN_FINISHED(src, choose_cooldown))
-		chosen_target = L
-		COOLDOWN_START(src, choose_cooldown, 3 SECONDS)
-	else if(!(chosen_target in targets))
-		chosen_target = L
-		COOLDOWN_RESET(src, choose_cooldown)
+	if(LAZYLEN(adjacent_targets))
+		chosen_target = pick(adjacent_targets)
+	else if(COOLDOWN_FINISHED(src, choose_cooldown) || !(chosen_target in (targets + adjacent_targets)))
+		chosen_target = pick(targets)
+		COOLDOWN_START(src, choose_cooldown, cooldown)
 
 	step_to(src, chosen_target)
 	if(!Adjacent(chosen_target))
