@@ -94,6 +94,7 @@ GLOBAL_LIST_EMPTY(all_clockers)
 		var/datum/objective/serveclock/obj = new
 		obj.owner = clockwork_mind
 		clockwork_mind.objectives += obj
+		clockwork_mind.current.AddElement(/datum/element/halo_attach)
 
 		if(clockwork_mind.assigned_role == JOB_TITLE_CLOWN)
 			to_chat(clockwork_mind.current, span_clockitalic("A dark power has allowed you to overcome your clownish nature, letting you wield weapons without harming yourself."))
@@ -190,6 +191,7 @@ GLOBAL_LIST_EMPTY(all_clockers)
 		clockwork_threshold_check()
 
 	if(!(clock_mind in clockwork_cult))
+		clock_mind.current.AddElement(/datum/element/halo_attach)
 		clockwork_cult += clock_mind
 		clock_mind.current.faction |= "clockwork_cult"
 		clock_mind.special_role = SPECIAL_ROLE_CLOCKER
@@ -283,8 +285,7 @@ GLOBAL_LIST_EMPTY(all_clockers)
 	if(ishuman(clocker) && isclocker(clocker))
 		var/mob/living/carbon/human/H = clocker
 		new /obj/effect/temp_visual/ratvar/sparks(get_turf(H), H.dir)
-		H.update_halo_layer()
-
+		SEND_SIGNAL(H, COMSIG_MOB_HALO_GAINED)
 
 /datum/game_mode/proc/remove_clocker(datum/mind/clock_mind, show_message = TRUE)
 	if(!(clock_mind in clockwork_cult))
@@ -302,6 +303,7 @@ GLOBAL_LIST_EMPTY(all_clockers)
 
 	if(ishuman(clocker))
 		var/mob/living/carbon/human/H = clocker
+		clock_mind.current.RemoveElement(/datum/element/halo_attach)
 		REMOVE_TRAIT(H, CLOCK_HANDS, null)
 		H.change_eye_color(H.original_eye_color, FALSE)
 		H.update_eyes()

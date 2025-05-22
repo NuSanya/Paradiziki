@@ -31,13 +31,14 @@
 	COOLDOWN_DECLARE(choose_cooldown)
 	var/mob/living/chosen_target
 	var/awakened = FALSE
+	var/awakened_pen = 50
 	var/bloodthirst = HIS_GRACE_SATIATED
 	var/prev_bloodthirst = HIS_GRACE_SATIATED
 	var/force_bonus = 0
 	var/ascended = FALSE
 	var/victims_needed = 20
 	var/ascend_bonus = 15
-	var/rogue
+	var/rogue = FALSE
 
 /obj/item/his_grace/ui_action_click(mob/user, datum/action/action, leftclick)
 	if(!user.has_status_effect(STATUS_EFFECT_HISGRACE))
@@ -157,18 +158,22 @@
 	gender = MALE
 	adjust_bloodthirst(1)
 	force_bonus = HIS_GRACE_FORCE_BONUS * LAZYLEN(contents)
-	armour_penetration = 50
+	armour_penetration = awakened_pen
+
+	var/pixel_x_offset = -2
+	var/pixel_y_offset = -3
 	notify_ghosts(
 		"[user.real_name] пробудил Его Светлость!",
 		source = src,
 		action = NOTIFY_FOLLOW,
 		title = "Славься Его Светлость!",
-		alert_overlay = image("icons/goonstation/objects/objects.dmi", "green4"),
+		alert_overlay = image('icons/goonstation/objects/objects.dmi', "green4", pixel_x = pixel_x_offset, pixel_y = pixel_y_offset),
 		ghost_sound = 'sound/effects/pope_entry.ogg'
 	)
 	playsound(user, 'sound/effects/his_grace/his_grace_awaken.ogg', 100)
 	update_appearance()
 	move_gracefully()
+	user.AddElement(/datum/element/halo_attach)
 
 /obj/item/his_grace/proc/move_gracefully()
 	SIGNAL_HANDLER
@@ -313,7 +318,7 @@
 		return
 	var/mob/living/carbon/human/master = loc
 	force_bonus += ascend_bonus
-	name = "[master]'s mythical toolbox of three powers"
+	name = "mythical toolbox of three powers"
 	desc = "Легендарный тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
 	ru_names = list(
 		NOMINATIVE = "Мифический тулбокс трёх сил",
@@ -328,12 +333,14 @@
 	playsound(src, 'sound/effects/his_grace/his_grace_ascend.ogg', 100)
 	if(!istype(master))
 		return
-	//master.update_held_items()
+	if(master.is_in_hands(src))
+		master.update_inv_l_hand()
+		master.update_inv_r_hand()
 	master.visible_message(span_his_grace("[span_big("Боги заинтересовались тобой.")]"))
-	halo_effect(master)
+	SEND_SIGNAL(master, COMSIG_MOB_HALO_GAINED)
 
-/obj/item/his_grace/proc/halo_effect(mob/living/carbon/human/owner)
-	var/mutable_appearance/new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "toolbox_halo", -ABOVE_MOB_LAYER)
-	new_halo_overlay.appearance_flags |= RESET_TRANSFORM
-	owner.overlays_standing[ABOVE_MOB_LAYER] = new_halo_overlay
-	owner.apply_overlay(ABOVE_MOB_LAYER)
+/proc/is_graceascended(mob/living/carbon/human/user)
+	if(!istype(user))
+		return
+	var/obj/item/his_grace/his_grace = user.find_item(/obj/item/his_grace)
+	return his_grace ? his_grace.ascended : FALSE

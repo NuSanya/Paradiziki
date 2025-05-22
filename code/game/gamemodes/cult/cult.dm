@@ -95,6 +95,7 @@ GLOBAL_LIST_EMPTY(all_cults)
 		equip_cultist(cult_mind.current)
 		cult_mind.current.faction |= "cult"
 		ADD_TRAIT(cult_mind.current, TRAIT_HEALS_FROM_CULT_PYLONS, CULT_TRAIT)
+		cult_mind.current.AddElement(/datum/element/halo_attach)
 		var/datum/objective/servecult/obj = new
 		obj.owner = cult_mind
 		cult_mind.objectives += obj
@@ -199,6 +200,7 @@ GLOBAL_LIST_EMPTY(all_cults)
 		cult_mind.current.faction |= "cult"
 		cult_mind.special_role = SPECIAL_ROLE_CULTIST
 		ADD_TRAIT(cult_mind.current, TRAIT_HEALS_FROM_CULT_PYLONS, CULT_TRAIT)
+		cult_mind.current.AddElement(/datum/element/halo_attach)
 
 		if(cult_mind.assigned_role == JOB_TITLE_CLOWN)
 			to_chat(cult_mind.current, span_cultitalic("A dark power has allowed you to overcome your clownish nature, letting you wield weapons without harming yourself."))
@@ -272,7 +274,7 @@ GLOBAL_LIST_EMPTY(all_cults)
 	if(ishuman(cultist) && iscultist(cultist))
 		var/mob/living/carbon/human/H = cultist
 		new /obj/effect/temp_visual/cult/sparks(get_turf(H), H.dir)
-		H.update_halo_layer()
+		SEND_SIGNAL(H, COMSIG_MOB_HALO_GAINED)
 
 
 /datum/game_mode/proc/remove_cultist(datum/mind/cult_mind, show_message = TRUE)
@@ -285,6 +287,7 @@ GLOBAL_LIST_EMPTY(all_cults)
 			cult_mind.objectives -= O
 			qdel(O)
 		REMOVE_TRAIT(cult_mind.current, TRAIT_HEALS_FROM_CULT_PYLONS, CULT_TRAIT)
+		cult_mind.current.RemoveElement(/datum/element/halo_attach)
 		for(var/datum/action/innate/cult/C in cultist.actions)
 			qdel(C)
 		update_cult_icons_removed(cult_mind)
