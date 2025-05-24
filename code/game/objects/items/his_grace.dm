@@ -115,7 +115,7 @@
 	if(awakened)
 		return
 	user.forceMove(get_turf(src))
-	user.visible_message(span_warning("[user] выкарабкивается из [declent_ru(GENITIVE)]!"), span_notice("Вы выбираетесь из [declent_ru(GENITIVE)]!"))
+	user.visible_message(span_warning("[user] выкарабкива[pluralize_ru(user.gender,"ет","ют")]ся из [declent_ru(GENITIVE)]!"), span_notice("Вы выбираетесь из [declent_ru(GENITIVE)]!"))
 
 /obj/item/his_grace/process(seconds_per_tick)
 	if(!bloodthirst)
