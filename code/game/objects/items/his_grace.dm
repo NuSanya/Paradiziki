@@ -83,7 +83,7 @@
 	var/mob/living/carbon/CM
 	if(ishuman(M))
 		CM = M
-	if(awakened && (M.stat || CM?.IsStamcrited() || CM?.health <= HEALTH_THRESHOLD_CRIT)) //change because carbons on paradise are very lively
+	if(awakened && (M.stat || CM?.health <= HEALTH_THRESHOLD_CRIT)) //change because carbons on paradise are very lively
 		consume(M)
 		return
 	..()
@@ -99,7 +99,7 @@
 		return
 	switch(bloodthirst)
 		if(HIS_GRACE_SATIATED to HIS_GRACE_PECKISH)
-			. += span_his_grace("[declent_ru(NOMINATIVE)] не очень голоден. Пока что.")
+			. += span_his_grace("[declent_ru(NOMINATIVE)] не очень голоден. Пока что...")
 		if(HIS_GRACE_PECKISH to HIS_GRACE_HUNGRY)
 			. += span_his_grace("[declent_ru(NOMINATIVE)] слегка проголодался.")
 		if(HIS_GRACE_HUNGRY to HIS_GRACE_FAMISHED)
@@ -107,7 +107,7 @@
 		if(HIS_GRACE_FAMISHED to HIS_GRACE_STARVING)
 			. += span_his_grace("[declent_ru(NOMINATIVE)] уже не скрывает, как пускает слюни при виде вас. Будьте осторожны.")
 		if(HIS_GRACE_STARVING to HIS_GRACE_CONSUME_OWNER)
-			. += span_his_grace("Вы играете с огнём. [declent_ru(NOMINATIVE)] в шаге от того, чтобы вас сожрать.")
+			. += span_his_grace("Вы играете с огнём. [declent_ru(NOMINATIVE)] в шаге от того, чтобы вас сожрать!")
 		if(HIS_GRACE_CONSUME_OWNER to HIS_GRACE_FALL_ASLEEP)
 			. += span_his_grace("[declent_ru(NOMINATIVE)] яростно трясётся, на сводя с вас глаз.")
 
@@ -379,7 +379,7 @@
 	var/mob/living/carbon/human/master = loc
 	force_bonus += ascend_bonus
 	name = "mythical toolbox of three powers"
-	desc = "Легендарный тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
+	desc = "Мифический тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»."
 	ru_names = list(
 		NOMINATIVE = "Мифический тулбокс трёх сил",
 		GENITIVE = "Мифического тулбокса трёх сил",
