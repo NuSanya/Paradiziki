@@ -8,7 +8,7 @@
 	var/bloodlust = 0
 
 /atom/movable/screen/alert/status_effect/his_grace
-	name = "His Grace"
+	name = "Его Светлость"
 	desc = "Его Светлость голоден, и вы обязаны Его насытить."
 	icon_state = "his_grace"
 	alerttooltipstyle = "hisgrace"
