@@ -115,7 +115,7 @@
 	if(awakened)
 		return
 	user.forceMove(get_turf(src))
-	user.visible_message(span_warning("[user] выкарабкивается из [declent_ru(GENITIVE)]!"), span_notice("Вы выбираетесь из [declent_ru(GENITIVE)]!"))
+	user.visible_message(span_warning("[user] выкарабкива[pluralize_ru(user.gender,"ет","ют")]ся из [declent_ru(GENITIVE)]!"), span_notice("Вы выбираетесь из [declent_ru(GENITIVE)]!"))
 
 /obj/item/his_grace/process(seconds_per_tick)
 	if(!bloodthirst)
@@ -145,7 +145,7 @@
 	if(awakened)
 		return
 	awakened = TRUE
-	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?."))
+	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?"))
 	name = "His Grace"
 	desc = "Кровавый артефакт, рождённый скверной магией."
 	ru_names = list(
@@ -354,7 +354,7 @@
 	if(awakened)
 		return
 	awakened = TRUE
-	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?."))
+	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?"))
 	name = "His Grace"
 	desc = "Кровавый артефакт, рождённый скверной магией."
 	ru_names = list(
