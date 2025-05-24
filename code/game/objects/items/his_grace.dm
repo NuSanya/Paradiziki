@@ -83,7 +83,7 @@
 	var/mob/living/carbon/CM
 	if(ishuman(M))
 		CM = M
-	if(awakened && (M.stat || CM?.health <= HEALTH_THRESHOLD_CRIT)) //change because carbons on paradise are very lively
+	if(awakened && (M.stat || CM?.health <= (HEALTH_THRESHOLD_CRIT-30))) //change because carbons on paradise are very lively
 		consume(M)
 		return
 	..()
@@ -216,7 +216,7 @@
 	force_bonus += HIS_GRACE_FORCE_BONUS
 	prev_bloodthirst = bloodthirst
 	if(prev_bloodthirst < HIS_GRACE_CONSUME_OWNER)
-		bloodthirst = max(LAZYLEN(contents), 1) //Never fully sated, and His hunger will only grow.
+		bloodthirst = max(round(LAZYLEN(contents)/2), 1) //Never fully sated, and His hunger will only grow.
 	else
 		bloodthirst = HIS_GRACE_CONSUME_OWNER
 	for(var/mob/living/C in contents)

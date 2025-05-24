@@ -5,7 +5,6 @@
 	duration = -1
 	tick_interval = 0.4 SECONDS
 	alert_type = /atom/movable/screen/alert/status_effect/his_grace
-	var/bloodlust = 0
 
 /atom/movable/screen/alert/status_effect/his_grace
 	name = "Его Светлость"
@@ -29,7 +28,6 @@
 
 /datum/status_effect/his_grace/tick(seconds_between_ticks)
 	var/mob/living/carbon/human/human = owner
-	bloodlust = 0
 	var/graces = 0
 	var/obj/item/his_grace/HG = human.find_item(/obj/item/his_grace)
 	if(HG)
@@ -42,9 +40,9 @@
 		qdel(src)
 		return
 	var/update = NONE
-	update |= human.heal_overall_damage(5, 5, updating_health = FALSE, affect_robotic = TRUE)
-	update |= human.heal_damages(tox = 5, oxy = 5, updating_health = FALSE)
-	update |= human.adjustCloneLoss(-5, FALSE)
+	update |= human.heal_overall_damage(2.5, 2.5, updating_health = FALSE, affect_robotic = TRUE)
+	update |= human.heal_damages(tox = 2, oxy = 5, updating_health = FALSE)
+	update |= human.adjustCloneLoss(-2.5, FALSE)
 	update |= human.setStaminaLoss(0, FALSE)
 	if(update)
 		human.updatehealth()
