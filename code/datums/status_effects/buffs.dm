@@ -31,8 +31,6 @@
 	var/graces = 0
 	var/obj/item/his_grace/HG = human.find_item(/obj/item/his_grace)
 	if(HG)
-		if(HG.bloodthirst > bloodlust)
-			bloodlust = HG.bloodthirst
 		if(HG.awakened)
 			graces++
 	if(!graces)
