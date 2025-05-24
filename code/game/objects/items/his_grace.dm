@@ -145,7 +145,7 @@
 	if(awakened)
 		return
 	awakened = TRUE
-	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?."))
+	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?"))
 	name = "His Grace"
 	desc = "Кровавый артефакт, рождённый скверной магией."
 	ru_names = list(
