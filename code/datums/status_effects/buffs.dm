@@ -5,6 +5,7 @@
 	duration = -1
 	tick_interval = 0.4 SECONDS
 	alert_type = /atom/movable/screen/alert/status_effect/his_grace
+	var/bloodlust = 0
 
 /atom/movable/screen/alert/status_effect/his_grace
 	name = "Его Светлость"
@@ -28,9 +29,12 @@
 
 /datum/status_effect/his_grace/tick(seconds_between_ticks)
 	var/mob/living/carbon/human/human = owner
+	bloodlust = 0
 	var/graces = 0
 	var/obj/item/his_grace/HG = human.find_item(/obj/item/his_grace)
 	if(HG)
+		if(HG.bloodthirst > bloodlust)
+			bloodlust = HG.bloodthirst
 		if(HG.awakened)
 			graces++
 	if(!graces)
