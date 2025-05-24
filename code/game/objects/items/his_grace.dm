@@ -320,7 +320,7 @@
 	var/mob/living/carbon/human/master = loc
 	force_bonus += ascend_bonus
 	name = "mythical toolbox of three powers"
-	desc = "Легендарный тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
+	desc = "Мифический тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
 	ru_names = list(
 		NOMINATIVE = "Мифический тулбокс трёх сил",
 		GENITIVE = "Мифического тулбокса трёх сил",

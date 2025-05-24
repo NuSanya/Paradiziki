@@ -7,7 +7,7 @@
 	alert_type = /atom/movable/screen/alert/status_effect/his_wrath
 
 /atom/movable/screen/alert/status_effect/his_wrath
-	name = "His Wrath"
+	name = "Его Гнев"
 	desc = "Вы предпочли бегство повиновению Его Светлости — и вот ваша расплата."
 	icon_state = "his_grace"
 	alerttooltipstyle = "hisgrace"
