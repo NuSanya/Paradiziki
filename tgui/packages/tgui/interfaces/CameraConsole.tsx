@@ -223,6 +223,7 @@ const CameraSelectorMap = (props) => {
             zoom={zoom}
             icon={'box'}
             tooltip={camera.name}
+            tooltipPosition="auto"
             color={
               camera.status
                 ? camera.ref === activeCamera?.ref

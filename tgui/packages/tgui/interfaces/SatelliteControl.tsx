@@ -144,7 +144,7 @@ const SatelliteControlMapView = (props: unknown) => {
   const [z_current, setZCurrent] = useState(stationLevelNum[0]);
   const [zoom, setZoom] = useState(data.zoom);
   return (
-    <Box height="100%" mb="0.5rem" overflow="hidden">
+    <Box height="100%" m="0.5rem" style={{ display: 'flex' }} >
       <NanoMap
         zoom={data.zoom}
         offsetX={data.offsetX}
@@ -176,6 +176,7 @@ const SatelliteControlMapView = (props: unknown) => {
             tooltip={
               sat.active ? 'Shield Satellite' : 'Inactive Shield Satellite'
             }
+            tooltipPosition="auto"
             color={sat.active ? 'white' : 'grey'}
             onClick={() => act('toggle', { id: sat.id })}
           />
@@ -192,6 +193,7 @@ const SatelliteControlMapView = (props: unknown) => {
               zoom={zoom}
               icon="shield"
               tooltip="Successful Defense"
+              tooltipPosition="auto"
               color="blue"
             />
           ))}
@@ -207,6 +209,7 @@ const SatelliteControlMapView = (props: unknown) => {
               zoom={zoom}
               icon="x"
               tooltip="Meteor Hit"
+              tooltipPosition="auto"
               color="red"
             />
           ))}
@@ -222,6 +225,7 @@ const SatelliteControlMapView = (props: unknown) => {
               zoom={zoom}
               icon="meteor"
               tooltip="Incoming Meteor"
+              tooltipPosition="auto"
               color="white"
             />
           ))}

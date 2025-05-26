@@ -155,6 +155,7 @@ const AtmosControlMapView = (_properties) => {
             zoom={zoom}
             icon="circle"
             tooltip={aa.name}
+            tooltipPosition="auto"
             color={getStatusColour(aa.danger)}
             onClick={() =>
               act('open_alarm', {

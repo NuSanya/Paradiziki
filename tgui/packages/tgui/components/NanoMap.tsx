@@ -1,3 +1,4 @@
+import type { Placement } from '@popperjs/core';
 import {
   useState,
   useRef,
@@ -7,7 +8,7 @@ import {
   useEffect,
   CSSProperties,
 } from 'react';
-import { Box, Icon, Tooltip, Button, Flex, Dropdown, Image } from '.';
+import { Box, Icon, Button, Flex, Dropdown, Image } from '.';
 import { useBackend } from '../backend';
 import { LabeledList } from './LabeledList';
 import { Slider } from './Slider';
@@ -164,6 +165,7 @@ export type NanoMakerProps = Partial<{
   z_current: number;
   zoom: number;
   tooltip: ReactNode;
+  tooltipPosition: Placement;
   children: ReactNode;
   bordered: boolean;
   onClick: MouseEventHandler<HTMLDivElement>;
@@ -178,6 +180,7 @@ const NanoMapMarker = (props: NanoMakerProps) => {
     z_current,
     zoom = 1,
     tooltip,
+    tooltipPosition,
     bordered,
     onClick,
     onDblClick,
@@ -191,23 +194,29 @@ const NanoMapMarker = (props: NanoMakerProps) => {
   const rx = (x - 1) * pixelsPerTurfAtZoom;
   const ry = (y - 1) * pixelsPerTurfAtZoom;
   return (
-    <div>
-      <Tooltip content={tooltip}>
-        <Box
-          position="absolute"
-          className={bordered ? 'NanoMap__marker__bordered' : 'NanoMap__marker'}
-          lineHeight="0"
-          bottom={ry + 'px'}
-          left={rx + 'px'}
-          width={pixelsPerTurfAtZoom + 'px'}
-          height={pixelsPerTurfAtZoom + 'px'}
-          onClick={onClick}
-          onDoubleClick={onDblClick}
-        >
-          {children}
-        </Box>
-      </Tooltip>
-    </div>
+    <Button
+      position="absolute"
+      className={bordered ? 'NanoMap__marker__bordered' : 'NanoMap__marker'}
+      tooltip={tooltip}
+      tooltipPosition={tooltipPosition}
+      lineHeight="0"
+      bottom={`${ry}px`}
+      left={`${rx}px`}
+      width={`${pixelsPerTurfAtZoom}px`}
+      height={`${pixelsPerTurfAtZoom}px`}
+      onClick={onClick}
+      onDoubleClick={onDblClick}
+      style={{
+        padding: 0,
+        border: 'none',
+        background: 'none',
+        overflow: 'visible',
+      }}
+    >
+      <div className="NanoMap__marker-content">
+        {children}
+      </div>
+    </Button>
   );
 };
 
