@@ -1,8 +1,3 @@
-#define MIN_ZOOM 1
-#define MAX_ZOOM 8
-#define MIN_TAB_INDEX 0
-#define MAX_TAB_INDEX 1
-
 //Station Shield
 // A chain of satellites encircles the station
 // Satellites be actived to generate a shield that will block unorganic matter from passing it.
@@ -13,6 +8,7 @@
 	var/last_coverage = 0
 	var/is_testing = FALSE
 	var/thrown = 0
+	var/goal_completed = FALSE
 	var/list/defended = list()
 	var/list/collisions = list()
 
@@ -39,13 +35,13 @@
 /datum/station_goal/station_shield/check_completion()
 	if(..())
 		return TRUE
-	return last_coverage >= coverage_goal
+	return goal_completed
 
 /datum/station_goal/station_shield/proc/update_coverage(success, turf/where)
 	if(success)
-		defended += list(list("x" = where.x, "y" = where.y))
+		defended += list(list("x" = where.x, "y" = where.y, "z" = where.z))
 	else
-		collisions += list(list("x" = where.x, "y" = where.y))
+		collisions += list(list("x" = where.x, "y" = where.y, "z" = where.z))
 	if(length(defended) > last_coverage)
 		last_coverage = length(defended)
 	if(length(defended) + length(collisions) >= max_meteor)
@@ -55,6 +51,9 @@
 /datum/station_goal/station_shield/proc/simulate_meteors()
 	if(is_testing)
 		return FALSE
+	if(last_coverage >= coverage_goal)
+		goal_completed = TRUE
+	last_coverage = 0
 	is_testing = TRUE
 	thrown = 0
 	defended = list()
@@ -65,6 +64,8 @@
 	spawn_meteor(list(/obj/effect/meteor/fake = 1))
 	thrown++
 	if(thrown >= max_meteor)
+		if(last_coverage >= coverage_goal)
+			goal_completed = TRUE
 		return PROCESS_KILL
 
 /obj/item/circuitboard/computer/sat_control
@@ -73,148 +74,39 @@
 	origin_tech = "engineering=3"
 
 /obj/machinery/computer/sat_control
-	name = "Satellite control"
-	desc = "Used to control the satellite network."
+	name = "Satellite Control"
+	desc = "Используется для управления спутниковой сетью."
 	circuit = /obj/item/circuitboard/computer/sat_control
 	icon_screen = "accelerator"
 	icon_keyboard = "rd_key"
-	/// A notice to display to the user.
-	var/notice = ""
-	/// The color to use for the notice.
-	var/notice_color = "white"
-	/// Before world.time reaches this, the notice will not automatically update to show the testing status.
-	var/freeze_notice_until = 0
-	/// The X offset of the UI map
-	var/offset_x = 0
-	/// The Y offset of the UI map
-	var/offset_y = 0
-	/// The zoom of the UI map
-	var/zoom = 1
-	/// The ID of the currently opened UI tab
-	var/tab_index = 0
+	var/datum/ui_module/sat_control/sat_control
+
+/obj/machinery/computer/sat_control/New()
+	sat_control = new(src)
+	..()
+
+/obj/machinery/computer/sat_control/Destroy()
+	QDEL_NULL(sat_control)
+	return ..()
 
 /obj/machinery/computer/sat_control/attack_hand(mob/user)
+	if(stat & (BROKEN|NOPOWER))
+		return
+
 	if(..())
-		return 1
+		return TRUE
+
+	add_fingerprint(user)
 	ui_interact(user)
 
-/obj/machinery/computer/sat_control/ui_state(mob/user)
-	return GLOB.default_state
+/obj/machinery/computer/sat_control/attack_ai(mob/user)
+	attack_hand(user)
 
 /obj/machinery/computer/sat_control/ui_interact(mob/user, datum/tgui/ui = null)
-	ui = SStgui.try_update_ui(user, src, ui)
-	if(!ui)
-		ui = new(user, src, "SatelliteControl", name)
-		ui.open()
+	sat_control.ui_interact(user, ui)
 
-/obj/machinery/computer/sat_control/ui_assets(mob/user)
-	return list(
-		get_asset_datum(/datum/asset/simple/nanomaps)
-	)
-
-/obj/machinery/computer/sat_control/ui_data(mob/user)
-	var/list/data = list()
-
-	data["satellites"] = list()
-	for(var/obj/machinery/satellite/S in GLOB.machines)
-		var/turf/T = get_turf(S)
-		data["satellites"] += list(list(
-			"id" = S.id,
-			"active" = S.active,
-			"mode" = S.mode,
-			"x" = T.x,
-			"y" = T.y
-		))
-	update_notice()
-	data["notice"] = notice
-	data["notice_color"] = notice_color
-	data["zoom"] = zoom
-	data["offsetX"] = offset_x
-	data["offsetY"] = offset_y
-	data["tabIndex"] = tab_index
-
-
-	var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
-	if(G)
-		data["has_goal"] = TRUE
-		data["coverage"] = G.last_coverage
-		data["coverage_goal"] = G.coverage_goal
-		data["testing"] = G.is_testing
-		data["thrown"] = G.thrown
-		data["defended"] = G?.defended || list()
-		data["collisions"] = G?.collisions || list()
-		var/list/fake_meteors = list()
-		if(G.is_testing)
-			for(var/obj/effect/meteor/fake/meteor in GLOB.meteor_list)
-				fake_meteors += list(list("x" = meteor.x, "y" = meteor.y))
-		data["fake_meteors"] = fake_meteors
-	else
-		data["has_goal"] = FALSE
-	return data
-
-/obj/machinery/computer/sat_control/ui_act(action, params)
-	if(..())
-		return
-
-	switch(action)
-		if("begin_test")
-			var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
-			if(G)
-				G.simulate_meteors()
-		if("toggle")
-			toggle(text2num(params["id"]))
-			. = TRUE
-		if("set_tab_index")
-			var/new_tab_index = text2num(params["tab_index"])
-			if(isnull(new_tab_index) || new_tab_index < MIN_TAB_INDEX || new_tab_index > MAX_TAB_INDEX)
-				return
-			tab_index = new_tab_index
-		if("set_zoom")
-			var/new_zoom = text2num(params["zoom"])
-			if(isnull(new_zoom) || new_zoom < MIN_ZOOM || new_zoom > MAX_ZOOM)
-				return
-			zoom = new_zoom
-		if("set_offset")
-			var/new_offset_x = text2num(params["offset_x"])
-			var/new_offset_y = text2num(params["offset_y"])
-			if(isnull(new_offset_x) || isnull(new_offset_y))
-				return
-			offset_x = new_offset_x
-			offset_y = new_offset_y
-
-/obj/machinery/computer/sat_control/proc/toggle(id)
-	for(var/obj/machinery/satellite/S in GLOB.machines)
-		if(S.id == id && are_zs_connected(src, S))
-			if(!S.toggle())
-				notice = "You can only activate satellites which are in space"
-				notice_color = "red"
-				freeze_notice_until = world.time + 5 SECONDS
-
-/obj/machinery/computer/sat_control/proc/update_notice()
-	var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
-	if(!G)
-		return
-	if(freeze_notice_until >= world.time)
-		return
-
-	if(G.is_testing && G.thrown < 100)
-		notice = "Throwing simulated meteors ([G.thrown]/100)..."
-		notice_color = "white"
-		return
-
-	var/total_meteors = length(G.defended) + length(G.collisions)
-	if(total_meteors == 0)
-		notice = "No simulation yet."
-		notice_color = "red"
-		return
-
-	if(G.is_testing)
-		notice = "Waiting for simulated meteors ([total_meteors]/100)..."
-		notice_color = "white"
-		return
-
-	notice = "Test complete. [100 - G.last_coverage] collisions out of 100 meteors."
-	notice_color = (G.last_coverage > G.coverage_goal) ? "blue" : "red"
+/obj/machinery/computer/sat_control/interact(mob/user)
+	sat_control.ui_interact(user)
 
 /obj/machinery/satellite
 	name = "Defunct Satellite"
@@ -288,6 +180,7 @@
 		if((!emagged || is_fake) && space_los(M))
 			if(!is_fake)
 				Beam(get_turf(M), icon_state = "sat_beam", time = 5, maxdistance = kill_range)
+				new /obj/effect/temp_visual/explosion(get_turf(M))
 				if(istype(M, /obj/effect/meteor/gore))
 					new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(M))
 			qdel(M)
@@ -319,8 +212,3 @@
 		if(active)
 			change_meteor_chance(2)
 		return TRUE
-
-#undef MIN_ZOOM
-#undef MAX_ZOOM
-#undef MIN_TAB_INDEX
-#undef MAX_TAB_INDEX
