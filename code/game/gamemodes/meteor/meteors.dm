@@ -317,10 +317,6 @@ GLOBAL_LIST_INIT(meteors_space_dust, list(/obj/effect/meteor/space_dust/weak)) /
 		goal = found_goal
 		return
 
-/obj/effect/meteor/fake/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents)
-	. = ..()
-	failed = TRUE
-
 /obj/effect/meteor/fake/Destroy()
 	if(!failed)
 		succeed()

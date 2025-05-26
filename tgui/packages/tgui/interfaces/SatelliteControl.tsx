@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { useBackend } from '../backend';
-import { Box, Button, LabeledList, NanoMap, ProgressBar, Section, Stack, Tabs } from '../components';
+import {
+  Box,
+  Button,
+  LabeledList,
+  NanoMap,
+  ProgressBar,
+  Section,
+  Stack,
+  Tabs,
+} from '../components';
 import { Window } from '../layouts';
 
 type SatelliteControlData = {
@@ -13,7 +22,7 @@ type SatelliteControlData = {
   coverage_goal: number;
   max_meteor: number;
   testing: boolean;
-  thrown: number
+  thrown: number;
   zoom: number;
   offsetX: number;
   offsetY: number;
@@ -45,14 +54,17 @@ export const SatelliteControl = (props: unknown) => {
 
   const handleTabChange = (index: number) => {
     setTabIndex(index);
-    act('set_tab_index', { tab_index: index});
+    act('set_tab_index', { tab_index: index });
   };
 
   const decideTab = (index: number) => {
     switch (index) {
-      case 0: return <SatelliteControlSatellitesList />;
-      case 1: return <SatelliteControlMapView />;
-      default: return "WE SHOULDN'T BE HERE!";
+      case 0:
+        return <SatelliteControlSatellitesList />;
+      case 1:
+        return <SatelliteControlMapView />;
+      default:
+        return "WE SHOULDN'T BE HERE!";
     }
   };
 
@@ -65,13 +77,15 @@ export const SatelliteControl = (props: unknown) => {
               <Tabs.Tab
                 icon="table"
                 selected={tabIndex === 0}
-                onClick={() => handleTabChange(0)}>
+                onClick={() => handleTabChange(0)}
+              >
                 Satellites
               </Tabs.Tab>
               <Tabs.Tab
                 icon="map-marked-alt"
                 selected={tabIndex === 1}
-                onClick={() => handleTabChange(1)}>
+                onClick={() => handleTabChange(1)}
+              >
                 Map View
               </Tabs.Tab>
             </Tabs>
@@ -96,15 +110,15 @@ const SatelliteControlSatellitesList = (props: unknown) => {
     <Section title="Satellite Network Control" fill scrollable>
       <LabeledList>
         {satellites.map((sat) => (
-          <LabeledList.Item
-            key={sat.id}
-            label={`#${sat.id}`}
-            color={sat.active ? "good" : "average"}>
-            <Box inline bold>{sat.mode}</Box>
+          <LabeledList.Item key={sat.id} label={`#${sat.id}`}>
+            <Box inline bold color={sat.active ? 'good' : 'average'} mr={2}>
+              {sat.mode}
+            </Box>
             <Button
-              icon={sat.active ? "power-off" : "times"}
-              color={sat.active ? "good" : "average"}
-              onClick={() => act('toggle', { id: sat.id.toString() })}>
+              icon={sat.active ? 'power-off' : 'times'}
+              color={sat.active ? 'average' : 'good'}
+              onClick={() => act('toggle', { id: sat.id.toString() })}
+            >
               {sat.active ? 'Deactivate' : 'Activate'}
             </Button>
           </LabeledList.Item>
@@ -159,53 +173,58 @@ const SatelliteControlMapView = (props: unknown) => {
             z_current={z_current}
             zoom={zoom}
             icon="satellite"
-            tooltip={sat.active ? 'Shield Satellite' : 'Inactive Shield Satellite'}
+            tooltip={
+              sat.active ? 'Shield Satellite' : 'Inactive Shield Satellite'
+            }
             color={sat.active ? 'white' : 'grey'}
             onClick={() => act('toggle', { id: sat.id })}
           />
         ))}
 
-        {has_goal && defended.map((meteor, i) => (
-          <NanoMap.MarkerIcon
-            key={`defended_${i}_${meteor.x}_${meteor.y}`}
-            x={meteor.x}
-            y={meteor.y}
-            z={meteor.z}
-            z_current={z_current}
-            zoom={zoom}
-            icon="shield"
-            tooltip="Successful Defense"
-            color="blue"
-          />
-        ))}
+        {has_goal &&
+          defended.map((meteor, i) => (
+            <NanoMap.MarkerIcon
+              key={`defended_${i}_${meteor.x}_${meteor.y}`}
+              x={meteor.x}
+              y={meteor.y}
+              z={meteor.z}
+              z_current={z_current}
+              zoom={zoom}
+              icon="shield"
+              tooltip="Successful Defense"
+              color="blue"
+            />
+          ))}
 
-        {has_goal && collisions.map((meteor, i) => (
-          <NanoMap.MarkerIcon
-            key={`collision_${i}_${meteor.x}_${meteor.y}`}
-            x={meteor.x}
-            y={meteor.y}
-            z={meteor.z}
-            z_current={z_current}
-            zoom={zoom}
-            icon="x"
-            tooltip="Meteor Hit"
-            color="red"
-          />
-        ))}
+        {has_goal &&
+          collisions.map((meteor, i) => (
+            <NanoMap.MarkerIcon
+              key={`collision_${i}_${meteor.x}_${meteor.y}`}
+              x={meteor.x}
+              y={meteor.y}
+              z={meteor.z}
+              z_current={z_current}
+              zoom={zoom}
+              icon="x"
+              tooltip="Meteor Hit"
+              color="red"
+            />
+          ))}
 
-        {has_goal && fake_meteors.map((meteor, i) => (
-          <NanoMap.MarkerIcon
-            key={`meteor_${i}_${meteor.x}_${meteor.y}`}
-            x={meteor.x}
-            y={meteor.y}
-            z={meteor.z}
-            z_current={z_current}
-            zoom={zoom}
-            icon="meteor"
-            tooltip="Incoming Meteor"
-            color="white"
-          />
-        ))}
+        {has_goal &&
+          fake_meteors.map((meteor, i) => (
+            <NanoMap.MarkerIcon
+              key={`meteor_${i}_${meteor.x}_${meteor.y}`}
+              x={meteor.x}
+              y={meteor.y}
+              z={meteor.z}
+              z_current={z_current}
+              zoom={zoom}
+              icon="meteor"
+              tooltip="Incoming Meteor"
+              color="white"
+            />
+          ))}
       </NanoMap>
     </Box>
   );
@@ -213,7 +232,15 @@ const SatelliteControlMapView = (props: unknown) => {
 
 const SatelliteControlFooter = (props: unknown) => {
   const { act, data } = useBackend<SatelliteControlData>();
-  const { notice, notice_color, has_goal, coverage, coverage_goal, testing, max_meteor } = data;
+  const {
+    notice,
+    notice_color,
+    has_goal,
+    coverage,
+    coverage_goal,
+    testing,
+    max_meteor,
+  } = data;
 
   return (
     <>
@@ -226,14 +253,13 @@ const SatelliteControlFooter = (props: unknown) => {
                   color={coverage >= coverage_goal ? 'good' : 'average'}
                   value={coverage}
                   minValue={0}
-                  maxValue={max_meteor}>
+                  maxValue={max_meteor}
+                >
                   {coverage}%
                 </ProgressBar>
               </Stack.Item>
               <Stack.Item>
-                <Button
-                  disabled={testing}
-                  onClick={() => act('begin_test')}>
+                <Button disabled={testing} onClick={() => act('begin_test')}>
                   Check coverage
                 </Button>
               </Stack.Item>
@@ -241,9 +267,7 @@ const SatelliteControlFooter = (props: unknown) => {
           </Section>
         </Stack.Item>
       )}
-      <Stack.Item textColor={notice_color}>
-        {notice}
-      </Stack.Item>
+      <Stack.Item textColor={notice_color}>{notice}</Stack.Item>
     </>
   );
 };

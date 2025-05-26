@@ -83,6 +83,7 @@
 
 /obj/machinery/computer/sat_control/New()
 	sat_control = new(src)
+	sat_control.object = src
 	..()
 
 /obj/machinery/computer/sat_control/Destroy()
@@ -117,7 +118,7 @@
 	var/active = FALSE
 	density = TRUE
 	use_power = FALSE
-	var/static/gid = 0
+	var/static/gid = 1
 	var/id = 0
 
 /obj/machinery/satellite/Initialize(mapload)

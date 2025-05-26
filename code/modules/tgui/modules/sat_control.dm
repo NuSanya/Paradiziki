@@ -19,6 +19,8 @@
 	var/zoom = 1
 	/// The ID of the currently opened UI tab
 	var/tab_index = 0
+	/// What are we in
+	var/obj/object
 
 /datum/ui_module/sat_control/ui_state(mob/user)
 	return GLOB.default_state
@@ -116,13 +118,9 @@
 			offset_y = new_offset_y
 
 /datum/ui_module/sat_control/proc/toggle(id)
-	to_chat(world, "Toggling satellite ID: [id]")
 	var/num_id = text2num(id)
-	to_chat(world, "Converted ID: [num_id]")
 	for(var/obj/machinery/satellite/S in GLOB.machines)
-		to_chat(world, "[S.id == num_id]")
-		to_chat(world, "[are_zs_connected(src, S)]")
-		if(S.id == num_id && are_zs_connected(src, S))
+		if(S.id == num_id && are_zs_connected(object, S))
 			if(!S.toggle())
 				notice = "You can only activate satellites which are in space"
 				notice_color = "red"
