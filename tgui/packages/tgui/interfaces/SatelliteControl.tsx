@@ -79,14 +79,14 @@ export const SatelliteControl = (props: unknown) => {
                 selected={tabIndex === 0}
                 onClick={() => handleTabChange(0)}
               >
-                Satellites
+                Спутники
               </Tabs.Tab>
               <Tabs.Tab
                 icon="map-marked-alt"
                 selected={tabIndex === 1}
                 onClick={() => handleTabChange(1)}
               >
-                Map View
+                Просмотр карты
               </Tabs.Tab>
             </Tabs>
           </Stack.Item>
@@ -107,7 +107,7 @@ const SatelliteControlSatellitesList = (props: unknown) => {
   const { satellites } = data;
 
   return (
-    <Section title="Satellite Network Control" fill scrollable>
+    <Section title="Управление спутниковой сетью" fill>
       <LabeledList>
         {satellites.map((sat) => (
           <LabeledList.Item key={sat.id} label={`#${sat.id}`}>
@@ -119,7 +119,7 @@ const SatelliteControlSatellitesList = (props: unknown) => {
               color={sat.active ? 'average' : 'good'}
               onClick={() => act('toggle', { id: sat.id.toString() })}
             >
-              {sat.active ? 'Deactivate' : 'Activate'}
+              {sat.active ? 'Деактивировать' : 'Активировать'}
             </Button>
           </LabeledList.Item>
         ))}
@@ -142,21 +142,17 @@ const SatelliteControlMapView = (props: unknown) => {
     stationLevelName,
   } = data;
   const [z_current, setZCurrent] = useState(stationLevelNum[0]);
-  const [zoom, setZoom] = useState(data.zoom);
+  const [zoom, setZoom] = useState(1);
   return (
-    <Box height="100%" m="0.5rem" style={{ display: 'flex' }} >
+    <Box height="100%" m="0.5rem" style={{ display: 'flex' }}>
       <NanoMap
-        zoom={data.zoom}
+        onZoom={(v, n) => setZoom(n)}
         offsetX={data.offsetX}
         offsetY={data.offsetY}
         zNames={stationLevelName}
         zLevels={stationLevelNum}
         zCurrent={z_current}
         setZCurrent={setZCurrent}
-        onZoom={(e, zoom) => {
-          setZoom(zoom);
-          act('set_zoom', { zoom });
-        }}
         onOffsetChangeEnded={(e, state) =>
           act('set_offset', {
             offset_x: state.x,
@@ -173,9 +169,7 @@ const SatelliteControlMapView = (props: unknown) => {
             z_current={z_current}
             zoom={zoom}
             icon="satellite"
-            tooltip={
-              sat.active ? 'Shield Satellite' : 'Inactive Shield Satellite'
-            }
+            tooltip={sat.active ? 'Спутник щита' : 'Неактивный спутник'}
             tooltipPosition="auto"
             color={sat.active ? 'white' : 'grey'}
             onClick={() => act('toggle', { id: sat.id })}
@@ -192,7 +186,7 @@ const SatelliteControlMapView = (props: unknown) => {
               z_current={z_current}
               zoom={zoom}
               icon="shield"
-              tooltip="Successful Defense"
+              tooltip="Успешная защита"
               tooltipPosition="auto"
               color="blue"
             />
@@ -208,7 +202,7 @@ const SatelliteControlMapView = (props: unknown) => {
               z_current={z_current}
               zoom={zoom}
               icon="x"
-              tooltip="Meteor Hit"
+              tooltip="Столкновение метеора"
               tooltipPosition="auto"
               color="red"
             />
@@ -224,7 +218,7 @@ const SatelliteControlMapView = (props: unknown) => {
               z_current={z_current}
               zoom={zoom}
               icon="meteor"
-              tooltip="Incoming Meteor"
+              tooltip="Метеор"
               tooltipPosition="auto"
               color="white"
             />
@@ -250,7 +244,7 @@ const SatelliteControlFooter = (props: unknown) => {
     <>
       {has_goal && (
         <Stack.Item>
-          <Section title="Station Shield Coverage">
+          <Section title="Антиметеоритное покрытие станции">
             <Stack fill>
               <Stack.Item grow>
                 <ProgressBar
@@ -264,7 +258,7 @@ const SatelliteControlFooter = (props: unknown) => {
               </Stack.Item>
               <Stack.Item>
                 <Button disabled={testing} onClick={() => act('begin_test')}>
-                  Check coverage
+                  Активировать симуляцию
                 </Button>
               </Stack.Item>
             </Stack>

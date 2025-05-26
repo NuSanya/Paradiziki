@@ -13,10 +13,10 @@
 	var/list/collisions = list()
 
 /datum/station_goal/station_shield/get_report()
-	return {"<b>Station Shield construction</b><br>
-	The station is located in a zone full of space debris. We have a prototype shielding system you will deploy to reduce collision related accidents.
+	return {"<b>Сооружение щитов станции</b><br>
+	В области вокруг станции большое количество космического мусора. У нас есть прототип щитовой системы, которую вы должны установить для уменьшения числа происшествий, связанных со столкновениями.
 	<br><br>
-	You can order the satellites and control systems through the cargo shuttle."}
+	Вы можете заказать доставку спутников и системы их управления через шаттл отдела снабжения."}
 
 /datum/station_goal/station_shield/on_report()
 	//Unlock
@@ -69,12 +69,12 @@
 		return PROCESS_KILL
 
 /obj/item/circuitboard/computer/sat_control
-	board_name = "Satellite Network Control"
+	board_name = "Контроллер сети спутников"
 	build_path = /obj/machinery/computer/sat_control
 	origin_tech = "engineering=3"
 
 /obj/machinery/computer/sat_control
-	name = "Satellite Control"
+	name = "Управление спутниками"
 	desc = "Используется для управления спутниковой сетью."
 	circuit = /obj/item/circuitboard/computer/sat_control
 	icon_screen = "accelerator"
@@ -136,10 +136,10 @@
 /obj/machinery/satellite/proc/toggle(mob/user)
 	if(!active && !isinspace())
 		if(user)
-			to_chat(user, "<span class='warning'>You can only activate satellites which are in space.</span>")
+			to_chat(user, span_warning("Вы можете активировать только находящиеся в космосе спутники"))
 		return FALSE
 	if(user)
-		to_chat(user, "<span class='notice'>You [active ? "deactivate": "activate"] [src]</span>")
+		to_chat(user, span_notice("Вы [active ? "деактивировали": "активировали"] [src]"))
 	active = !active
 	if(active)
 		animate(src, pixel_y = 2, time = 10, loop = -1)
@@ -154,14 +154,27 @@
 	icon_state = active ? "sat_active" : "sat_inactive"
 
 /obj/machinery/satellite/multitool_act(mob/living/user, obj/item/I)
-	to_chat(user, "<span class='notice'>// NTSAT-[id] // Mode : [active ? "PRIMARY" : "STANDBY"] //[emagged ? "DEBUG_MODE //" : ""]</span>")
+	to_chat(user, span_notice("// NTSAT-[id] // Режим : [active ? "ОСНОВНОЙ" : "ОЖИДАНИЕ"] //[emagged ? "ОТЛАДКА //" : ""]"))
 
 /obj/machinery/satellite/meteor_shield
 	name = "Meteor Shield Satellite"
-	desc = "Meteor Point Defense Satellite."
+	desc = "Узловой спутник метеорной защиты."
 	mode = "M-SHIELD"
 	speed_process = TRUE
 	var/kill_range = 14
+
+/obj/machinery/satellite/meteor_shield/examine(mob/user)
+	. = ..()
+	if(active)
+		. += span_notice("В настоящее время активно. Вы можете взаимодействовать с ним, чтобы отключить.")
+		if(emagged)
+			. += span_warning("Вместо обычных звуковых сигналов оно издаёт странное постоянное шипение белого шума…")
+		else
+			. += span_notice("Оно периодически издаёт звуковые сигналы, связываясь со спутниковой сетью.")
+	else
+		. += span_notice("В настоящее время отключено. Вы можете взаимодействовать с ним, чтобы активировать.")
+		if(emagged)
+			. += span_warning("Но что-то здесь не так…?")
 
 /obj/machinery/satellite/meteor_shield/proc/space_los(meteor)
 	for(var/turf/T in get_line(src,meteor))
@@ -195,10 +208,17 @@
 		else
 			change_meteor_chance(0.5)
 
-/obj/machinery/satellite/meteor_shield/proc/change_meteor_chance(mod)
+/obj/machinery/satellite/meteor_shield/proc/change_meteor_chance(mod = 1)
+	var/static/list/meteor_event_typecache
+	if(!meteor_event_typecache)
+		meteor_event_typecache = typecacheof(list(
+			/datum/event/meteor_wave,
+			/datum/event/dust/meaty,
+			/datum/event/dust,
+		))
 	for(var/datum/event_container/container in SSevents.event_containers)
 		for(var/datum/event_meta/M in container.available_events)
-			if(M.event_type == /datum/event/meteor_wave)
+			if(is_type_in_typecache(M.event_type, meteor_event_typecache))
 				M.weight_mod *= mod
 
 /obj/machinery/satellite/meteor_shield/Destroy()
@@ -208,7 +228,7 @@
 
 /obj/machinery/satellite/meteor_shield/emag_act(mob/user)
 	if(!emagged)
-		to_chat(user, "<span class='danger'>You override the shield's circuits, causing it to attract meteors instead of destroying them.</span>")
+		to_chat(user, span_danger("Вы переписали схемы метеорного щита, заставив его привлекать метеоры, а не уничтожать их."))
 		emagged = TRUE
 		if(active)
 			change_meteor_chance(2)

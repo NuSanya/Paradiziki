@@ -213,9 +213,7 @@ const NanoMapMarker = (props: NanoMakerProps) => {
         overflow: 'visible',
       }}
     >
-      <div className="NanoMap__marker-content">
-        {children}
-      </div>
+      <div className="NanoMap__marker-content">{children}</div>
     </Button>
   );
 };

@@ -122,7 +122,7 @@
 	for(var/obj/machinery/satellite/S in GLOB.machines)
 		if(S.id == num_id && are_zs_connected(object, S))
 			if(!S.toggle())
-				notice = "You can only activate satellites which are in space"
+				notice = "Вы можете активировать только находящиеся в космосе спутники."
 				notice_color = "red"
 				freeze_notice_until = world.time + 5 SECONDS
 
@@ -134,22 +134,22 @@
 		return
 
 	if(G.is_testing && G.thrown < G.max_meteor)
-		notice = "Throwing simulated meteors ([G.thrown]/[G.max_meteor])..."
+		notice = "Идёт симуляция метеоритного шторма ([G.thrown]/[G.max_meteor])..."
 		notice_color = "white"
 		return
 
 	var/total_meteors = length(G.defended) + length(G.collisions)
 	if(total_meteors == 0)
-		notice = "No simulation yet."
+		notice = "Симуляция не активирована."
 		notice_color = "red"
 		return
 
 	if(G.is_testing)
-		notice = "Waiting for simulated meteors ([total_meteors]/[G.max_meteor])..."
+		notice = "Завершение симуляции метеоритного шторма ([total_meteors]/[G.max_meteor])..."
 		notice_color = "white"
 		return
 
-	notice = "Test complete. [G.max_meteor - G.last_coverage] collisions out of [G.max_meteor] meteors. [G.goal_completed ? ((G.last_coverage > G.coverage_goal) ? "Goal is completed." : "Goal is completed, but current run failed.") : "Goal failed."]"
+	notice = "Симуляция завершена. [G.max_meteor - G.last_coverage] столкновений из [G.max_meteor] метеоров. [G.goal_completed ? ((G.last_coverage > G.coverage_goal) ? "Цель выполнена." : "Цель выполнена, но текущая симуляция провалена.") : "Симуляция провалена."]"
 	notice_color = (G.last_coverage > G.coverage_goal) ? "blue" : "red"
 
 #undef MIN_ZOOM
