@@ -265,7 +265,14 @@ const SatelliteControlFooter = (props: unknown) => {
           </Section>
         </Stack.Item>
       )}
-      <Stack.Item align="center" fontFamily="sans-serif" fontSize="14px" textColor={notice_color}>{notice}</Stack.Item>
+      <Stack.Item
+        align="center"
+        fontFamily="sans-serif"
+        fontSize="14px"
+        textColor={notice_color}
+      >
+        {notice}
+      </Stack.Item>
     </>
   );
 };
