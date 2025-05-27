@@ -71,7 +71,7 @@ export const SatelliteControl = (props: unknown) => {
   return (
     <Window width={800} height={600}>
       <Window.Content>
-        <Stack fill vertical>
+        <Stack fill vertical fillPositionedParent>
           <Stack.Item>
             <Tabs>
               <Tabs.Tab
@@ -90,7 +90,7 @@ export const SatelliteControl = (props: unknown) => {
               </Tabs.Tab>
             </Tabs>
           </Stack.Item>
-          <Stack.Item grow={1} overflow="auto">
+          <Stack.Item grow={1} overflow="hidden">
             {decideTab(tabIndex)}
           </Stack.Item>
           <Stack.Item>
@@ -107,7 +107,7 @@ const SatelliteControlSatellitesList = (props: unknown) => {
   const { satellites } = data;
 
   return (
-    <Section title="Управление спутниковой сетью" fill>
+    <Section title="Управление спутниковой сетью" fill overflow="auto">
       <LabeledList>
         {satellites.map((sat) => (
           <LabeledList.Item key={sat.id} label={`#${sat.id}`}>
@@ -144,11 +144,11 @@ const SatelliteControlMapView = (props: unknown) => {
   const [z_current, setZCurrent] = useState(stationLevelNum[0]);
   const [zoom, setZoom] = useState(1);
   return (
-    <Box height="100%" m="0.5rem" style={{ display: 'flex' }}>
+    <Box maxHeight="100%" style={{ display: 'flex' }}>
       <NanoMap
         onZoom={(v, n) => setZoom(n)}
-        offsetX={data.offsetX}
-        offsetY={data.offsetY}
+        offsetX={offsetX}
+        offsetY={offsetY}
         zNames={stationLevelName}
         zLevels={stationLevelNum}
         zCurrent={z_current}
@@ -265,7 +265,7 @@ const SatelliteControlFooter = (props: unknown) => {
           </Section>
         </Stack.Item>
       )}
-      <Stack.Item textColor={notice_color}>{notice}</Stack.Item>
+      <Stack.Item align="center" fontFamily="sans-serif" fontSize="14px" textColor={notice_color}>{notice}</Stack.Item>
     </>
   );
 };
