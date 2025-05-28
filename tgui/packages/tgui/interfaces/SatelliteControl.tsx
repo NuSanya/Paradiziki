@@ -71,7 +71,7 @@ export const SatelliteControl = (props: unknown) => {
   return (
     <Window width={800} height={600}>
       <Window.Content>
-        <Stack fill vertical fillPositionedParent>
+        <Stack vertical fillPositionedParent>
           <Stack.Item>
             <Tabs>
               <Tabs.Tab
@@ -144,7 +144,7 @@ const SatelliteControlMapView = (props: unknown) => {
   const [z_current, setZCurrent] = useState(stationLevelNum[0]);
   const [zoom, setZoom] = useState(1);
   return (
-    <Box maxHeight="100%" style={{ display: 'flex' }}>
+    <Box height="100%" style={{ display: 'flex' }}>
       <NanoMap
         onZoom={(v, n) => setZoom(n)}
         offsetX={offsetX}
@@ -266,7 +266,6 @@ const SatelliteControlFooter = (props: unknown) => {
         </Stack.Item>
       )}
       <Stack.Item
-        align="center"
         fontFamily="sans-serif"
         fontSize="14px"
         textColor={notice_color}
