@@ -170,7 +170,7 @@ const SatelliteControlMapView = (props: unknown) => {
             zoom={zoom}
             icon="satellite"
             tooltip={sat.active ? 'Спутник щита' : 'Неактивный спутник'}
-            tooltipPosition="auto"
+            tooltipPosition={sat.x > 255 / 2 ? 'bottom' : 'right'}
             color={sat.active ? 'white' : 'grey'}
             onClick={() => act('toggle', { id: sat.id })}
           />
@@ -187,7 +187,7 @@ const SatelliteControlMapView = (props: unknown) => {
               zoom={zoom}
               icon="shield"
               tooltip="Успешная защита"
-              tooltipPosition="auto"
+              tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
               color="blue"
             />
           ))}
@@ -203,7 +203,7 @@ const SatelliteControlMapView = (props: unknown) => {
               zoom={zoom}
               icon="x"
               tooltip="Столкновение метеора"
-              tooltipPosition="auto"
+              tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
               color="red"
             />
           ))}
@@ -219,7 +219,7 @@ const SatelliteControlMapView = (props: unknown) => {
               zoom={zoom}
               icon="meteor"
               tooltip="Метеор"
-              tooltipPosition="auto"
+              tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
               color="white"
             />
           ))}

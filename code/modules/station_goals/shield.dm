@@ -29,8 +29,8 @@
 	supply_list.Add(P)
 	//Changes
 	var/list/station_levels = levels_by_trait(STATION_LEVEL)
-	coverage_goal = coverage_goal * station_levels.len
 	max_meteor = max_meteor * station_levels.len
+	coverage_goal = max_meteor - 25 //225 to 300 or 150 to 200 feels weird
 
 /datum/station_goal/station_shield/check_completion()
 	if(..())
