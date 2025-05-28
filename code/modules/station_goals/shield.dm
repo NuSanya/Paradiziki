@@ -162,6 +162,8 @@
 	mode = "M-SHIELD"
 	speed_process = TRUE
 	var/kill_range = 14
+	/// A list of "proxy" objects used for multi-z coverage.
+	var/list/obj/effect/abstract/meteor_shield_proxy/proxies = list()
 
 /obj/machinery/satellite/meteor_shield/examine(mob/user)
 	. = ..()
@@ -181,6 +183,36 @@
 		if(!isspaceturf(T))
 			return FALSE
 	return TRUE
+
+/obj/machinery/satellite/meteor_shield/Initialize(mapload)
+	. = ..()
+	setup_proxies()
+
+/obj/machinery/satellite/meteor_shield/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents)
+	. = ..()
+	setup_proxies()
+
+/obj/machinery/satellite/meteor_shield/proc/setup_proxy_for_z(target_z)
+	if(target_z == z)
+		return
+	// don't setup a proxy if there already is one.
+	if(!QDELETED(proxies["[target_z]"]))
+		return
+	var/turf/our_loc = get_turf(src)
+	var/turf/target_loc = locate(our_loc.x, our_loc.y, target_z)
+	if(QDELETED(target_loc))
+		return
+	var/obj/effect/abstract/meteor_shield_proxy/new_proxy = new(target_loc, src)
+	proxies["[target_z]"] = new_proxy
+
+/obj/machinery/satellite/meteor_shield/Process_Spacemove(movement_dir = NONE, continuous_move = FALSE)
+	if(active)
+		return TRUE
+	return ..()
+
+/obj/machinery/satellite/meteor_shield/proc/setup_proxies()
+	for(var/stacked_z in SSmapping.get_connected_levels(get_turf(src)))
+		setup_proxy_for_z(stacked_z)
 
 /obj/machinery/satellite/meteor_shield/process()
 	if(!active)
@@ -233,3 +265,56 @@
 		if(active)
 			change_meteor_chance(2)
 		return TRUE
+
+/obj/effect/abstract/meteor_shield_proxy
+	name = "Proxy Detector For Meteor Shield"
+	/// The meteor shield sat this is proxying.
+	var/obj/machinery/satellite/meteor_shield/parent
+
+/obj/effect/abstract/meteor_shield_proxy/Initialize(mapload, obj/machinery/satellite/meteor_shield/parent)
+	. = ..()
+	if(QDELETED(parent))
+		return INITIALIZE_HINT_QDEL
+	src.parent = parent
+	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(on_parent_deleted))
+	RegisterSignal(parent, COMSIG_MOVABLE_Z_CHANGED, PROC_REF(on_parent_z_changed))
+	RegisterSignal(parent, COMSIG_QDELETING, PROC_REF(on_parent_moved))
+	START_PROCESSING(SSfastprocess, src)
+
+/obj/effect/abstract/meteor_shield_proxy/proc/on_parent_moved()
+	SIGNAL_HANDLER
+	var/turf/parent_loc = get_turf(parent)
+	var/turf/new_loc = locate(parent_loc.x, parent_loc.y, z)
+	abstract_move(new_loc)
+
+/obj/effect/abstract/meteor_shield_proxy/proc/on_parent_z_changed()
+	SIGNAL_HANDLER
+	if(z == parent.z || !are_zs_connected(parent, src))
+		qdel(src)
+
+/obj/effect/abstract/meteor_shield_proxy/proc/on_parent_deleted()
+	SIGNAL_HANDLER
+	qdel(src)
+
+/obj/effect/abstract/meteor_shield_proxy/process()
+	if(!parent.active)
+		return
+	for(var/obj/effect/M in GLOB.meteor_list)
+		if(M.z != z)
+			continue
+		if(get_dist(M, src) > parent.kill_range)
+			continue
+		var/is_fake = istype(M, /obj/effect/meteor/fake)
+		if((!parent.emagged || is_fake) && space_los(M))
+			if(!is_fake)
+				parent.Beam(get_turf(M), icon_state = "sat_beam", time = 5, maxdistance = parent.kill_range)
+				new /obj/effect/temp_visual/explosion(get_turf(M))
+				if(istype(M, /obj/effect/meteor/gore))
+					new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(M))
+			qdel(M)
+
+/obj/effect/abstract/meteor_shield_proxy/proc/space_los(meteor)
+	for(var/turf/T in get_line(src,meteor))
+		if(!isspaceturf(T))
+			return FALSE
+	return TRUE
