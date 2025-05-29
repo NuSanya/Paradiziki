@@ -95,7 +95,6 @@ GLOBAL_LIST_EMPTY(all_cults)
 		equip_cultist(cult_mind.current)
 		cult_mind.current.faction |= "cult"
 		ADD_TRAIT(cult_mind.current, TRAIT_HEALS_FROM_CULT_PYLONS, CULT_TRAIT)
-		cult_mind.current.AddElement(/datum/element/halo_attach)
 		var/datum/objective/servecult/obj = new
 		obj.owner = cult_mind
 		cult_mind.objectives += obj
@@ -107,6 +106,10 @@ GLOBAL_LIST_EMPTY(all_cults)
 			if(!(locate(/datum/action/innate/toggle_clumsy) in cult_mind.current.actions))
 				var/datum/action/innate/toggle_clumsy/toggle_clumsy = new
 				toggle_clumsy.Grant(cult_mind.current)
+
+		var/istate = pick("halo1", "halo2", "halo3", "halo4", "halo5", "halo6")
+		var/mutable_appearance/halo_overlay = mutable_appearance('icons/effects/32x64.dmi', istate)
+		cult_mind.current.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(iscultist), cult_mind.current))
 
 		add_cult_actions(cult_mind)
 		update_cult_icons_added(cult_mind)
@@ -200,7 +203,6 @@ GLOBAL_LIST_EMPTY(all_cults)
 		cult_mind.current.faction |= "cult"
 		cult_mind.special_role = SPECIAL_ROLE_CULTIST
 		ADD_TRAIT(cult_mind.current, TRAIT_HEALS_FROM_CULT_PYLONS, CULT_TRAIT)
-		cult_mind.current.AddElement(/datum/element/halo_attach)
 
 		if(cult_mind.assigned_role == JOB_TITLE_CLOWN)
 			to_chat(cult_mind.current, span_cultitalic("A dark power has allowed you to overcome your clownish nature, letting you wield weapons without harming yourself."))
@@ -222,6 +224,10 @@ GLOBAL_LIST_EMPTY(all_cults)
 		var/datum/objective/servecult/obj = new
 		obj.owner = cult_mind
 		cult_mind.objectives += obj
+
+		var/istate = pick("halo1", "halo2", "halo3", "halo4", "halo5", "halo6")
+		var/mutable_appearance/halo_overlay = mutable_appearance('icons/effects/32x64.dmi', istate)
+		cult_mind.current.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(iscultist), cult_mind.current))
 
 		if(cult_risen)
 			rise(cult_mind.current)

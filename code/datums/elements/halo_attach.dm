@@ -1,18 +1,28 @@
 /// a simple halo attach element (for cult and his grace)
 /datum/element/halo_attach
+	var/mutable_appearance/halo_overlay
+	// check for valid halo owner
+	var/datum/callback/proc_callback
 
 
-/datum/element/halo_attach/Attach(mob/living/carbon/target)
+/datum/element/halo_attach/Attach(mob/living/carbon/target, mutable_appearance/overlay, datum/callback/callback)
 	. = ..()
 
 	if(!istype(target))
 		return ELEMENT_INCOMPATIBLE
+
+	halo_overlay = overlay
+	proc_callback = callback
 
 	RegisterSignal(target, COMSIG_MOB_HALO_GAINED, PROC_REF(on_halo_gained), override = TRUE)
 
 
 /datum/element/halo_attach/Detach(datum/target)
 	. = ..()
+
+	halo_overlay = null
+	proc_callback = null
+
 	UnregisterSignal(target, COMSIG_MOB_HALO_GAINED)
 
 
@@ -21,20 +31,12 @@
 	SIGNAL_HANDLER
 
 	target.remove_overlay(HALO_LAYER)
-	var/mutable_appearance/new_halo_overlay
-
-	if(iscultist(target) && SSticker.mode.cult_ascendant)
-		var/istate = pick("halo1", "halo2", "halo3", "halo4", "halo5", "halo6")
-		new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', istate, -HALO_LAYER)
-	else if(isclocker(target) && SSticker.mode.crew_reveal)
-		new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "haloclock", -HALO_LAYER)
-	else if(is_graceascended(target))
-		new_halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "toolbox_halo", -HALO_LAYER) //placeholder sprite, change
-	else
+	if(!proc_callback?.Invoke())
 		return
 
-	new_halo_overlay.appearance_flags |= RESET_TRANSFORM
-	target.overlays_standing[HALO_LAYER] = new_halo_overlay
+	halo_overlay.layer = HALO_LAYER
+	halo_overlay.appearance_flags |= RESET_TRANSFORM
+	target.overlays_standing[HALO_LAYER] = halo_overlay
 	target.apply_overlay(HALO_LAYER)
 
 

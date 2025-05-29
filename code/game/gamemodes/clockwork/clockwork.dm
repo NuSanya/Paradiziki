@@ -94,7 +94,6 @@ GLOBAL_LIST_EMPTY(all_clockers)
 		var/datum/objective/serveclock/obj = new
 		obj.owner = clockwork_mind
 		clockwork_mind.objectives += obj
-		clockwork_mind.current.AddElement(/datum/element/halo_attach)
 
 		if(clockwork_mind.assigned_role == JOB_TITLE_CLOWN)
 			to_chat(clockwork_mind.current, span_clockitalic("A dark power has allowed you to overcome your clownish nature, letting you wield weapons without harming yourself."))
@@ -103,6 +102,9 @@ GLOBAL_LIST_EMPTY(all_clockers)
 			if(!(locate(/datum/action/innate/toggle_clumsy) in clockwork_mind.current.actions))
 				var/datum/action/innate/toggle_clumsy/toggle_clumsy = new
 				toggle_clumsy.Grant(clockwork_mind.current)
+
+		var/mutable_appearance/halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "haloclock")
+		clockwork_mind.current.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(isclocker), clockwork_mind))
 
 		add_clock_actions(clockwork_mind)
 		update_clock_icons_added(clockwork_mind)
@@ -191,7 +193,6 @@ GLOBAL_LIST_EMPTY(all_clockers)
 		clockwork_threshold_check()
 
 	if(!(clock_mind in clockwork_cult))
-		clock_mind.current.AddElement(/datum/element/halo_attach)
 		clockwork_cult += clock_mind
 		clock_mind.current.faction |= "clockwork_cult"
 		clock_mind.special_role = SPECIAL_ROLE_CLOCKER
@@ -218,6 +219,9 @@ GLOBAL_LIST_EMPTY(all_clockers)
 		clock_mind.objectives += obj
 
 		adjust_clockwork_power(CLOCK_POWER_CONVERT)
+
+		var/mutable_appearance/halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "haloclock")
+		clock_mind.current.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(isclocker), clock_mind))
 
 		if(power_reveal)
 			powered(clock_mind.current)
