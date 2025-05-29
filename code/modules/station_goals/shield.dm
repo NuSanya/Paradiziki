@@ -157,7 +157,7 @@
 	to_chat(user, span_notice("// NTSAT-[id] // Режим : [active ? "ОСНОВНОЙ" : "ОЖИДАНИЕ"] //[emagged ? "ОТЛАДКА //" : ""]"))
 
 /obj/machinery/satellite/meteor_shield
-	name = "Meteor Shield Satellite"
+	name = "meteor shield satellite"
 	desc = "Автономный модуль, синхронизированный с другими спутниками, формирует защитное поле вокруг станции, предназначенное для отражения ударов метеоритов."
 	mode = "M-SHIELD"
 	speed_process = TRUE
