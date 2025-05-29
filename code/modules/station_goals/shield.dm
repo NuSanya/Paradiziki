@@ -110,7 +110,7 @@
 	sat_control.ui_interact(user)
 
 /obj/machinery/satellite
-	name = "Defunct Satellite"
+	name = "inactive satellite"
 	desc = ""
 	icon = 'icons/obj/machines/satellite.dmi'
 	icon_state = "sat_inactive"
