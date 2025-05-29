@@ -158,7 +158,7 @@
 
 /obj/machinery/satellite/meteor_shield
 	name = "Meteor Shield Satellite"
-	desc = "Узловой спутник метеорной защиты."
+	desc = "Автономный модуль, синхронизированный с другими спутниками, формирует защитное поле вокруг станции, предназначенное для отражения ударов метеоритов."
 	mode = "M-SHIELD"
 	speed_process = TRUE
 	var/kill_range = 14
