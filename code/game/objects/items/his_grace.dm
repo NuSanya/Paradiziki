@@ -74,6 +74,43 @@
 	item_state = ascended ? "toolbox_gold" : "toolbox_green"
 	return ..()
 
+/obj/item/his_grace/update_name(updates = ALL)
+	. = ..()
+	if(!awakened)
+		return
+
+	if(ascended)
+		name = "mythical toolbox of three powers"
+		desc = "Мифический тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
+		ru_names = list(
+			NOMINATIVE = "Мифический тулбокс трёх сил",
+			GENITIVE = "Мифического тулбокса трёх сил",
+			DATIVE = "Мифическому тулбоксу трёх сил",
+			ACCUSATIVE = "Мифический тулбокс трёх сил",
+			INSTRUMENTAL = "Мифическим тулбоксом трёх сил",
+			PREPOSITIONAL = "Мифическом тулбоксе трёх сил"
+		)
+	else
+		name = "His Grace"
+		desc = "Кровавый артефакт, рождённый скверной магией."
+		ru_names = list(
+			NOMINATIVE = "Его Светлость",
+			GENITIVE = "Его Светлости",
+			DATIVE = "Его Светлости",
+			ACCUSATIVE = "Его Светлость",
+			INSTRUMENTAL = "Его Светлостью",
+			PREPOSITIONAL = "Его Светлости"
+		)
+
+/obj/item/his_grace/proc/reset_to_initial()
+	name = initial(name)
+	ru_names = initial(ru_names)
+	desc = initial(desc)
+	gender = initial(gender)
+	force = initial(force)
+	force_bonus = initial(force_bonus)
+	armour_penetration = initial(armour_penetration)
+
 /obj/item/his_grace/attack_self(mob/living/user)
 	if(awakened)
 		return
@@ -154,16 +191,6 @@
 		return
 	awakened = TRUE
 	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?"))
-	name = "His Grace"
-	desc = "Кровавый артефакт, рождённый скверной магией."
-	ru_names = list(
-		NOMINATIVE = "Его Светлость",
-		GENITIVE = "Его Светлости",
-		DATIVE = "Его Светлости",
-		ACCUSATIVE = "Его Светлость",
-		INSTRUMENTAL = "Его Светлостью",
-		PREPOSITIONAL = "Его Светлости"
-	)
 	gender = MALE
 	adjust_bloodthirst(1)
 	force_bonus = HIS_GRACE_FORCE_BONUS * LAZYLEN(contents)
@@ -198,14 +225,8 @@
 	var/turf/T = get_turf(src)
 	T.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] медленно затихает и замирает. Защёлка [declent_ru(GENITIVE)] с громким щелчком захлопывается."))
 	playsound(loc, 'sound/weapons/batonextend.ogg', 100, TRUE)
-	name = initial(name)
-	ru_names = initial(ru_names)
-	desc = initial(desc)
 	animate(src, transform=matrix())
-	gender = initial(gender)
-	force = initial(force)
-	force_bonus = initial(force_bonus)
-	armour_penetration = initial(armour_penetration)
+	reset_to_initial()
 	awakened = FALSE
 	bloodthirst = 0
 	rogue = FALSE
@@ -328,16 +349,6 @@
 		return
 	var/mob/living/carbon/human/master = loc
 	force_bonus += ascend_bonus
-	name = "mythical toolbox of three powers"
-	desc = "Мифический тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
-	ru_names = list(
-		NOMINATIVE = "Мифический тулбокс трёх сил",
-		GENITIVE = "Мифического тулбокса трёх сил",
-		DATIVE = "Мифическому тулбоксу трёх сил",
-		ACCUSATIVE = "Мифический тулбокс трёх сил",
-		INSTRUMENTAL = "Мифическим тулбоксом трёх сил",
-		PREPOSITIONAL = "Мифическом тулбоксе трёх сил"
-	)
 	ascended = TRUE
 	update_appearance()
 	playsound(src, 'sound/effects/his_grace/his_grace_ascend.ogg', 100)
@@ -349,55 +360,24 @@
 	master.visible_message(span_his_grace("[span_big("Боги заинтересовались тобой.")]"))
 	SEND_SIGNAL(master, COMSIG_MOB_HALO_GAINED)
 
+
 //for thunderdome
 /obj/item/his_grace/no_sound
 
-/obj/item/his_grace/no_sound/awaken(mob/user) // no sound + no announce
+/obj/item/his_grace/no_sound/awaken(mob/user) // no announce
 	if(awakened)
 		return
 	awakened = TRUE
 	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?"))
-	name = "His Grace"
-	desc = "Кровавый артефакт, рождённый скверной магией."
-	ru_names = list(
-		NOMINATIVE = "Его Светлость",
-		GENITIVE = "Его Светлости",
-		DATIVE = "Его Светлости",
-		ACCUSATIVE = "Его Светлость",
-		INSTRUMENTAL = "Его Светлостью",
-		PREPOSITIONAL = "Его Светлости"
-	)
 	gender = MALE
 	adjust_bloodthirst(1)
 	force_bonus = HIS_GRACE_FORCE_BONUS * LAZYLEN(contents)
 	armour_penetration = awakened_pen
+	playsound(user, 'sound/effects/his_grace/his_grace_awaken.ogg', 100)
 	update_appearance()
 	move_gracefully()
 	user.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["his_grace"], GLOB.halo_callbacks["his_grace"])
 
-/obj/item/his_grace/no_sound/ascend() //no sound + no msg
-	if(ascended)
-		return
-	var/mob/living/carbon/human/master = loc
-	force_bonus += ascend_bonus
-	name = "mythical toolbox of three powers"
-	desc = "Мифический тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»."
-	ru_names = list(
-		NOMINATIVE = "Мифический тулбокс трёх сил",
-		GENITIVE = "Мифического тулбокса трёх сил",
-		DATIVE = "Мифическому тулбоксу трёх сил",
-		ACCUSATIVE = "Мифический тулбокс трёх сил",
-		INSTRUMENTAL = "Мифическим тулбоксом трёх сил",
-		PREPOSITIONAL = "Мифическом тулбоксе трёх сил"
-	)
-	ascended = TRUE
-	update_appearance()
-	if(!istype(master))
-		return
-	if(master.is_in_hands(src))
-		master.update_inv_l_hand()
-		master.update_inv_r_hand()
-	SEND_SIGNAL(master, COMSIG_MOB_HALO_GAINED)
 
 /proc/is_grace_ascended(mob/living/carbon/human/user)
 	if(!istype(user))
