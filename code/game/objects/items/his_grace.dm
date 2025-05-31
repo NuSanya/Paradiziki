@@ -30,7 +30,6 @@
 	pickup_sound = 'sound/items/handling/toolbox_pickup.ogg'
 	COOLDOWN_DECLARE(choose_cooldown)
 	var/cooldown = 3 SECONDS
-	var/mutable_appearance/halo_overlay
 	var/mob/living/chosen_target
 	var/awakened = FALSE
 	var/awakened_pen = 50
@@ -60,7 +59,6 @@
 	. = ..()
 	START_PROCESSING(SSprocessing, src)
 	GLOB.poi_list |= src
-	halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "toolbox_halo")
 	RegisterSignal(src, COMSIG_MOVABLE_POST_THROW, PROC_REF(move_gracefully))
 	update_appearance()
 
@@ -184,7 +182,7 @@
 	playsound(user, 'sound/effects/his_grace/his_grace_awaken.ogg', 100)
 	update_appearance()
 	move_gracefully()
-	user.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(is_graceascended), user))
+	user.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["his_grace"], GLOB.halo_callbacks["his_grace"])
 
 /obj/item/his_grace/proc/move_gracefully()
 	SIGNAL_HANDLER
@@ -375,7 +373,7 @@
 	armour_penetration = awakened_pen
 	update_appearance()
 	move_gracefully()
-	user.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(is_graceascended), user))
+	user.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["his_grace"], GLOB.halo_callbacks["his_grace"])
 
 /obj/item/his_grace/no_sound/ascend() //no sound + no msg
 	if(ascended)
@@ -401,7 +399,7 @@
 		master.update_inv_r_hand()
 	SEND_SIGNAL(master, COMSIG_MOB_HALO_GAINED)
 
-/proc/is_graceascended(mob/living/carbon/human/user)
+/proc/is_grace_ascended(mob/living/carbon/human/user)
 	if(!istype(user))
 		return
 	var/obj/item/his_grace/his_grace = user.find_item(/obj/item/his_grace)

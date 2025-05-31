@@ -17,10 +17,6 @@ GLOBAL_LIST_EMPTY(all_cults)
 	/// The number of ghost summons available to the cult.
 	var/ghost_summons = null
 
-
-/proc/iscultist(mob/living/M)
-	return istype(M) && M.mind && SSticker && SSticker.mode && (M.mind in SSticker.mode.cult)
-
 /proc/is_convertable_to_cult(datum/mind/mind)
 	if(!mind)
 		return FALSE
@@ -107,9 +103,7 @@ GLOBAL_LIST_EMPTY(all_cults)
 				var/datum/action/innate/toggle_clumsy/toggle_clumsy = new
 				toggle_clumsy.Grant(cult_mind.current)
 
-		var/istate = pick("halo1", "halo2", "halo3", "halo4", "halo5", "halo6")
-		var/mutable_appearance/halo_overlay = mutable_appearance('icons/effects/32x64.dmi', istate)
-		cult_mind.current.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(iscultist), cult_mind.current))
+		cult_mind.current.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["cult"], GLOB.halo_callbacks["cult"])
 
 		add_cult_actions(cult_mind)
 		update_cult_icons_added(cult_mind)
@@ -225,9 +219,7 @@ GLOBAL_LIST_EMPTY(all_cults)
 		obj.owner = cult_mind
 		cult_mind.objectives += obj
 
-		var/istate = pick("halo1", "halo2", "halo3", "halo4", "halo5", "halo6")
-		var/mutable_appearance/halo_overlay = mutable_appearance('icons/effects/32x64.dmi', istate)
-		cult_mind.current.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(iscultist), cult_mind.current))
+		cult_mind.current.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["cult"], GLOB.halo_callbacks["cult"])
 
 		if(cult_risen)
 			rise(cult_mind.current)
@@ -367,6 +359,8 @@ GLOBAL_LIST_EMPTY(all_cults)
 	..()
 
 
-/proc/is_cultist(mob/living/user)
+/proc/iscultist(mob/living/user)
 	return istype(user) && user.mind && SSticker && SSticker.mode && (user.mind in SSticker.mode.cult)
 
+/proc/iscultist_ascended(mob/living/user)
+	return iscultist(user) && SSticker.mode.cult_ascendant

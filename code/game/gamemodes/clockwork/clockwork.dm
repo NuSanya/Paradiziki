@@ -16,9 +16,6 @@ GLOBAL_LIST_EMPTY(all_clockers)
 	/// Used for CentCom announcement when reached crew limit conversion
 	var/reveal_percent
 
-/proc/isclocker(mob/living/M)
-	return istype(M) && M.mind && SSticker && SSticker.mode && (M.mind in SSticker.mode.clockwork_cult)
-
 /proc/is_convertable_to_clocker(datum/mind/mind)
 	if(!mind)
 		return FALSE
@@ -103,8 +100,7 @@ GLOBAL_LIST_EMPTY(all_clockers)
 				var/datum/action/innate/toggle_clumsy/toggle_clumsy = new
 				toggle_clumsy.Grant(clockwork_mind.current)
 
-		var/mutable_appearance/halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "haloclock")
-		clockwork_mind.current.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(isclocker), clockwork_mind))
+		clockwork_mind.current.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["clockwork"], GLOB.halo_callbacks["clockwork"])
 
 		add_clock_actions(clockwork_mind)
 		update_clock_icons_added(clockwork_mind)
@@ -220,8 +216,7 @@ GLOBAL_LIST_EMPTY(all_clockers)
 
 		adjust_clockwork_power(CLOCK_POWER_CONVERT)
 
-		var/mutable_appearance/halo_overlay = mutable_appearance('icons/effects/32x64.dmi', "haloclock")
-		clock_mind.current.AddElement(/datum/element/halo_attach, halo_overlay, CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(isclocker), clock_mind))
+		clock_mind.current.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["clockwork"], GLOB.halo_callbacks["clockwork"])
 
 		if(power_reveal)
 			powered(clock_mind.current)
@@ -366,3 +361,9 @@ GLOBAL_LIST_EMPTY(all_clockers)
 
 	to_chat(world, endtext)
 	. = ..()
+
+/proc/isclocker(mob/living/user)
+	return istype(user) && user.mind && SSticker && SSticker.mode && (user.mind in SSticker.mode.clockwork_cult)
+
+/proc/isclocker_ascended(mob/living/user)
+	return isclocker(user) && SSticker.mode.crew_reveal
