@@ -115,6 +115,15 @@
 #define HIS_GRACE_FALL_ASLEEP 160 //If it reaches this point, He falls asleep and resets.
 
 #define HIS_GRACE_FORCE_BONUS 4 //How much force is gained per kill.
+#define HIS_GRACE_PEN_BONUS 50 //How much pen is given at awakening.
+#define HIS_GRACE_ASCEND_BONUS 15 //How much extra force is given at ascend
+
+#define HIS_GRACE_ASCENDING_REQ 20 //How many to consume before ascending
+
+//His Grace tiers
+#define HIS_GRACE_DORMANT    /datum/grace_tier/dormant
+#define HIS_GRACE_AWAKENED   /datum/grace_tier/awakened
+#define HIS_GRACE_ASCENDED   /datum/grace_tier/ascended
 
 //Embedded objects
 #define EMBEDDED_PAIN_CHANCE 					15	//Chance for embedded objects to cause pain (damage user)

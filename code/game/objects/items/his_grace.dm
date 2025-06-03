@@ -22,7 +22,6 @@
 	righthand_file = 'icons/goonstation/mob/inhands/items_righthand.dmi'
 	w_class = WEIGHT_CLASS_GIGANTIC
 	force = 12
-	armour_penetration = 0
 	attack_verb = list("заробастил", "сокрушил")
 	hitsound = 'sound/weapons/smash.ogg'
 	actions_types = list(/datum/action/item_action/toggle)
@@ -32,14 +31,12 @@
 	var/cooldown = 3 SECONDS
 	var/mob/living/chosen_target
 	var/awakened = FALSE
-	var/awakened_pen = 50
 	var/bloodthirst = HIS_GRACE_SATIATED
 	var/prev_bloodthirst = HIS_GRACE_SATIATED
 	var/force_bonus = 0
 	var/ascended = FALSE
-	var/victims_needed = 20
-	var/ascend_bonus = 15
 	var/rogue = FALSE
+	var/datum/grace_tier/tier
 
 /obj/item/his_grace/ui_action_click(mob/user, datum/action/action, leftclick)
 	if(!user.has_status_effect(STATUS_EFFECT_HISGRACE))
@@ -60,6 +57,7 @@
 	START_PROCESSING(SSprocessing, src)
 	GLOB.poi_list |= src
 	RegisterSignal(src, COMSIG_MOVABLE_POST_THROW, PROC_REF(move_gracefully))
+	init_new_tier(HIS_GRACE_DORMANT)
 	update_appearance()
 
 /obj/item/his_grace/Destroy()
@@ -74,42 +72,37 @@
 	item_state = ascended ? "toolbox_gold" : "toolbox_green"
 	return ..()
 
-/obj/item/his_grace/update_name(updates = ALL)
-	. = ..()
-	if(!awakened)
-		return
+/obj/item/his_grace/proc/try_update_tier()
+	if(!tier.next_tier_type)
+		return FALSE
 
-	if(ascended)
-		name = "mythical toolbox of three powers"
-		desc = "Мифический тулбокс, реликт Эпохи Трёх Сил. Его три застёжки сияют надписями «The Sun», «The Moon», «The Stars», а на гранях — таинственное «The World»"
-		ru_names = list(
-			NOMINATIVE = "Мифический тулбокс трёх сил",
-			GENITIVE = "Мифического тулбокса трёх сил",
-			DATIVE = "Мифическому тулбоксу трёх сил",
-			ACCUSATIVE = "Мифический тулбокс трёх сил",
-			INSTRUMENTAL = "Мифическим тулбоксом трёх сил",
-			PREPOSITIONAL = "Мифическом тулбоксе трёх сил"
-		)
-	else
-		name = "His Grace"
-		desc = "Кровавый артефакт, рождённый скверной магией."
-		ru_names = list(
-			NOMINATIVE = "Его Светлость",
-			GENITIVE = "Его Светлости",
-			DATIVE = "Его Светлости",
-			ACCUSATIVE = "Его Светлость",
-			INSTRUMENTAL = "Его Светлостью",
-			PREPOSITIONAL = "Его Светлости"
-		)
+	if(count_player_victims() < tier.required_kills)
+		return FALSE
 
-/obj/item/his_grace/proc/reset_to_initial()
-	name = initial(name)
-	ru_names = initial(ru_names)
-	desc = initial(desc)
-	gender = initial(gender)
-	force = initial(force)
-	force_bonus = initial(force_bonus)
-	armour_penetration = initial(armour_penetration)
+	if(!init_new_tier(tier.next_tier_type))
+		return FALSE
+
+	return TRUE // tier updated.
+
+/obj/item/his_grace/proc/init_new_tier(typepath)
+	if(typepath)
+		tier = new typepath()
+
+	if(!tier)
+		return FALSE // something bad occured, but we prevent runtimes
+
+	tier.link_tier(src)
+	tier.apply_tier()
+
+	return TRUE
+
+/obj/item/his_grace/proc/count_player_victims()
+	var/victims
+	for(var/mob/living/C in contents)
+		if(!C.mind)
+			continue
+		victims++
+	return victims
 
 /obj/item/his_grace/attack_self(mob/living/user)
 	if(awakened)
@@ -193,9 +186,6 @@
 	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?"))
 	gender = MALE
 	adjust_bloodthirst(1)
-	force_bonus = HIS_GRACE_FORCE_BONUS * LAZYLEN(contents)
-	armour_penetration = awakened_pen
-
 	var/pixel_x_offset = -2
 	var/pixel_y_offset = -3
 	notify_ghosts(
@@ -209,6 +199,7 @@
 	playsound(user, 'sound/effects/his_grace/his_grace_awaken.ogg', 100)
 	update_appearance()
 	move_gracefully()
+	init_new_tier(HIS_GRACE_AWAKENED)
 	user.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["his_grace"], GLOB.halo_callbacks["his_grace"])
 
 /obj/item/his_grace/proc/move_gracefully()
@@ -226,16 +217,16 @@
 	T.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] медленно затихает и замирает. Защёлка [declent_ru(GENITIVE)] с громким щелчком захлопывается."))
 	playsound(loc, 'sound/weapons/batonextend.ogg', 100, TRUE)
 	animate(src, transform=matrix())
-	reset_to_initial()
+	gender = initial(gender)
 	awakened = FALSE
 	bloodthirst = 0
 	rogue = FALSE
+	init_new_tier(HIS_GRACE_DORMANT)
 	update_appearance()
 
 /obj/item/his_grace/proc/consume(mob/living/meal) //Here's your dinner, Mr. Grace.
 	if(!meal)
 		return
-	var/victims = 0
 	meal.visible_message(span_warning("[declent_ru(NOMINATIVE)] открывается нараспашку и пожирает [meal]!"), span_his_grace("[span_big("[declent_ru(NOMINATIVE)] пожирает вас!")]"))
 	meal.adjustBruteLoss(200)
 	meal.death()
@@ -248,12 +239,7 @@
 		bloodthirst = max(round(LAZYLEN(contents)/2), 1) //Never fully sated, and His hunger will only grow.
 	else
 		bloodthirst = HIS_GRACE_CONSUME_OWNER
-	for(var/mob/living/C in contents)
-		if(!C.mind)
-			continue
-		victims++
-	if(victims >= victims_needed)
-		ascend()
+	try_update_tier()
 	update_stats()
 
 /obj/item/his_grace/proc/consume_owner(mob/living/owner)
@@ -344,11 +330,10 @@
 				master.visible_message(span_warning("[declent_ru(NOMINATIVE)] сыт."), span_his_grace("Голод [declent_ru(GENITIVE)] спадает..."))
 	force = initial(force) + force_bonus
 
-/obj/item/his_grace/proc/ascend()
+/obj/item/his_grace/proc/on_ascend()
 	if(ascended)
 		return
 	var/mob/living/carbon/human/master = loc
-	force_bonus += ascend_bonus
 	ascended = TRUE
 	update_appearance()
 	playsound(src, 'sound/effects/his_grace/his_grace_ascend.ogg', 100)
@@ -371,11 +356,10 @@
 	user.visible_message(span_boldwarning("[declent_ru(NOMINATIVE)] начинает яростно дребезжать. Он жаждет крови."), span_his_grace("Вы открываете защёлку [declent_ru(GENITIVE)]. Хорошая ли это была идея?"))
 	gender = MALE
 	adjust_bloodthirst(1)
-	force_bonus = HIS_GRACE_FORCE_BONUS * LAZYLEN(contents)
-	armour_penetration = awakened_pen
 	playsound(user, 'sound/effects/his_grace/his_grace_awaken.ogg', 100)
 	update_appearance()
 	move_gracefully()
+	init_new_tier(HIS_GRACE_AWAKENED)
 	user.AddElement(/datum/element/halo_attach, GLOB.halo_overlays["his_grace"], GLOB.halo_callbacks["his_grace"])
 
 

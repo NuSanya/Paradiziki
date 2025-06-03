@@ -6,6 +6,8 @@
 	tick_interval = 0.4 SECONDS
 	alert_type = /atom/movable/screen/alert/status_effect/his_grace
 	var/bloodlust = 0
+	var/mend_fractures_chance = 3
+	var/regenerate_limbs_chance = 1
 
 /atom/movable/screen/alert/status_effect/his_grace
 	name = "Его Светлость"
@@ -48,16 +50,29 @@
 	update |= human.setStaminaLoss(0, FALSE)
 	if(update)
 		human.updatehealth()
-	human.AdjustDizzy(-20 SECONDS)
-	human.AdjustDrowsy(-20 SECONDS)
-	human.SetSleeping(0)
-	human.SetSlowed(0)
-	human.SetConfused(0)
-	if(prob(97))
+	remove_debuffs(human)
+	heal_bones(human)
+	regenerate_limbs(human)
+
+/datum/status_effect/his_grace/proc/remove_debuffs(mob/living/carbon/human/owner)
+	owner.AdjustDizzy(-20 SECONDS)
+	owner.AdjustDrowsy(-20 SECONDS)
+	owner.SetSleeping(0)
+	owner.SetSlowed(0)
+	owner.SetConfused(0)
+
+/datum/status_effect/his_grace/proc/heal_bones(mob/living/carbon/human/owner)
+	if(prob(100-mend_fractures_chance))
 		return
-	var/obj/item/organ/external/bodypart = safepick(human.check_fractures())
+
+	var/obj/item/organ/external/bodypart = safepick(owner.check_fractures())
 	bodypart?.mend_fracture()
-	human.check_and_regenerate_organs()
+
+/datum/status_effect/his_grace/proc/regenerate_limbs(mob/living/carbon/human/owner)
+	if(prob(100-regenerate_limbs_chance))
+		return
+
+	owner.check_and_regenerate_organs()
 
 /datum/status_effect/shadow_mend
 	id = "shadow_mend"
