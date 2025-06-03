@@ -80,3 +80,4 @@ GLOBAL_LIST_INIT(halo_callbacks, list(
 	"clockwork" = CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(isclocker_ascended)),
 	"his_grace" = CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(is_grace_ascended)),
 ))
+GLOBAL_LIST_EMPTY(wryn_structures)
