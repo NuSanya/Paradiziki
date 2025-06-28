@@ -1,3 +1,7 @@
+#define REAGENT_UNITS_1 1
+#define REAGENT_UNITS_5 5
+#define REAGENT_UNITS_10 10
+
 /datum/reagent
 	var/name = "Реагент"
 	var/id = "reagent"
@@ -35,6 +39,7 @@
 	var/taste_mult = 1 //how easy it is to taste - the more the easier
 	var/taste_description = "метафорической соли"
 	var/addict_supertype = /datum/reagent
+	var/devil_regen_ignored = FALSE
 
 	// For chemical fire
 	var/chemfiresupp = FALSE

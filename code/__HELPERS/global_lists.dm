@@ -23,6 +23,10 @@
 	//alt heads
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/alt_heads, GLOB.alt_heads_list)
 
+	init_datum_subtypes(/datum/wryn_building, GLOB.wryn_structures, null, "name")
+
+	init_datum_subtypes(/datum/robot_skin, GLOB.robot_skins, null, "type")
+
 	init_subtypes(/datum/surgery_step, GLOB.surgery_steps)
 	init_subtypes(/obj/item/slimepotion, GLOB.slime_potions)
 	init_subtypes(/datum/preference_info, GLOB.preferences_info)
@@ -42,6 +46,8 @@
 	init_datum_subtypes(/datum/job, GLOB.joblist, list(/datum/job/ai, /datum/job/cyborg), "title")
 	init_datum_subtypes(/datum/superheroes, GLOB.all_superheroes, null, "name")
 	init_datum_subtypes(/datum/language, GLOB.all_languages, null, "name")
+
+	init_datum_subtypes(/datum/devil_contract, GLOB.devil_contracts, list(/datum/devil_contract), "contract_type")
 
 	// Setup languages
 	for(var/language_name in GLOB.all_languages)
@@ -395,4 +401,3 @@
 /proc/update_mob_config_movespeeds()
 	for(var/mob/M as anything in GLOB.mob_list)
 		M.update_config_movespeed()
-

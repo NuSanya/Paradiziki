@@ -73,8 +73,8 @@
 /obj/item/gun/projectile/revolver/proc/unload(user)
 
 /obj/item/gun/projectile/revolver/verb/spin()
-	set name = "Spin Chamber"
-	set category = "Object"
+	set name = "Вращать барабан"
+	set category = STATPANEL_OBJECT
 	set desc = "Click to spin your revolver's chamber."
 	set src in usr
 
@@ -389,7 +389,7 @@
 	if(istype(barrel, /obj/item/weaponcrafting/revolverbarrel/steel) || prob(80))
 		return ..()
 	chamber_round(TRUE)
-	user.visible_message(span_dangerbigger("*CRACK*"))
+	user.visible_message(span_biggerdanger("*CRACK*"))
 	playsound(user, 'sound/weapons/jammed.ogg', 140, TRUE)
 
 /obj/item/gun/projectile/revolver/improvised/proc/radial_menu(mob/user)
