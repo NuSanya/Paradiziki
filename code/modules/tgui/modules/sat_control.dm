@@ -40,15 +40,16 @@
 	var/list/data = list()
 
 	data["satellites"] = list()
-	for(var/obj/machinery/satellite/S in GLOB.machines)
-		var/turf/T = get_turf(S)
+	for(var/obj/machinery/satellite/meteor_shield/sat in SSmachines.get_by_type(/obj/machinery/satellite))
+		var/turf/sat_turf = get_turf(sat)
 		data["satellites"] += list(list(
-			"id" = S.id,
-			"active" = S.active,
-			"mode" = S.mode,
-			"x" = T.x,
-			"y" = T.y,
-			"z" = T.z,
+			"id" = sat.id,
+			"active" = sat.active,
+			"mode" = sat.mode,
+			"kill_range" = sat.kill_range,
+			"x" = sat_turf.x,
+			"y" = sat_turf.y,
+			"z" = sat_turf.z,
 		))
 	update_notice()
 	data["notice"] = notice
@@ -59,21 +60,21 @@
 	data["tabIndex"] = tab_index
 
 
-	var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
-	if(G)
-		data["coverage"] = G.last_coverage
-		data["coverage_goal"] = G.coverage_goal
-		data["max_meteor"] = G.max_meteor
-		data["testing"] = G.is_testing
-		data["thrown"] = G.thrown
-		data["defended"] = G.defended
-		data["collisions"] = G.collisions
+	var/datum/station_goal/station_shield/goal = locate() in SSticker.mode?.station_goals
+	if(goal)
+		data["coverage"] = goal.last_coverage
+		data["coverage_goal"] = goal.coverage_goal
+		data["max_meteor"] = goal.max_meteor
+		data["testing"] = goal.is_testing
+		data["thrown"] = goal.thrown
+		data["defended"] = goal.defended
+		data["collisions"] = goal.collisions
 		var/list/fake_meteors = list()
-		if(G.is_testing)
+		if(goal.is_testing)
 			for(var/obj/effect/meteor/fake/meteor in GLOB.meteor_list)
 				fake_meteors += list(list("x" = meteor.x, "y" = meteor.y, "z" = meteor.z))
 		data["fake_meteors"] = fake_meteors
-	data["has_goal"] = !!G
+	data["has_goal"] = !!goal
 	return data
 
 /datum/ui_module/sat_control/ui_static_data(mob/user)
@@ -93,9 +94,9 @@
 
 	switch(action)
 		if("begin_test")
-			var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
-			if(G)
-				G.simulate_meteors()
+			var/datum/station_goal/station_shield/goal = locate() in SSticker.mode?.station_goals
+			if(goal)
+				goal.simulate_meteors()
 		if("toggle")
 			toggle(params["id"])
 			. = TRUE
@@ -119,38 +120,40 @@
 
 /datum/ui_module/sat_control/proc/toggle(id)
 	var/num_id = text2num(id)
-	for(var/obj/machinery/satellite/S in GLOB.machines)
-		if(S.id == num_id && are_zs_connected(object, S))
-			if(!S.toggle())
-				notice = "Вы можете активировать только находящиеся в космосе спутники."
+	for(var/obj/machinery/satellite/sat in SSmachines.get_by_type(/obj/machinery/satellite))
+		if(sat.id == num_id && are_zs_connected(object, sat))
+			if(sat.toggle())
+				continue
+			else
+				notice = "Вы можете активировать только спутники, находящиеся в космосе."
 				notice_color = "red"
 				freeze_notice_until = world.time + 5 SECONDS
 
 /datum/ui_module/sat_control/proc/update_notice()
-	var/datum/station_goal/station_shield/G = locate() in SSticker.mode?.station_goals
-	if(!G)
+	var/datum/station_goal/station_shield/goal = locate() in SSticker.mode?.station_goals
+	if(!goal)
 		return
 	if(freeze_notice_until >= world.time)
 		return
 
-	if(G.is_testing && G.thrown < G.max_meteor)
-		notice = "Идёт симуляция метеоритного шторма ([G.thrown]/[G.max_meteor])..."
+	if(goal.is_testing && goal.thrown < goal.max_meteor)
+		notice = "Идёт симуляция метеорного шторма ([goal.thrown]/[goal.max_meteor])..."
 		notice_color = "white"
 		return
 
-	var/total_meteors = length(G.defended) + length(G.collisions)
+	var/total_meteors = length(goal.defended) + length(goal.collisions)
 	if(total_meteors == 0)
 		notice = "Симуляция не активирована."
 		notice_color = "red"
 		return
 
-	if(G.is_testing)
-		notice = "Завершение симуляции метеоритного шторма ([total_meteors]/[G.max_meteor])..."
+	if(goal.is_testing)
+		notice = "Завершение симуляции метеорного шторма ([total_meteors]/[goal.max_meteor])..."
 		notice_color = "white"
 		return
 
-	notice = "Симуляция завершена. [G.max_meteor - G.last_coverage] столкновений из [G.max_meteor] метеоров. [G.goal_completed ? ((G.last_coverage > G.coverage_goal) ? "Цель выполнена." : "Цель выполнена, но текущая симуляция провалена.") : "Симуляция провалена."]"
-	notice_color = (G.last_coverage > G.coverage_goal) ? "blue" : "red"
+	notice = "Симуляция завершена. [goal.max_meteor - goal.last_coverage] столкновений из [goal.max_meteor] метеоров. [goal.goal_completed ? ((goal.last_coverage > goal.coverage_goal) ? "Цель выполнена." : "Цель выполнена, но текущая симуляция провалена.") : "Симуляция провалена."]"
+	notice_color = (goal.last_coverage > goal.coverage_goal) ? "blue" : "red"
 
 #undef MIN_ZOOM
 #undef MAX_ZOOM

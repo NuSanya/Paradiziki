@@ -20,13 +20,13 @@
 
 /datum/station_goal/station_shield/on_report()
 	//Unlock
-	var/datum/supply_packs/P = SSshuttle.supply_packs["[/datum/supply_packs/misc/station_goal/shield_sat]"]
-	P.special_enabled = TRUE
-	supply_list.Add(P)
+	var/datum/supply_packs/pack = SSshuttle.supply_packs["[/datum/supply_packs/misc/station_goal/shield_sat]"]
+	pack.special_enabled = TRUE
+	supply_list.Add(pack)
 
-	P = SSshuttle.supply_packs["[/datum/supply_packs/misc/station_goal/shield_sat_control]"]
-	P.special_enabled = TRUE
-	supply_list.Add(P)
+	pack = SSshuttle.supply_packs["[/datum/supply_packs/misc/station_goal/shield_sat_control]"]
+	pack.special_enabled = TRUE
+	supply_list.Add(pack)
 	//Changes
 	var/list/station_levels = levels_by_trait(STATION_LEVEL)
 	max_meteor = max_meteor * station_levels.len
@@ -63,10 +63,12 @@
 /datum/station_goal/station_shield/process()
 	spawn_meteor(list(/obj/effect/meteor/fake = 1))
 	thrown++
-	if(thrown >= max_meteor)
-		if(last_coverage >= coverage_goal)
-			goal_completed = TRUE
-		return PROCESS_KILL
+	if(thrown < max_meteor)
+		return
+
+	if(last_coverage >= coverage_goal)
+		goal_completed = TRUE
+	return PROCESS_KILL
 
 /obj/item/circuitboard/computer/sat_control
 	board_name = "Контроллер сети спутников"
@@ -127,7 +129,7 @@
 
 /obj/machinery/satellite/attack_hand(mob/user)
 	if(..())
-		return 1
+		return TRUE
 	interact(user)
 
 /obj/machinery/satellite/interact(mob/user)
@@ -136,17 +138,18 @@
 /obj/machinery/satellite/proc/toggle(mob/user)
 	if(!active && !isinspace())
 		if(user)
-			to_chat(user, span_warning("Вы можете активировать только находящиеся в космосе спутники"))
+			to_chat(user, span_warning("Вы можете активировать только спутники, находящиеся в космосе."))
 		return FALSE
 	if(user)
 		to_chat(user, span_notice("Вы [active ? "деактивировали": "активировали"] [src]"))
 	active = !active
 	if(active)
 		animate(src, pixel_y = 2, time = 10, loop = -1)
-		anchored = TRUE
+		set_anchored(TRUE)
+		pulledby?.stop_pulling()
 	else
 		animate(src, pixel_y = 0, time = 10)
-		anchored = FALSE
+		set_anchored(FALSE)
 	update_icon(UPDATE_ICON_STATE)
 	return TRUE
 
@@ -154,11 +157,14 @@
 	icon_state = active ? "sat_active" : "sat_inactive"
 
 /obj/machinery/satellite/multitool_act(mob/living/user, obj/item/I)
+	..()
+	add_fingerprint(user)
 	to_chat(user, span_notice("// NTSAT-[id] // Режим : [active ? "ОСНОВНОЙ" : "ОЖИДАНИЕ"] //[emagged ? "ОТЛАДКА //" : ""]"))
+	return TRUE
 
 /obj/machinery/satellite/meteor_shield
 	name = "meteor shield satellite"
-	desc = "Автономный модуль, синхронизированный с другими спутниками, формирует защитное поле вокруг станции, предназначенное для отражения ударов метеоритов."
+	desc = "Автономный модуль, синхронизированный с другими спутниками, формирует защитное поле вокруг станции, предназначенное для отражения ударов метеоров."
 	mode = "M-SHIELD"
 	speed_process = TRUE
 	var/kill_range = 14
@@ -170,22 +176,23 @@
 	if(active)
 		. += span_notice("В настоящее время активно. Вы можете взаимодействовать с ним, чтобы отключить.")
 		if(emagged)
-			. += span_warning("Вместо обычных звуковых сигналов оно издаёт странное постоянное шипение белого шума…")
+			. += span_warning("Вместо обычных звуковых сигналов он издаёт странное постоянное шипение белого шума…")
 		else
-			. += span_notice("Оно периодически издаёт звуковые сигналы, связываясь со спутниковой сетью.")
+			. += span_notice("Он периодически издаёт звуковые сигналы, связываясь со спутниковой сетью.")
 	else
 		. += span_notice("В настоящее время отключено. Вы можете взаимодействовать с ним, чтобы активировать.")
 		if(emagged)
 			. += span_warning("Но что-то здесь не так…?")
 
 /obj/machinery/satellite/meteor_shield/proc/space_los(meteor)
-	for(var/turf/T in get_line(src,meteor))
-		if(!isspaceturf(T))
+	for(var/turf/turf as anything in get_line(src, meteor))
+		if(!isspaceturf(turf))
 			return FALSE
 	return TRUE
 
 /obj/machinery/satellite/meteor_shield/Initialize(mapload)
 	. = ..()
+	AddComponent(/datum/component/proximity_monitor, kill_range)
 	setup_proxies()
 
 /obj/machinery/satellite/meteor_shield/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents)
@@ -214,22 +221,24 @@
 	for(var/stacked_z in SSmapping.get_connected_levels(get_turf(src)))
 		setup_proxy_for_z(stacked_z)
 
-/obj/machinery/satellite/meteor_shield/process()
+/obj/machinery/satellite/meteor_shield/HasProximity(atom/movable/AM)
+	shoot_meteor(AM)
+
+/obj/machinery/satellite/meteor_shield/proc/shoot_meteor(atom/movable/possible_danger)
 	if(!active)
 		return
-	for(var/obj/effect/M in GLOB.meteor_list)
-		if(M.z != z)
-			continue
-		if(get_dist(M, src) > kill_range)
-			continue
-		var/is_fake = istype(M, /obj/effect/meteor/fake)
-		if((!emagged || is_fake) && space_los(M))
-			if(!is_fake)
-				Beam(get_turf(M), icon_state = "sat_beam", time = 5, maxdistance = kill_range)
-				new /obj/effect/temp_visual/explosion(get_turf(M))
-				if(istype(M, /obj/effect/meteor/gore))
-					new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(M))
-			qdel(M)
+	if(istype(possible_danger, /obj/effect/meteor))
+		var/obj/effect/meteor/meteor_to_destroy = possible_danger
+		if(!space_los(meteor_to_destroy))
+			return
+
+		if(!emagged || is_fake_meteor(meteor_to_destroy))
+			if(!is_fake_meteor(meteor_to_destroy) && meteor_to_destroy.shield_defense(src))
+				Beam(get_turf(meteor_to_destroy), icon_state = "sat_beam", time = 5, maxdistance = kill_range)
+				new /obj/effect/temp_visual/explosion(get_turf(meteor_to_destroy))
+				if(istype(meteor_to_destroy, /obj/effect/meteor/gore))
+					new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(meteor_to_destroy))
+			qdel(meteor_to_destroy)
 
 /obj/machinery/satellite/meteor_shield/toggle(user)
 	if(..(user))
@@ -255,20 +264,25 @@
 
 /obj/machinery/satellite/meteor_shield/Destroy()
 	. = ..()
-	if(active && emagged)
-		change_meteor_chance(0.5)
+	if(!(active && emagged))
+		return
+
+	change_meteor_chance(0.5)
 
 /obj/machinery/satellite/meteor_shield/emag_act(mob/user)
-	if(!emagged)
-		to_chat(user, span_danger("Вы переписали схемы метеорного щита, заставив его привлекать метеоры, а не уничтожать их."))
-		emagged = TRUE
-		if(active)
-			change_meteor_chance(2)
-		return TRUE
+	if(emagged)
+		return
+
+	add_attack_logs(user, src, "emagged")
+	to_chat(user, span_danger("Вы переписали схемы метеорного щита, заставив его привлекать метеоры, а не уничтожать их."))
+	emagged = TRUE
+	if(active)
+		change_meteor_chance(2)
+	return TRUE
 
 /obj/effect/abstract/meteor_shield_proxy
 	name = "Proxy Detector For Meteor Shield"
-	/// The meteor shield sat this is proxying.
+	/// The meteor shield sat this is proxying - any HasProximity calls will be forwarded to it..
 	var/obj/machinery/satellite/meteor_shield/parent
 
 /obj/effect/abstract/meteor_shield_proxy/Initialize(mapload, obj/machinery/satellite/meteor_shield/parent)
@@ -276,10 +290,14 @@
 	if(QDELETED(parent))
 		return INITIALIZE_HINT_QDEL
 	src.parent = parent
+	AddComponent(/datum/component/proximity_monitor, parent.kill_range)
 	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(on_parent_deleted))
 	RegisterSignal(parent, COMSIG_MOVABLE_Z_CHANGED, PROC_REF(on_parent_z_changed))
 	RegisterSignal(parent, COMSIG_QDELETING, PROC_REF(on_parent_moved))
 	START_PROCESSING(SSfastprocess, src)
+
+/obj/effect/abstract/meteor_shield_proxy/HasProximity(atom/movable/AM)
+	parent.shoot_meteor(AM)
 
 /obj/effect/abstract/meteor_shield_proxy/proc/on_parent_moved()
 	SIGNAL_HANDLER
@@ -296,25 +314,3 @@
 	SIGNAL_HANDLER
 	qdel(src)
 
-/obj/effect/abstract/meteor_shield_proxy/process()
-	if(!parent.active)
-		return
-	for(var/obj/effect/M in GLOB.meteor_list)
-		if(M.z != z)
-			continue
-		if(get_dist(M, src) > parent.kill_range)
-			continue
-		var/is_fake = istype(M, /obj/effect/meteor/fake)
-		if((!parent.emagged || is_fake) && space_los(M))
-			if(!is_fake)
-				parent.Beam(get_turf(M), icon_state = "sat_beam", time = 5, maxdistance = parent.kill_range)
-				new /obj/effect/temp_visual/explosion(get_turf(M))
-				if(istype(M, /obj/effect/meteor/gore))
-					new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(M))
-			qdel(M)
-
-/obj/effect/abstract/meteor_shield_proxy/proc/space_los(meteor)
-	for(var/turf/T in get_line(src,meteor))
-		if(!isspaceturf(T))
-			return FALSE
-	return TRUE

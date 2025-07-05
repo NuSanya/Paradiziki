@@ -313,9 +313,7 @@ GLOBAL_LIST_INIT(meteors_space_dust, list(/obj/effect/meteor/space_dust/weak)) /
 
 /obj/effect/meteor/fake/Initialize(mapload)
 	. = ..()
-	for(var/datum/station_goal/station_shield/found_goal in SSticker.mode.station_goals)
-		goal = found_goal
-		return
+	goal = locate() in SSticker.mode?.station_goals
 
 /obj/effect/meteor/fake/Destroy()
 	if(!failed)
@@ -323,12 +321,12 @@ GLOBAL_LIST_INIT(meteors_space_dust, list(/obj/effect/meteor/space_dust/weak)) /
 	goal = null
 	return ..()
 
-/obj/effect/meteor/fake/ram_turf(turf/T)
-	if(!isspaceturf(T))
+/obj/effect/meteor/fake/ram_turf(turf/target_turf)
+	if(!isspaceturf(target_turf))
 		fail()
 		return
-	for(var/thing in T)
-		if(isobj(thing) && !iseffect(thing))
+	for(var/obj/obj in target_turf)
+		if(!iseffect(obj))
 			fail()
 			return
 
@@ -336,14 +334,17 @@ GLOBAL_LIST_INIT(meteors_space_dust, list(/obj/effect/meteor/space_dust/weak)) /
 	return
 
 /obj/effect/meteor/fake/proc/succeed()
-	if(istype(goal))
+	if(goal)
 		goal.update_coverage(TRUE, get_turf(src))
 
 /obj/effect/meteor/fake/proc/fail()
-	if(istype(goal))
+	if(goal)
 		goal.update_coverage(FALSE, get_turf(src))
 	failed = TRUE
 	qdel(src)
+
+/proc/is_fake_meteor(obj/effect/meteor/meteor)
+	return istype(meteor, /obj/effect/meteor/fake)
 
 //Medium-sized
 /obj/effect/meteor/medium

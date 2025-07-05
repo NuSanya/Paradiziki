@@ -37,6 +37,7 @@ type Satellite = {
   id: string;
   mode: string;
   active: boolean;
+  kill_range: number;
   x: number;
   y: number;
   z: number;
@@ -143,87 +144,117 @@ const SatelliteControlMapView = (props: unknown) => {
   } = data;
   const [z_current, setZCurrent] = useState(stationLevelNum[0]);
   const [zoom, setZoom] = useState(1);
+  const [showProtectedArea, setShowProtectedArea] = useState(false);
   return (
-    <Box height="100%" style={{ display: 'flex' }}>
-      <NanoMap
-        onZoom={(v, n) => setZoom(n)}
-        offsetX={offsetX}
-        offsetY={offsetY}
-        zNames={stationLevelName}
-        zLevels={stationLevelNum}
-        zCurrent={z_current}
-        setZCurrent={setZCurrent}
-        onOffsetChangeEnded={(e, state) =>
-          act('set_offset', {
-            offset_x: state.x,
-            offset_y: state.y,
-          })
-        }
-      >
-        {satellites.map((sat) => (
-          <NanoMap.MarkerIcon
-            key={`sat_${sat.id}`}
-            x={sat.x}
-            y={sat.y}
-            z={sat.z}
-            z_current={z_current}
-            zoom={zoom}
-            icon="satellite"
-            tooltip={sat.active ? 'Спутник щита' : 'Неактивный спутник'}
-            tooltipPosition={sat.x > 255 / 2 ? 'bottom' : 'right'}
-            color={sat.active ? 'white' : 'grey'}
-            onClick={() => act('toggle', { id: sat.id })}
-          />
-        ))}
-
-        {has_goal &&
-          defended.map((meteor, i) => (
+    <Box height="100%">
+      <Box height="100%" style={{ display: 'flex' }}>
+        <NanoMap
+          onZoom={(v, n) => setZoom(n)}
+          offsetX={offsetX}
+          offsetY={offsetY}
+          zNames={stationLevelName}
+          zLevels={stationLevelNum}
+          zCurrent={z_current}
+          setZCurrent={setZCurrent}
+          onOffsetChangeEnded={(e, state) =>
+            act('set_offset', {
+              offset_x: state.x,
+              offset_y: state.y,
+            })
+          }
+        >
+          {satellites.map((sat) => (
             <NanoMap.MarkerIcon
-              key={`defended_${i}_${meteor.x}_${meteor.y}`}
-              x={meteor.x}
-              y={meteor.y}
-              z={meteor.z}
+              key={`sat_${sat.id}`}
+              x={sat.x}
+              y={sat.y}
+              z={sat.z}
               z_current={z_current}
               zoom={zoom}
-              icon="shield"
-              tooltip="Успешная защита"
-              tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
-              color="blue"
+              icon="satellite"
+              tooltip={sat.active ? 'Спутник щита' : 'Неактивный спутник'}
+              tooltipPosition={sat.x > 255 / 2 ? 'bottom' : 'right'}
+              color={sat.active ? 'white' : 'grey'}
+              onClick={() => act('toggle', { id: sat.id })}
             />
           ))}
 
-        {has_goal &&
-          collisions.map((meteor, i) => (
-            <NanoMap.MarkerIcon
-              key={`collision_${i}_${meteor.x}_${meteor.y}`}
-              x={meteor.x}
-              y={meteor.y}
-              z={meteor.z}
-              z_current={z_current}
-              zoom={zoom}
-              icon="x"
-              tooltip="Столкновение метеора"
-              tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
-              color="red"
-            />
-          ))}
+          {showProtectedArea &&
+            satellites.map(
+              (sat) =>
+                sat.active && (
+                  <NanoMap.MarkerCircle
+                    key={`circle_${sat.id}`}
+                    x={sat.x}
+                    y={sat.y}
+                    z={z_current}
+                    z_current={z_current}
+                    zoom={zoom}
+                    radius={sat.kill_range}
+                    color="rgba(0, 150, 255, 0.5)"
+                    tooltip="Защищённая территория"
+                  />
+                )
+            )}
 
-        {has_goal &&
-          fake_meteors.map((meteor, i) => (
-            <NanoMap.MarkerIcon
-              key={`meteor_${i}_${meteor.x}_${meteor.y}`}
-              x={meteor.x}
-              y={meteor.y}
-              z={meteor.z}
-              z_current={z_current}
-              zoom={zoom}
-              icon="meteor"
-              tooltip="Метеор"
-              tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
-              color="white"
-            />
-          ))}
-      </NanoMap>
+          {has_goal &&
+            defended.map((meteor, i) => (
+              <NanoMap.MarkerIcon
+                key={`defended_${i}_${meteor.x}_${meteor.y}`}
+                x={meteor.x}
+                y={meteor.y}
+                z={meteor.z}
+                z_current={z_current}
+                zoom={zoom}
+                icon="shield"
+                tooltip="Успешная защита"
+                tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
+                color="blue"
+              />
+            ))}
+
+          {has_goal &&
+            collisions.map((meteor, i) => (
+              <NanoMap.MarkerIcon
+                key={`collision_${i}_${meteor.x}_${meteor.y}`}
+                x={meteor.x}
+                y={meteor.y}
+                z={meteor.z}
+                z_current={z_current}
+                zoom={zoom}
+                icon="x"
+                tooltip="Столкновение с метеором"
+                tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
+                color="red"
+              />
+            ))}
+
+          {has_goal &&
+            fake_meteors.map((meteor, i) => (
+              <NanoMap.MarkerIcon
+                key={`meteor_${i}_${meteor.x}_${meteor.y}`}
+                x={meteor.x}
+                y={meteor.y}
+                z={meteor.z}
+                z_current={z_current}
+                zoom={zoom}
+                icon="meteor"
+                tooltip="Метеор"
+                tooltipPosition={meteor.x > 255 / 2 ? 'bottom' : 'right'}
+                color="white"
+              />
+            ))}
+        </NanoMap>
+      </Box>
+      <Button
+        position="absolute"
+        top="0.5rem"
+        right="0.5rem"
+        icon="shield"
+        selected={showProtectedArea}
+        onClick={() => setShowProtectedArea(!showProtectedArea)}
+        tooltip="Отображение защищённой территории"
+      />
     </Box>
   );
 };
@@ -244,7 +275,7 @@ const SatelliteControlFooter = (props: unknown) => {
     <>
       {has_goal && (
         <Stack.Item>
-          <Section title="Антиметеоритное покрытие станции">
+          <Section title="Антиметеорное покрытие станции">
             <Stack fill>
               <Stack.Item grow>
                 <ProgressBar
