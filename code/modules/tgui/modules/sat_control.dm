@@ -37,20 +37,30 @@
 	)
 
 /datum/ui_module/sat_control/ui_data(mob/user)
+	var/turf/obj_turf = get_turf(object)
+	if(!obj_turf)
+		log_runtime(EXCEPTION("No turf found underneath [object]."), src)
+		return
+	var/list/z_list = list()
+	for(var/z in SSmapping.get_connected_levels(obj_turf))
+		z_list += z
+
 	var/list/data = list()
 
 	data["satellites"] = list()
 	for(var/obj/machinery/satellite/meteor_shield/sat in SSmachines.get_by_type(/obj/machinery/satellite))
 		var/turf/sat_turf = get_turf(sat)
-		data["satellites"] += list(list(
-			"id" = sat.id,
-			"active" = sat.active,
-			"mode" = sat.mode,
-			"kill_range" = sat.kill_range,
-			"x" = sat_turf.x,
-			"y" = sat_turf.y,
-			"z" = sat_turf.z,
-		))
+		if(!LAZYIN(z_list, sat_turf.z))
+			continue
+		else
+			data["satellites"] += list(list(
+				"active" = sat.active,
+				"mode" = sat.mode,
+				"kill_range" = sat.kill_range,
+				"x" = sat_turf.x,
+				"y" = sat_turf.y,
+				"z" = sat_turf.z,
+			))
 	update_notice()
 	data["notice"] = notice
 	data["notice_color"] = notice_color
