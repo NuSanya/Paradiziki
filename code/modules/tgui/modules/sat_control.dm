@@ -54,6 +54,7 @@
 			continue
 		else
 			data["satellites"] += list(list(
+				"id" = sat.id,
 				"active" = sat.active,
 				"mode" = sat.mode,
 				"kill_range" = sat.kill_range,
