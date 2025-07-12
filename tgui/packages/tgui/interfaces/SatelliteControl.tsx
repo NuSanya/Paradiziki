@@ -180,21 +180,20 @@ const SatelliteControlMapView = (props: unknown) => {
           ))}
 
           {showProtectedArea &&
-            satellites.map(
-              (sat) =>
-                sat.active && (
-                  <NanoMap.MarkerCircle
-                    key={`circle_${sat.id}`}
-                    x={sat.x}
-                    y={sat.y}
-                    z={z_current}
-                    z_current={z_current}
-                    zoom={zoom}
-                    radius={sat.kill_range}
-                    color="rgba(0, 150, 255, 0.5)"
-                    tooltip="Защищённая территория"
-                  />
-                )
+            satellites.map((sat) =>
+              sat.active ? (
+                <NanoMap.MarkerCircle
+                  key={`circle_${sat.id}`}
+                  x={sat.x}
+                  y={sat.y}
+                  z={z_current}
+                  z_current={z_current}
+                  zoom={zoom}
+                  radius={sat.kill_range}
+                  color="rgba(0, 150, 255, 0.5)"
+                  tooltip="Защищённая территория"
+                />
+              ) : null
             )}
 
           {has_goal &&
@@ -273,7 +272,7 @@ const SatelliteControlFooter = (props: unknown) => {
 
   return (
     <>
-      {has_goal && (
+      {has_goal ? (
         <Stack.Item>
           <Section title="Антиметеорное покрытие станции">
             <Stack fill>
@@ -295,7 +294,7 @@ const SatelliteControlFooter = (props: unknown) => {
             </Stack>
           </Section>
         </Stack.Item>
-      )}
+      ) : null}
       <Stack.Item
         fontFamily="sans-serif"
         fontSize="14px"

@@ -153,7 +153,7 @@ GLOBAL_LIST_INIT(meteors_space_dust, list(/obj/effect/meteor/space_dust/weak)) /
 	GLOB.meteor_list += src
 	SpinAnimation()
 	chase_target(target)
-	if(SSaugury && !istype(src, /obj/effect/meteor/fake))
+	if(SSaugury && !is_fake_meteor(src))
 		SSaugury.register_doom(src, threat)
 	QDEL_IN(src, lifetime)
 
@@ -343,6 +343,10 @@ GLOBAL_LIST_INIT(meteors_space_dust, list(/obj/effect/meteor/space_dust/weak)) /
 	failed = TRUE
 	qdel(src)
 
+/obj/effect/meteor/fake/shield_defense(obj/machinery/satellite/meteor_shield/defender)
+	return FALSE
+
+
 /proc/is_fake_meteor(obj/effect/meteor/meteor)
 	return istype(meteor, /obj/effect/meteor/fake)
 
@@ -461,6 +465,10 @@ GLOBAL_LIST_INIT(meteors_space_dust, list(/obj/effect/meteor/space_dust/weak)) /
 		return .
 	bumped_atom.ex_act(hitpwr)
 	get_hit()
+
+/obj/effect/meteor/gore/shield_defense(obj/machinery/satellite/meteor_shield/defender)
+	new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(src))
+	return TRUE
 
 
 //Meteor Ops

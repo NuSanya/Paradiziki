@@ -232,13 +232,14 @@
 		if(!space_los(meteor_to_destroy))
 			return
 
-		if(!emagged || is_fake_meteor(meteor_to_destroy))
-			if(!is_fake_meteor(meteor_to_destroy) && meteor_to_destroy.shield_defense(src))
-				Beam(get_turf(meteor_to_destroy), icon_state = "sat_beam", time = 5, maxdistance = kill_range)
-				new /obj/effect/temp_visual/explosion(get_turf(meteor_to_destroy))
-				if(istype(meteor_to_destroy, /obj/effect/meteor/gore))
-					new /obj/item/reagent_containers/food/snacks/meatsteak(get_turf(meteor_to_destroy))
-			qdel(meteor_to_destroy)
+		if(emagged && !is_fake_meteor(meteor_to_destroy))
+			return
+
+		if(meteor_to_destroy.shield_defense(src))
+			Beam(get_turf(meteor_to_destroy), icon_state = "sat_beam", time = 5, maxdistance = kill_range)
+			new /obj/effect/temp_visual/explosion(get_turf(meteor_to_destroy))
+
+		qdel(meteor_to_destroy)
 
 /obj/machinery/satellite/meteor_shield/toggle(user)
 	if(..(user))

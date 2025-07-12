@@ -130,15 +130,16 @@
 			offset_y = new_offset_y
 
 /datum/ui_module/sat_control/proc/toggle(id)
-	var/num_id = text2num(id)
 	for(var/obj/machinery/satellite/sat in SSmachines.get_by_type(/obj/machinery/satellite))
-		if(sat.id == num_id && are_zs_connected(object, sat))
-			if(sat.toggle())
-				continue
-			else
-				notice = "Вы можете активировать только спутники, находящиеся в космосе."
-				notice_color = "red"
-				freeze_notice_until = world.time + 5 SECONDS
+		if(sat.id == id && are_zs_connected(object, sat))
+			continue
+
+		if(!sat.toggle())
+			continue
+
+		notice = "Вы можете активировать только спутники, находящиеся в космосе."
+		notice_color = "red"
+		freeze_notice_until = world.time + 5 SECONDS
 
 /datum/ui_module/sat_control/proc/update_notice()
 	var/datum/station_goal/station_shield/goal = locate() in SSticker.mode?.station_goals
@@ -165,6 +166,11 @@
 
 	notice = "Симуляция завершена. [goal.max_meteor - goal.last_coverage] столкновений из [goal.max_meteor] метеоров. [goal.goal_completed ? ((goal.last_coverage > goal.coverage_goal) ? "Цель выполнена." : "Цель выполнена, но текущая симуляция провалена.") : "Симуляция провалена."]"
 	notice_color = (goal.last_coverage > goal.coverage_goal) ? "blue" : "red"
+
+/datum/ui_module/sat_control/Destroy(force)
+	. = ..()
+	tab_index = 0
+	object = null
 
 #undef MIN_ZOOM
 #undef MAX_ZOOM
