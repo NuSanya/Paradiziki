@@ -277,6 +277,8 @@
 	taste_description = "горького воздуха"
 
 /datum/reagent/sorium/reaction_turf(turf/T, volume) // oh no
+	if(volume < 1)
+		return
 	if(prob(75))
 		return
 	if(isspaceturf(T))
@@ -294,6 +296,8 @@
 	taste_description = "горького вакуума"
 
 /datum/reagent/liquid_dark_matter/reaction_turf(turf/T, volume) //Oh gosh, why
+	if(volume < 4)
+		return
 	if(prob(75))
 		return
 	if(isspaceturf(T))
