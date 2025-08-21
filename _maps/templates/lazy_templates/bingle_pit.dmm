@@ -21,7 +21,7 @@
 /turf/simulated/floor/indestructible/bingle,
 /area/misc/bingle_pit)
 "U" = (
-/turf/simulated/space,
+/turf/space,
 /area/space)
 "V" = (
 /obj/effect/mob_spawn/human/skeleton,

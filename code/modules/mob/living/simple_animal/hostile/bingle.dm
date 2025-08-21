@@ -34,6 +34,7 @@
 
 /mob/living/simple_animal/hostile/bingle/ComponentInitialize()
 	AddComponent( \
+		/datum/component/animal_temperature, \
 		maxbodytemp = INFINITY, \
 		minbodytemp = 0, \
 	)
