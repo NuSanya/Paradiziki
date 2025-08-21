@@ -278,3 +278,13 @@
 /turf/simulated/wall/indestructible/invisible/view_portal
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	always_lit = TRUE
+
+/turf/simulated/wall/indestructible/bingle
+	name = "Bingle Pit wall"
+	desc = "Оно синее... Это всё, о чём вы можете подумать. Это нельзя сломать."
+	icon = 'icons/turf/walls/bingle.dmi'
+	icon_state = "wall-0"
+	base_icon_state = "wall"
+	smooth = SMOOTH_BITMASK
+	canSmoothWith = SMOOTH_GROUP_WALLS
+	smoothing_groups = SMOOTH_GROUP_WALLS

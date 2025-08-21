@@ -41,6 +41,9 @@ SUBSYSTEM_DEF(mapping)
 	/// Amount of reserved levels we created so far. Mostly we will have only one
 	var/num_of_res_levels = 0
 
+	/// list of lazy templates that have been loaded
+	var/list/loaded_lazy_templates
+
 	/// List of z level (as number) -> plane offset of that z level
 	/// Used to maintain the plane cube
 	var/list/z_level_to_plane_offset = list()
@@ -786,5 +789,31 @@ SUBSYSTEM_DEF(mapping)
 		z_level = connected.z
 	return z_level_to_stack[z_level]
 
+/datum/controller/subsystem/mapping/proc/lazy_load_template(template_key, force = FALSE)
+	RETURN_TYPE(/datum/turf_reservation)
+
+	UNTIL(initialized)
+	var/static/lazy_loading = FALSE
+	UNTIL(!lazy_loading)
+
+	lazy_loading = TRUE
+	. = _lazy_load_template(template_key, force)
+	lazy_loading = FALSE
+	return .
+
+/datum/controller/subsystem/mapping/proc/_lazy_load_template(template_key, force = FALSE)
+	PRIVATE_PROC(TRUE)
+
+	if(LAZYACCESS(loaded_lazy_templates, template_key)  && !force)
+		var/datum/lazy_template/template = GLOB.lazy_templates[template_key]
+		return template.reservations[1]
+	LAZYSET(loaded_lazy_templates, template_key, TRUE)
+
+	var/datum/lazy_template/target = GLOB.lazy_templates[template_key]
+	if(!target)
+		CRASH("Attempted to lazy load a template key that does not exist: '[template_key]'")
+	return target.lazy_load()
+
 /datum/controller/subsystem/mapping/Recover()
 	flags |= SS_NO_INIT
+	loaded_lazy_templates = SSmapping.loaded_lazy_templates
