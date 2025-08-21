@@ -342,3 +342,13 @@
 
 /turf/simulated/floor/indestructible/view_portal/dense
 	density = TRUE
+
+/turf/simulated/floor/indestructible/bingle
+	name = "Bingle pit"
+	desc = "Яма бинглов. Вам бы не хотелось туда упасть..."
+	icon = 'icons/turf/floors/bingle.dmi'
+	icon_state = "carpet_orange-0"
+	footstep = FOOTSTEP_MEAT
+	barefootstep = FOOTSTEP_MEAT
+	clawfootstep = FOOTSTEP_MEAT
+	heavyfootstep = FOOTSTEP_MEAT
