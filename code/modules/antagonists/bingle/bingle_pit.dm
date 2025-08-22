@@ -49,6 +49,7 @@ GLOBAL_LIST(bingle_mobs)
 		COMSIG_ATOM_ENTERED = PROC_REF(on_entered),
 		COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON = PROC_REF(on_entered),
 	)
+	START_PROCESSING(SSobj, src)
 	AddElement(/datum/element/connect_loc, loc_connections)
 	return INITIALIZE_HINT_LATELOAD
 
@@ -68,7 +69,7 @@ GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_hole/examine(mob/user)
 	. = .. ()
-	if(isbingle(user) || !isliving(user))
+	if(isbingle(user))
 		. += span_alert("The bingle pit has [item_value_consumed] items in it!")
 		. += span_notice("Creatures are worth more, but cannot be deposited until 100 item value!")
 
