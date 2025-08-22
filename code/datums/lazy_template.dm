@@ -71,7 +71,9 @@
 
 	var/list/obj/structure/cable/loaded_cables = list()
 	var/list/obj/machinery/atmospherics/loaded_atmospherics = list()
-	for(var/z_idx in bounds[MAP_MAXZ] to 1 step -1)
+
+	var/num_z_levels = bounds[MAP_MAXZ] - bounds[MAP_MINZ] + 1
+	for(var/z_idx = 1 to num_z_levels)
 		var/turf/bottom_left = reservation.bottom_left_turfs[z_idx]
 		var/turf/top_right = reservation.top_right_turfs[z_idx]
 		GLOB.maploader.load_map(
@@ -92,7 +94,7 @@
 					loaded_atmospherics += thing
 				loaded_atom_movables |= thing
 
-	SSatoms.InitializeAtoms(loaded_areas + loaded_atom_movables + loaded_turfs)
+	SSatoms.InitializeAtoms(loaded_areas + loaded_atom_movables + loaded_turfs, FALSE)
 	SSmachines.setup_template_powernets(loaded_cables)
 	SSair.setup_template_machinery(loaded_atmospherics)
 	SEND_SIGNAL(src, COMSIG_LAZY_TEMPLATE_LOADED, loaded_atom_movables, loaded_turfs, loaded_areas)

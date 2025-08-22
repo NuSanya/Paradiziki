@@ -13,7 +13,7 @@
 	maxHealth = 100
 	health = 100
 
-	obj_damage = 70
+	obj_damage = 50
 	environment_smash = ENVIRONMENT_SMASH_RWALLS
 	melee_damage_lower = 5
 	melee_damage_upper = 5
