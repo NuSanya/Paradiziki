@@ -10,7 +10,7 @@ GLOBAL_LIST(bingle_mobs)
 	max_integrity = 500
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	icon_state = "binglepit"
-	light_color = COLOR_BLUE_BABY_LIGHT
+	light_color = LIGHT_COLOR_BABY_BLUE
 	light_range = 5
 	anchored = TRUE
 	density = FALSE
