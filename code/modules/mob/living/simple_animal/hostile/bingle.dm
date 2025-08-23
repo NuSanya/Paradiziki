@@ -84,12 +84,17 @@
 
 	melee_damage_lower = 10
 	melee_damage_upper = 15
-	var/pit_spawner = /datum/action/innate/bingle/spawn_hole
+	var/pit_spawner = /obj/effect/proc_holder/spell/bingle/spawn_hole
 
 /mob/living/simple_animal/hostile/bingle/lord/Initialize(mapload)
 	. = ..()
-	var/datum/action/innate/bingle/spawn_hole/makehole = new pit_spawner(src)
-	makehole.Grant(src)
+	RegisterSignal(src, COMSIG_MOB_MIND_INITIALIZED, PROC_REF(add_hole_spawner))
+
+/mob/living/simple_animal/hostile/bingle/lord/proc/add_hole_spawner()
+	SIGNAL_HANDLER
+
+	mind.AddSpell(new pit_spawner(null))
+	UnregisterSignal(src, COMSIG_MOB_MIND_INITIALIZED)
 
 /mob/living/simple_animal/hostile/bingle/Life(seconds_between_ticks, times_fired)
 	. = ..()
