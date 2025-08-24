@@ -161,7 +161,7 @@ GLOBAL_LIST(bingle_mobs)
 	if(item_value_consumed < 100)
 		var/turf/target = get_edge_target_turf(src, pick(GLOB.alldirs))
 		victim.throw_at(target, rand(1, 5), rand(1, 5))
-		to_chat(victim, span_warning("The pit has not swallowed enough items to accept creatures yet!"))
+		to_chat(victim, span_warning("Вы не пролезаете в яму!"))
 		return FALSE
 	victim.add_traits(list(TRAIT_FALLING_INTO_BINGLE_HOLE, TRAIT_NO_TRANSFORM), UNIQUE_TRAIT_SOURCE(src))
 	item_value_consumed += get_item_value(victim)
@@ -352,7 +352,7 @@ GLOBAL_LIST(bingle_mobs)
 			// If pit is larger than 3x3, consume walls on these tiles
 			if(new_size > 3)
 				for(var/obj/thing in T)
-					if(thing.density && isstructure(thing) && !istype(thing, /obj/structure/bingle_pit_overlay))
+					if(!istype(thing, /obj/structure/bingle_pit_overlay))
 						swallow(thing)
 				// Remove wall turf itself, if present
 				if(iswallturf(T))

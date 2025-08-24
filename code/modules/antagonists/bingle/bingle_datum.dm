@@ -42,7 +42,7 @@ if too much trash on ground bingles roll
 	base_cooldown = 10 SECONDS
 
 /obj/effect/proc_holder/spell/bingle/spawn_hole/write_custom_logs(list/targets, mob/user)
-	user.create_log(MISC_LOG, "Summoned bingle pit with spell "[name]"")
+	user.create_log(MISC_LOG, "Summoned bingle pit with spell [name]")
 
 /obj/effect/proc_holder/spell/bingle/spawn_hole/create_new_targeting()
 	var/datum/spell_targeting/aoe/turf/T = new()
