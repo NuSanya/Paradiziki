@@ -32,6 +32,13 @@
 
 	var/stamina_damage = 50
 
+	// everything death related
+	var/reagents_amount_min = 3
+	var/reagents_amount_max = 5
+	var/reagent_min = 20
+	var/reagent_max = 30
+	var/smoke_range = 2
+
 /mob/living/simple_animal/hostile/bingle/ComponentInitialize()
 	AddComponent( \
 		/datum/component/animal_temperature, \
@@ -86,6 +93,12 @@
 	melee_damage_upper = 15
 	var/pit_spawner = /obj/effect/proc_holder/spell/bingle/spawn_hole
 
+	reagents_amount_min = 10
+	reagents_amount_max = 15
+	reagent_min = 50
+	reagent_max = 75
+	smoke_range = 7
+
 /mob/living/simple_animal/hostile/bingle/lord/Initialize(mapload)
 	. = ..()
 	RegisterSignal(src, COMSIG_MOB_MIND_INITIALIZED, PROC_REF(add_hole_spawner))
@@ -137,7 +150,6 @@
 	. = ..()
 
 	var/list/possible_chems = list(
-		/datum/reagent/smoke_powder,
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,
 		/datum/reagent/methamphetamine,
@@ -183,18 +195,16 @@
 		/datum/reagent/consumable/drink/orangejuice
 	)
 
-	// Pick 3-5 random chemicals and create smoke with each
-	var/chemicals_to_use = rand(3, 5)
+	var/chemicals_to_use = rand(reagents_amount_min, reagents_amount_max)
+	var/datum/reagents/reagents_list = new (reagent_max * reagents_amount_max)
 	for(var/i = 1 to chemicals_to_use)
-		var/chemical_type = pick(possible_chems)
-		do_chem_smoke(
-			range = 2,
-			holder = src,
-			location = get_turf(src),
-			reagent_type = chemical_type,
-			reagent_volume = rand(5, 15),
-			log = TRUE
-		)
+		var/datum/reagent/chemical_type = pick(possible_chems)
+		reagents_list.add_reagent(chemical_type.id, rand(reagent_min, reagent_max))
+
+	var/datum/effect_system/fluid_spread/smoke/chem/smoke = new
+	smoke.set_up(range = smoke_range, location = loc, carry = reagents_list, silent = TRUE)
+	smoke.start()
+
 	if(!gibbed)
 		src.gib()
 
@@ -202,7 +212,6 @@
 	. = ..()
 
 	var/list/possible_chems = list(
-		/datum/reagent/smoke_powder,
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,
 		/datum/reagent/methamphetamine,
@@ -212,17 +221,15 @@
 		/datum/reagent/consumable/ethanol
 	)
 
-	// Pick 10-15 random chemicals and create smoke with each
-	var/chemicals_to_use = rand(10, 15)
+	var/chemicals_to_use = rand(reagents_amount_min, reagents_amount_max)
+	var/datum/reagents/reagents_list = new (reagent_max * reagents_amount_max)
 	for(var/i = 1 to chemicals_to_use)
-		var/chemical_type = pick(possible_chems)
-		do_chem_smoke(
-			range = 2,
-			holder = src,
-			location = get_turf(src),
-			reagent_type = chemical_type,
-			reagent_volume = rand(5, 15),
-			log = TRUE
-		)
+		var/datum/reagent/chemical_type = pick(possible_chems)
+		reagents_list.add_reagent(chemical_type.id, rand(reagent_min, reagent_max))
+
+	var/datum/effect_system/fluid_spread/smoke/chem/smoke = new
+	smoke.set_up(range = smoke_range, location = loc, carry = reagents_list, silent = TRUE)
+	smoke.start()
+
 	if(!gibbed)
 		src.gib()
