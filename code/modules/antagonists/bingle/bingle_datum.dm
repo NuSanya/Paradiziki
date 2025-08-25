@@ -18,8 +18,7 @@ if too much trash on ground bingles roll
 /datum/antagonist/bingle/greet()
 	var/list/messages = list()
 	messages.Add(span_blue("<center>Вы Бингл!</center>"))
-	messages.Add("<center>Кормите яму любой ценой! Яму можно кормить любым предметом, а также людьми.</center>")
-	SEND_SOUND(owner.current, sound('sound/misc/sadtrombone.ogg'))
+	messages.Add("<center>Кормите яму любой ценой! Яму можно кормить любыми предметами, а также людьми.</center>")
 	return messages
 
 /datum/antagonist/bingle/get_team()
