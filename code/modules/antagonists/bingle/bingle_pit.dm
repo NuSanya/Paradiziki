@@ -49,7 +49,6 @@ GLOBAL_LIST(bingle_mobs)
 		COMSIG_ATOM_ENTERED = PROC_REF(on_entered),
 		COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON = PROC_REF(on_entered),
 	)
-	START_PROCESSING(SSobj, src)
 	AddElement(/datum/element/connect_loc, loc_connections)
 	return INITIALIZE_HINT_LATELOAD
 
@@ -352,7 +351,7 @@ GLOBAL_LIST(bingle_mobs)
 			// If pit is larger than 3x3, consume walls on these tiles
 			if(new_size > 3)
 				for(var/obj/thing in T)
-					if(!istype(thing, /obj/structure/bingle_pit_overlay))
+					if(thing.density && isstructure(thing) && !istype(thing, /obj/structure/bingle_pit_overlay))
 						swallow(thing)
 				// Remove wall turf itself, if present
 				if(iswallturf(T))
