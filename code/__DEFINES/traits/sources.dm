@@ -122,7 +122,6 @@
 
 /// Source trait for the Bingle
 #define TRAIT_BINGLE "bingle_trait"
-#define BINGLE_PIT_TRAIT "bingle_pit"
 
 /// Trait associated to resting
 #define RESTING_TRAIT "resting"

@@ -12,6 +12,7 @@
 
 	maxHealth = 100
 	health = 100
+	pressure_resistance = 100
 
 	obj_damage = 50
 	environment_smash = ENVIRONMENT_SMASH_RWALLS
@@ -88,6 +89,9 @@
 	icon_state = "binglelord"
 	icon_living = "binglelord"
 	icon_dead = "binglelord"
+
+	maxHealth = 200
+	health = 200
 
 	melee_damage_lower = 10
 	melee_damage_upper = 15
