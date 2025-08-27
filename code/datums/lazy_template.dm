@@ -101,23 +101,6 @@
 	reservations += reservation
 	return reservation
 
-/* later
-/datum/lazy_template/nukie_base
-	key = LAZY_TEMPLATE_KEY_NUKIEBASE
-	map_name = "nukie_base"
-
-/datum/lazy_template/wizard_dem
-	key = LAZY_TEMPLATE_KEY_WIZARDDEN
-	map_name = "wizard_den"
-
-/datum/lazy_template/ninja_holding_facility
-	key = LAZY_TEMPLATE_KEY_NINJA_HOLDING_FACILITY
-	map_name = "ninja_den"
-
-/datum/lazy_template/abductor_ship
-	key = LAZY_TEMPLATE_KEY_ABDUCTOR_SHIPS
-	map_name = "abductor_ships"
-*/
 
 /datum/lazy_template/bingle_pit
 	key = LAZY_TEMPLATE_KEY_BINGLE_PIT

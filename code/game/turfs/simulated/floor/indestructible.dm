@@ -345,7 +345,7 @@
 
 /turf/simulated/floor/indestructible/bingle
 	name = "Bingle pit"
-	desc = "Яма бинглов. Вам бы не хотелось туда упасть..."
+	desc = "Покрытие ямы бинглов."
 	icon = 'icons/turf/floors/bingle.dmi'
 	icon_state = "carpet_orange-0"
 	footstep = FOOTSTEP_MEAT
