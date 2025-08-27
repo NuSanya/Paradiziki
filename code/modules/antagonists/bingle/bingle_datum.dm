@@ -7,6 +7,7 @@ if too much trash on ground bingles roll
 	roundend_category = "bingles"
 	job_rank = ROLE_BINGLE
 	antag_hud_name = "hudbingle"
+	give_objectives = FALSE
 	var/static/datum/team/bingles/bingle_team
 	var/obj/structure/bingle_hole/pit_check
 
@@ -19,6 +20,8 @@ if too much trash on ground bingles roll
 	var/list/messages = list()
 	messages.Add(span_blue("<center>Вы Бингл!</center>"))
 	messages.Add("<center>Кормите яму любой ценой! Яму можно кормить любыми предметами, а также людьми.</center>")
+	messages.Add("<center>Вы обладаете мощной атакой вблизи, которой можно захватывать людей. Однако, вы ещё всё слабы к дальнему оружию.</center>")
+	messages.Add("<center>В случае, если вашу яму сломают, вы (и ваши сородичи) умрёте.</center>")
 	return messages
 
 /datum/antagonist/bingle/get_team()
@@ -34,11 +37,11 @@ if too much trash on ground bingles roll
 
 /obj/effect/proc_holder/spell/bingle/spawn_hole
 	name = "Spawn Bingle Pit"
-	desc = "Создаёт яму. Яму надо КОРМИТЬ."
+	desc = "Создаёт яму. Одноразовое."
 	action_icon_state = "binglepit"
 	create_attack_logs = FALSE
 	create_custom_logs = TRUE
-	base_cooldown = 10 SECONDS
+	base_cooldown = 20 SECONDS
 
 /obj/effect/proc_holder/spell/bingle/spawn_hole/write_custom_logs(list/targets, mob/user)
 	user.create_log(MISC_LOG, "Summoned bingle pit with spell [name]")

@@ -56,10 +56,14 @@
 	. = ..()
 	LAZYADD(GLOB.bingle_mobs, src)
 	RegisterSignal(src, BINGLE_EVOLVE, PROC_REF(evolve))
+	RegisterSignal(src, COMSIG_LIVING_DEATH, PROC_REF(on_death)) //so no double smoke
 	add_traits(bingle_traits, INNATE_TRAIT)
 
 /mob/living/simple_animal/hostile/bingle/Destroy()
 	LAZYREMOVE(GLOB.bingle_mobs, src)
+	UnregisterSignal(src, BINGLE_EVOLVE)
+	UnregisterSignal(src, COMSIG_LIVING_DEATH)
+	remove_traits(bingle_traits, INNATE_TRAIT)
 	return ..()
 
 /mob/living/simple_animal/hostile/bingle/AttackingTarget()
@@ -150,9 +154,7 @@
 	else
 		icon_state = "binglelord"
 
-/mob/living/simple_animal/hostile/bingle/death(gibbed)
-	. = ..()
-
+/mob/living/simple_animal/hostile/bingle/proc/on_death()
 	var/list/possible_chems = list(
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,
@@ -209,12 +211,10 @@
 	smoke.set_up(range = smoke_range, location = loc, carry = reagents_list, silent = TRUE)
 	smoke.start()
 
-	if(!gibbed)
+	if(src)
 		src.gib()
 
-/mob/living/simple_animal/hostile/bingle/lord/death(gibbed)
-	. = ..()
-
+/mob/living/simple_animal/hostile/bingle/lord/on_death()
 	var/list/possible_chems = list(
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,
@@ -235,5 +235,5 @@
 	smoke.set_up(range = smoke_range, location = loc, carry = reagents_list, silent = TRUE)
 	smoke.start()
 
-	if(!gibbed)
+	if(src)
 		src.gib()

@@ -69,8 +69,8 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_hole/examine(mob/user)
 	. = .. ()
 	if(isbingle(user))
-		. += span_alert("The bingle pit has [item_value_consumed] items in it!")
-		. += span_notice("Creatures are worth more, but cannot be deposited until 100 item value!")
+		. += span_alert("В яме находится [item_value_consumed] предметов!")
+		. += span_notice("Существа могут туда упасть, когда в яме будет минимум 100 предметов!")
 
 /obj/structure/bingle_hole/CanAStarPass(to_dir, datum/can_pass_info/pass_info)
 	if(!pass_info.is_living)
@@ -86,7 +86,13 @@ GLOBAL_LIST(bingle_mobs)
 			return TRUE
 	return FALSE
 
-/obj/structure/bingle_hole/ex_act(severity, target)
+/obj/structure/bingle_hole/attack_animal(mob/living/simple_animal/user)
+	if(isbingle(user))
+		to_chat(user, span_warning("Вы отказываетесь ломать ваше святилище!"))
+		return TRUE
+	return ..()
+
+/obj/structure/bingle_hole/ex_act(severity)
 	if(!COOLDOWN_FINISHED(src, bomb_cooldown))
 		return FALSE
 	COOLDOWN_START(src, bomb_cooldown, 2 SECONDS)
@@ -246,7 +252,7 @@ GLOBAL_LIST(bingle_mobs)
 
 /obj/effect/temp_visual/bingle_pit_swirl
 	name = "swirling void"
-	desc = "Reality bends around the pit..."
+	desc = "Реальность искажается вокруг ямы..."
 	icon = 'icons/effects/effects.dmi'
 	icon_state = "quantum_sparks"
 	layer = ABOVE_MOB_LAYER
@@ -358,7 +364,7 @@ GLOBAL_LIST(bingle_mobs)
 					T.dismantle_wall(TRUE)
 					item_value_consumed++
 				if(!announcement_made)
-					GLOB.minor_announcement.announce("The blue tide has been detected upon [station_name()]. All personnel must stop the consumption of the station.",
+					GLOB.minor_announcement.announce("Обнаружено массовое нашествие Бинглов на [station_name()]!. Весь экипаж станции должен в срочном порядке защищить станцию от уничтожения.",
 									ANNOUNCE_BIOHAZARD_RU)
 					announcement_made = TRUE
 	current_pit_size = new_size
@@ -366,6 +372,7 @@ GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
+	desc = "Что-то манит вас туда упасть."
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	layer = TURF_LAYER + 0.5
 	plane = GAME_PLANE
@@ -400,35 +407,21 @@ GLOBAL_LIST(bingle_mobs)
 	return parent_pit.ex_act(severity, target)
 
 /obj/structure/bingle_pit_overlay/attackby(obj/item/W, mob/user)
-	if(isbingle(user))
-		to_chat(user, span_warning("Your bingle hands pass harmlessly through the pit!"))
-		return TRUE
 	if(parent_pit)
 		return parent_pit.attackby(W, user)
 	return ..()
 
 /obj/structure/bingle_pit_overlay/attack_hand(mob/user)
-	if(isbingle(user))
-		to_chat(user, span_warning("Your bingle hands pass harmlessly through the pit!"))
-		return TRUE
 	if(parent_pit)
 		return parent_pit.attack_hand(user)
 	return ..()
 
-/obj/structure/bingle_pit_overlay/attack_animal(mob/living/simple_animal/user, list/modifiers)
+/obj/structure/bingle_pit_overlay/attack_animal(mob/living/simple_animal/user)
 	if(isbingle(user))
-		to_chat(user, span_warning("You cannot bring yourself to harm the sacred pit!"))
+		to_chat(user, span_warning("Вы отказываетесь ломать ваше святилище!"))
 		return TRUE
 	if(parent_pit)
-		return parent_pit.attack_animal(user, modifiers)
-	return ..()
-
-/obj/structure/bingle_pit_overlay/attack_basic_mob(mob/living/simple_animal/hostile/user, list/modifiers)
-	if(isbingle(user))
-		to_chat(user, span_warning("You cannot bring yourself to harm the sacred pit!"))
-		return TRUE
-	if(parent_pit)
-		return parent_pit.attack_basic_mob(user, modifiers)
+		return parent_pit.attack_animal(user)
 	return ..()
 
 /obj/structure/bingle_pit_overlay/take_damage(amount, type, source, flags)
@@ -448,7 +441,7 @@ GLOBAL_LIST(bingle_mobs)
 // Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()
 
-	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Do you want to play as a Bingle?", ROLE_BINGLE, TRUE, poll_time = 10 SECONDS, source = src)
+	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Бингла?", ROLE_BINGLE, TRUE, poll_time = 10 SECONDS, source = src)
 
 	if(!length(candidates))
 		return
@@ -492,19 +485,8 @@ GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_pit_overlay/examine(mob/user)
 	. = ..()
-	if(parent_pit)
-		. += span_alert("The bingle pit has [parent_pit.item_value_consumed] items in it! Creatures are worth more, but cannot be deposited until 100 item value!")
-
-/obj/structure/bingle_hole/attackby(obj/item/W, mob/user)
-	if(isbingle(user))
-		to_chat(user, span_warning("Your bingle hands pass harmlessly through the pit!"))
-		return
-	return ..()
-
-/obj/structure/bingle_hole/attack_hand(mob/user)
-	if(isbingle(user))
-		to_chat(user, span_warning("Your bingle hands pass harmlessly through the pit!"))
-		return
-	return ..()
+	if(parent_pit && isbingle(user))
+		. += span_alert("В яме находится [parent_pit.item_value_consumed] предметов!")
+		. += span_notice("Существа могут туда упасть, когда в яме будет минимум 100 предметов!")
 
 #undef TRAIT_FALLING_INTO_BINGLE_HOLE
