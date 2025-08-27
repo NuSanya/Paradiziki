@@ -56,7 +56,7 @@
 	. = ..()
 	LAZYADD(GLOB.bingle_mobs, src)
 	RegisterSignal(src, BINGLE_EVOLVE, PROC_REF(evolve))
-	RegisterSignal(src, COMSIG_LIVING_DEATH, PROC_REF(on_death)) //so no double smoke
+	RegisterSignal(src, COMSIG_LIVING_DEATH, PROC_REF(on_death))
 	add_traits(bingle_traits, INNATE_TRAIT)
 
 /mob/living/simple_animal/hostile/bingle/Destroy()
@@ -94,8 +94,8 @@
 	icon_living = "binglelord"
 	icon_dead = "binglelord"
 
-	maxHealth = 200
-	health = 200
+	maxHealth = 300
+	health = 300
 
 	melee_damage_lower = 10
 	melee_damage_upper = 15
@@ -106,6 +106,8 @@
 	reagent_min = 50
 	reagent_max = 75
 	smoke_range = 7
+
+	stamina_damage = 80
 
 /mob/living/simple_animal/hostile/bingle/lord/Initialize(mapload)
 	. = ..()
