@@ -440,21 +440,24 @@ GLOBAL_LIST(bingle_mobs)
 
 // Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()
-
-	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Бингла?", ROLE_BINGLE, TRUE, poll_time = 10 SECONDS, source = src)
+	var/image/poll_source = image('icons/mob/bingle/bingles.dmi', "bingle"),
+	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Бингла?", ROLE_BINGLE, TRUE, poll_time = 10 SECONDS, source = poll_source)
 
 	if(!length(candidates))
 		return
 
-	var/mob/dead/observer/selected = pick_n_take(candidates)
+	var/mob/dead/observer/selected = pick(candidates)
 
 	var/turf/spawn_loc = get_turf(src) // Use the pit's location
 	if(isnull(spawn_loc))
 		return
 
+	var/datum/mind/player_mind = new /datum/mind(selected.key)
+	player_mind.active = TRUE
 	var/mob/living/simple_animal/hostile/bingle/bingle = new(spawn_loc)
-	bingle.key = selected.key
-	bingle.mind.add_antag_datum(/datum/antagonist/bingle)
+	player_mind.transfer_to(bingle)
+	player_mind.assigned_role = ROLE_BINGLE
+	player_mind.special_role = SPECIAL_ROLE_BINGLE
 
 	if(item_value_consumed >= 500)
 		bingle.icon_state = "bingle_armored"
