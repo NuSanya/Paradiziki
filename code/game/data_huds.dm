@@ -229,21 +229,18 @@
 
 /mob/living/carbon/human/proc/med_hud_insurance_set_overlay()
 	var/image/holder = hud_list[STATUS_HUD]
-	var/datum/money_account/account = null
-	var/obj/item/card/id/temp_id = null
+	var/perpname = get_visible_name(add_id_name = FALSE)
+	
 	holder.overlays.Cut()
 
-	if(!wear_id)
-		if((wear_mask && wear_mask.flags_inv & HIDENAME) || (head && head.flags_inv & HIDENAME))
-			return
-	else
-		temp_id = wear_id.GetID()
+	if(!perpname || perpname == "Unknown" || perpname == "Неизвестный")
+		return
 
-	if(!temp_id)
-		if(dna.real_name == get_face_name())
-			account = get_insurance_account_DNA(src)
-	else
-		account = get_money_account(temp_id.associated_account_number)
+	var/datum/money_account/account = get_insurance_account(src)
+	if(wear_id)
+		var/obj/item/card/id/temp_id = wear_id.GetID()
+		if(temp_id)
+			account = get_money_account(temp_id.associated_account_number)
 
 	if(account)
 		holder.overlays += image('icons/mob/hud.dmi', icon_state = "hudhealthy_[account.insurance_type]")
