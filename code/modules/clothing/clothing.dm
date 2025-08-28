@@ -1378,3 +1378,4 @@ BLIND     // can't see anything
 	if(istype(wearer))
 		for(var/new_trait in trait_or_traits)
 			REMOVE_CLOTHING_TRAIT(wearer, src, new_trait)
+
