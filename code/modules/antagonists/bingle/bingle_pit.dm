@@ -5,8 +5,8 @@ GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_hole
 	name = "bingle pit"
-	desc = "An all-consuming pit of endless horrors... and bingles."
-	armor = list("melee"=10,"bullet"=20,"laser"=75,"energy"=75,"bomb"=99,"bio"=100,"rad"=100,"fire"=50,"acid"=80)
+	desc = "Всепоглощающая бездна бесконечных ужасов... и бинглов."
+	armor = list("melee"=20,"bullet"=20,"laser"=75,"energy"=75,"bomb"=99,"bio"=100,"rad"=100,"fire"=50,"acid"=80)
 	max_integrity = 500
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	icon_state = "binglepit"
