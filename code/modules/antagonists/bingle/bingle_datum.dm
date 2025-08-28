@@ -7,7 +7,7 @@ if too much trash on ground bingles roll
 	roundend_category = "bingles"
 	job_rank = ROLE_BINGLE
 	antag_hud_name = "hudbingle"
-	give_objectives = FALSE
+	silent = TRUE
 	var/static/datum/team/bingles/bingle_team
 	var/obj/structure/bingle_hole/pit_check
 
@@ -15,14 +15,6 @@ if too much trash on ground bingles roll
 /datum/antagonist/bingle/on_gain()
 	bingle_team = team
 	. = ..()
-
-/datum/antagonist/bingle/greet()
-	var/list/messages = list()
-	messages.Add(span_blue("<center>Вы Бингл!</center>"))
-	messages.Add("<center>Кормите яму любой ценой! Яму можно кормить любыми предметами, а также людьми.</center>")
-	messages.Add("<center>Вы обладаете мощной атакой вблизи, которой можно захватывать людей. Однако, вы ещё всё слабы к дальнему оружию.</center>")
-	messages.Add("<center>В случае, если вашу яму сломают, вы (и ваши сородичи) умрёте.</center>")
-	return messages
 
 /datum/antagonist/bingle/get_team()
 	return bingle_team

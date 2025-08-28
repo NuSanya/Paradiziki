@@ -440,7 +440,7 @@ GLOBAL_LIST(bingle_mobs)
 
 // Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()
-	var/image/poll_source = image('icons/mob/bingle/bingles.dmi', "bingle"),
+	var/image/poll_source = image('icons/mob/bingle/bingles.dmi', "bingle")
 	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Бингла?", ROLE_BINGLE, TRUE, poll_time = 10 SECONDS, source = poll_source)
 
 	if(!length(candidates))
