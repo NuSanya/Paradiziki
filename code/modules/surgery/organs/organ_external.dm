@@ -1266,3 +1266,4 @@ Note that amputating the affected organ does in fact remove the infection from t
 #undef LIMB_DMG_PROB
 #undef LIMB_FRACTURE_MIN_DMG
 #undef LIMB_INT_BLEEDING_MIN_DMG
+
