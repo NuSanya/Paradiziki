@@ -94,8 +94,8 @@
 	icon_living = "binglelord"
 	icon_dead = "binglelord"
 
-	maxHealth = 300
-	health = 300
+	maxHealth = 200
+	health = 200
 
 	melee_damage_lower = 10
 	melee_damage_upper = 15
@@ -128,15 +128,25 @@
 	update_icon()
 
 /mob/living/simple_animal/hostile/bingle/proc/evolve()
-	var/mob/living/simple_animal/hostile/bingle/bongle = src
-	bongle.maxHealth = 160
-	bongle.health = 160
-	bongle.obj_damage = 100
-	bongle.melee_damage_lower = 10
-	bongle.melee_damage_upper = 10
-	bongle.armour_penetration = 0
+	icon_state = "bingle_armored"
+	maxHealth = 200
+	health = 200
+	obj_damage = 100
+	melee_damage_lower = 15
+	melee_damage_upper = 15
+	armour_penetration = 10
+	evolved = TRUE
 
-/mob/living/simple_animal/hostile/bingle/update_icon()
+/mob/living/simple_animal/hostile/bingle/lord/evolve()
+	maxHealth = 300
+	health = 300
+	obj_damage = 100
+	melee_damage_lower = 15
+	melee_damage_upper = 20
+	armour_penetration = 20
+	evolved = TRUE
+
+/mob/living/simple_animal/hostile/bingle/update_icon(updates)
 	. = ..()
 	if(evolved)
 		if(a_intent == INTENT_HARM)
@@ -149,7 +159,7 @@
 	else
 		icon_state = "bingle"
 
-/mob/living/simple_animal/hostile/bingle/lord/update_icon()
+/mob/living/simple_animal/hostile/bingle/lord/update_icon(updates)
 	. = ..()
 	if(a_intent == INTENT_HARM)
 		icon_state = "binglelord_combat"
@@ -213,8 +223,7 @@
 	smoke.set_up(range = smoke_range, location = loc, carry = reagents_list, silent = TRUE)
 	smoke.start()
 
-	if(src)
-		src.gib()
+	gib()
 
 /mob/living/simple_animal/hostile/bingle/lord/on_death()
 	var/list/possible_chems = list(
@@ -237,5 +246,4 @@
 	smoke.set_up(range = smoke_range, location = loc, carry = reagents_list, silent = TRUE)
 	smoke.start()
 
-	if(src)
-		src.gib()
+	gib()

@@ -6,7 +6,7 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_hole
 	name = "bingle pit"
 	desc = "Всепоглощающая бездна бесконечных ужасов... и бинглов."
-	armor = list("melee"=20,"bullet"=20,"laser"=75,"energy"=75,"bomb"=99,"bio"=100,"rad"=100,"fire"=50,"acid"=80)
+	armor = list(MELEE=20, BULLET=20, LASER=75, ENERGY=75, BOMB=90, BIO=100, RAD=100, FIRE=50, ACID=80)
 	max_integrity = 500
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	icon_state = "binglepit"
@@ -103,20 +103,22 @@ GLOBAL_LIST(bingle_mobs)
 	swallow(arrived) // swallow does all the needed checks
 
 /obj/structure/bingle_hole/proc/spit_em_out()
-	var/turf/target_turf = get_turf(src)
-	if(!target_turf)
-		return
-
 	var/area/bingle_pit = GLOB.areas_by_type[/area/misc/bingle_pit]
 	for(var/atom/movable/thing in bingle_pit?.contents)
 		if(QDELETED(thing))
 			continue
+
+		// i am doing this in order to not lag the shit out of clients when too many objects stack in one turf
+		var/obj/structure/bingle_pit_overlay/pit_overlay = pick(pit_overlays)
+		var/turf/target_turf = get_turf(pit_overlay) ? get_turf(pit_overlay) : get_turf(src)
+		if(!target_turf)
+			return
+
 		thing.forceMove(target_turf)
 		var/dir = pick(GLOB.alldirs)
 		var/turf/edge = get_edge_target_turf(src, dir)
 		if(ismob(thing) || isobj(thing))
 			thing.throw_at(edge, rand(1, 5), rand(1, 5))
-
 
 /obj/structure/bingle_hole/process(seconds_per_tick)
 	// Only spawn a new bingle for each 30 item value milestone, and only once per milestone
@@ -136,17 +138,14 @@ GLOBAL_LIST(bingle_mobs)
 	if(desired_pit_size > current_pit_size)
 		grow_pit(desired_pit_size)
 
-	// Evolve bingles and buff if item_value_consumed >= 100
-	for(var/mob/living/simple_animal/hostile/bingle/bong in bingle_team?.members)
-		if(item_value_consumed >= 500)
-			bong.icon_state = "bingle_armored"
-			bong.maxHealth = 200
-			bong.health = 200
-			bong.obj_damage = 100
-			bong.melee_damage_lower = 15
-			bong.melee_damage_upper = 15
-			bong.armour_penetration = 10
-			bong.evolved = TRUE
+	// Evolve bingles and buff if item_value_consumed >= 500
+	for(var/datum/mind/bingle_mind in bingle_team?.members)
+		if(item_value_consumed < 500)
+			return
+
+		var/mob/living/simple_animal/hostile/bingle/bong = bingle_mind.current
+		if(!bong || bong.evolved)
+			continue
 
 		SEND_SIGNAL(bong, BINGLE_EVOLVE)
 
@@ -182,8 +181,8 @@ GLOBAL_LIST(bingle_mobs)
 	else if(isstack(thing))
 		var/obj/item/stack/stack = thing
 		return stack.amount
-	else
-		return 1
+
+	return 1
 
 /obj/structure/bingle_hole/proc/swallow_obj(obj/thing)
 	if(!isobj(thing))
@@ -409,11 +408,13 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_pit_overlay/attackby(obj/item/W, mob/user)
 	if(parent_pit)
 		return parent_pit.attackby(W, user)
+
 	return ..()
 
 /obj/structure/bingle_pit_overlay/attack_hand(mob/user)
 	if(parent_pit)
 		return parent_pit.attack_hand(user)
+
 	return ..()
 
 /obj/structure/bingle_pit_overlay/attack_animal(mob/living/simple_animal/user)
@@ -422,21 +423,22 @@ GLOBAL_LIST(bingle_mobs)
 		return TRUE
 	if(parent_pit)
 		return parent_pit.attack_animal(user)
+
 	return ..()
 
 /obj/structure/bingle_pit_overlay/take_damage(amount, type, source, flags)
 	if(isbingle(source))
 		return FALSE // No damage from bingles
 	if(parent_pit)
-		parent_pit.take_damage(amount, type, source, flags)
-	else
-		..()
+		return parent_pit.take_damage(amount, type, source, flags)
+
+	return ..()
 
 /obj/structure/bingle_pit_overlay/bullet_act(obj/projectile/projectile)
 	if(parent_pit)
 		return parent_pit.bullet_act(projectile)
-	else
-		return ..()
+
+	return ..()
 
 // Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()

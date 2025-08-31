@@ -13,12 +13,19 @@ if too much trash on ground bingles roll
 
 
 /datum/antagonist/bingle/on_gain()
-	bingle_team = team
-	. = ..()
+	if(!bingle_team)
+		bingle_team = new
+		team = bingle_team
+
+	bingle_team.add_member(owner)
+	return ..()
 
 /datum/antagonist/bingle/get_team()
 	return bingle_team
 
+/datum/antagonist/bingle/Destroy(force)
+	pit_check = null
+	return ..()
 
 /obj/effect/proc_holder/spell/bingle
 	name = "Zuzya"
