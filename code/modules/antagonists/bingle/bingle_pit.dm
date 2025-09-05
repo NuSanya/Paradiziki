@@ -50,6 +50,7 @@ GLOBAL_LIST(bingle_mobs)
 		COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON = PROC_REF(on_entered),
 	)
 	AddElement(/datum/element/connect_loc, loc_connections)
+	AddComponent(/datum/component/obj_regenerate)
 	return INITIALIZE_HINT_LATELOAD
 
 /obj/structure/bingle_hole/LateInitialize()
@@ -368,7 +369,7 @@ GLOBAL_LIST(bingle_mobs)
 					announcement_made = TRUE
 	current_pit_size = new_size
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
-	repair_damage(max_integrity * 0.15)
+	max_integrity += 25
 
 
 /obj/structure/bingle_pit_overlay
