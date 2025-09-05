@@ -7,10 +7,7 @@ if too much trash on ground bingles roll
 	roundend_category = "bingles"
 	job_rank = ROLE_BINGLE
 	antag_hud_name = "hudbingle"
-	silent = TRUE
 	var/static/datum/team/bingles/bingle_team
-	var/obj/structure/bingle_hole/pit_check
-
 
 /datum/antagonist/bingle/on_gain()
 	if(!bingle_team)
@@ -20,15 +17,27 @@ if too much trash on ground bingles roll
 	bingle_team.add_member(owner)
 	return ..()
 
+/datum/antagonist/bingle/greet()
+	var/list/messages = list()
+	messages.Add(span_danger("<center>Вы - Бингл!</center>"))
+	messages.Add("<center>Работайте сообща, помогайте своим братьям, разбирайте станцию, тащите экипаж в яму, сделайте из этой станции одну большую дыру!</center>")
+	SEND_SOUND(owner.current, sound('sound/ambience/antag/bingle.ogg'))
+	return messages
+
+/datum/antagonist/bingle/give_objectives()
+	if(!bingle_team.pit_check)
+		add_objective(/datum/objective/bingle_lord)
+	else
+		var/datum/objective/bingle/bingle_obj = add_objective(/datum/objective/bingle)
+		bingle_obj.pit_check = bingle_team.pit_check
+
+	return TRUE
+
 /datum/antagonist/bingle/get_team()
 	return bingle_team
 
-/datum/antagonist/bingle/Destroy(force)
-	pit_check = null
-	return ..()
-
 /obj/effect/proc_holder/spell/bingle
-	name = "Zuzya"
+	name = "Bingle"
 	desc = "Напишите баг-репорт, если вы это увидели."
 	action_icon = 'icons/mob/bingle/binglepit.dmi'
 	clothes_req = FALSE
@@ -69,12 +78,23 @@ if too much trash on ground bingles roll
 	return TRUE
 
 /obj/effect/proc_holder/spell/bingle/spawn_hole/proc/spawn_hole(turf/selected_turf, mob/living/user)
-    var/datum/antagonist/bingle/bingle_datum = user.mind?.has_antag_datum(/datum/antagonist/bingle)
-    if(!selected_turf)
-        to_chat(user, span_notice("Под вами нету пола!"))
-        return
-    var/obj/structure/bingle_hole/hole = new(selected_turf)
-    bingle_datum.pit_check = hole
-    // Register the team in the pit
-    hole.bingle_team = bingle_datum.get_team()
-    qdel(src)
+	var/datum/antagonist/bingle/bingle_datum = user.mind?.has_antag_datum(/datum/antagonist/bingle)
+	if(!bingle_datum)
+		return
+	if(!selected_turf)
+		to_chat(user, span_notice("Под вами нету пола!"))
+		return
+	var/obj/structure/bingle_hole/hole = new(selected_turf)
+
+	// Complete the bingle lord objective
+	var/datum/objective/bingle_lord/lord_obj = bingle_datum.objectives[1]
+	lord_obj.completed = TRUE
+
+	// Register the pit in the team, give the second obj to the bingle lord
+	var/datum/team/bingles/bingle_team = bingle_datum.bingle_team
+	bingle_team.pit_check = hole
+	bingle_datum.give_objectives()
+
+	// Register the team in the pit
+	hole.bingle_team = bingle_datum.get_team()
+	qdel(src)

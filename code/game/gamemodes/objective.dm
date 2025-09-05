@@ -1862,3 +1862,17 @@ GLOBAL_LIST_EMPTY(admin_objective_list)
 	name = "Геноцид разумной жизни"
 	needs_target = FALSE
 	explanation_text = "Убивайте всех, кто не является ксеноморфом. Утопите станцию в крови!"
+
+/datum/objective/bingle_lord
+	needs_target = FALSE
+	antag_menu_name = "Создать яму"
+	explanation_text = "Найдите укромное место для станции, где можно будет быстро напитать вашу яму."
+
+/datum/objective/bingle
+	needs_target = FALSE
+	antag_menu_name = "Защитить и разрастить яму"
+	explanation_text = "Тащите в яму всё, что попадётся под руки. Яма должна вырасти до размера 40 на 40."
+	var/obj/structure/bingle_hole/pit_check
+
+/datum/objective/bingle/check_completion()
+	return pit_check.current_pit_size >= 40
