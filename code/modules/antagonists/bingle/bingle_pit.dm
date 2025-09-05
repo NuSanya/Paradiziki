@@ -368,6 +368,8 @@ GLOBAL_LIST(bingle_mobs)
 					announcement_made = TRUE
 	current_pit_size = new_size
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
+	repair_damage(max_integrity * 0.15)
+
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
