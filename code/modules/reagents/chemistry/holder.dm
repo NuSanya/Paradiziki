@@ -931,6 +931,17 @@
 		return TRUE
 	return FALSE
 
+/datum/reagents/proc/get_average_clothing_pen()
+	var/clothing_pen = 0
+	for(var/datum/reagent/R in reagent_list)
+		if(!R.clothing_penetration)
+			continue
+
+		clothing_pen += R.clothing_penetration * (R.volume / total_volume)
+
+	return clothing_pen
+
+
 /datum/reagents/Destroy()
 	. = ..()
 	QDEL_LIST(reagent_list)
