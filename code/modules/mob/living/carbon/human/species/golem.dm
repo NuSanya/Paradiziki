@@ -46,7 +46,7 @@
 
 	blood_color = "#515573"
 	flesh_color = "#137E8F"
-	skinned_type = /obj/item/stack/sheet/metal
+	skinned_type = /obj/item/stack/ore/iron
 
 	blacklisted = TRUE // To prevent golem subtypes from overwhelming the odds when random species changes, only the Random Golem type can be chosen
 	dangerous_existence = TRUE
@@ -96,9 +96,13 @@
 	var/special_name_chance = 10
 	var/owner //dobby is a free golem
 
+	var/list/suitable_materials_for_heal = list(
+		/obj/item/stack/ore/iron,
+		/obj/item/stack/sheet/metal,
+	)											// подходящие для лечения материалы
 	var/material_heal = 20						// лечение с материала, из которого сделан голем
-	var/amount_required_for_heal = 5		// сколько требуется материала для лечениея
-	var/self_heal_delay = 2 SECONDS		// время, требуемое для лечение самого себя
+	var/amount_required_for_heal = 5			// сколько требуется материала для лечениея
+	var/self_heal_delay = 2 SECONDS				// время, требуемое для лечение самого себя
 
 /datum/species/golem/get_random_name()
 	//определяем случайный пол для ИМЕНИ голема. Если же все шансы провалились, то берется дефолтное значение пола
@@ -226,6 +230,7 @@
 		NEUTER = null
 		)
 
+	suitable_materials_for_heal = list(/obj/item/stack/sheet/mineral/adamantine)
 	material_heal = 40
 	amount_required_for_heal = 1
 	self_heal_delay = 2 SECONDS
@@ -233,7 +238,7 @@
 //The suicide bombers of golemkind
 /datum/species/golem/plasma
 	name = SPECIES_GOLEM_PLASMA
-	skinned_type = /obj/item/stack/sheet/mineral/plasma
+	skinned_type = /obj/item/stack/ore/plasma
 	golem_colour = rgb(170, 51, 221)
 	heat_level_1 = 360
 	heat_level_2 = 400
@@ -248,6 +253,10 @@
 		)
 	var/boom_warning = FALSE
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/plasma,
+		/obj/item/stack/sheet/mineral/plasma,
+	)
 	material_heal = 25
 	amount_required_for_heal = 2
 	self_heal_delay = 2 SECONDS
@@ -311,7 +320,7 @@
 	clone_mod = 0.3
 	brain_mod = 0.3
 	stamina_mod = 0.3
-	skinned_type = /obj/item/stack/sheet/mineral/diamond
+	skinned_type = /obj/item/stack/ore/diamond
 	info_text = "Будучи <span class='danger'>алмазным големом</span>, вы прочнее обычных големов."
 	prefix = "Алмазн" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
 	special_names = list(
@@ -324,6 +333,10 @@
 	chance_name_neuter = 10
 	special_name_chance = 60
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/diamond,
+		/obj/item/stack/sheet/mineral/diamond,
+	)
 	material_heal = 35
 	amount_required_for_heal = 2
 	self_heal_delay = 3 SECONDS
@@ -339,7 +352,7 @@
 	clone_mod = 0.75
 	brain_mod = 0.75
 	stamina_mod = 0.75
-	skinned_type = /obj/item/stack/sheet/mineral/gold
+	skinned_type = /obj/item/stack/ore/gold
 	info_text = "Будучи <span class='danger'>золотым големом</span>, вы более быстры, но менее прочны, нежели обычный голем."
 	prefix = "Золот" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
 	prefix_type = 2
@@ -350,6 +363,10 @@
 		)
 	special_name_chance = 80
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/gold,
+		/obj/item/stack/sheet/mineral/gold,
+	)
 	material_heal = 25
 	amount_required_for_heal = 3
 	self_heal_delay = 2 SECONDS
@@ -359,7 +376,7 @@
 	name = SPECIES_GOLEM_SILVER
 	golem_colour = rgb(221, 221, 221)
 	punchstunthreshold = 9 //60% chance, from 40%
-	skinned_type = /obj/item/stack/sheet/mineral/silver
+	skinned_type = /obj/item/stack/ore/silver
 	info_text = "Будучи <span class='danger'>серебряным големом</span>, вы с большей вероятностью можете оглушить противников атаками."
 	prefix = "Серебрян" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
 	special_names = list(
@@ -372,6 +389,10 @@
 	chance_name_neuter = 10
 	special_name_chance = 40
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/silver,
+		/obj/item/stack/sheet/mineral/silver,
+	)
 	material_heal = 25
 	amount_required_for_heal = 3
 	self_heal_delay = 2 SECONDS
@@ -396,7 +417,14 @@
 		)
 	unarmed_type = /datum/unarmed_attack/golem/plasteel
 
-	material_heal = 25
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/iron,
+		/obj/item/stack/ore/plasma,
+		/obj/item/stack/sheet/mineral/plasma,
+		/obj/item/stack/sheet/metal,
+		/obj/item/stack/sheet/plasteel,
+	)
+	material_heal = 20
 	amount_required_for_heal = 2
 	self_heal_delay = 2 SECONDS
 
@@ -408,7 +436,7 @@
 /datum/species/golem/titanium
 	name = SPECIES_GOLEM_TITANIUM
 	golem_colour = rgb(255, 255, 255)
-	skinned_type = /obj/item/stack/sheet/mineral/titanium
+	skinned_type = /obj/item/stack/ore/titanium
 	info_text = "Будучи <span class='danger'>титановым големом</span>, вы частично устойчивы к ожогам и невосприимчивы к пепельным бурям."
 	burn_mod = 0.405
 	prefix = "Титанов" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
@@ -428,6 +456,10 @@
 		TRAIT_ASHSTORM_IMMUNE,
 	)
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/titanium,
+		/obj/item/stack/sheet/mineral/titanium,
+	)
 	material_heal = 25
 	amount_required_for_heal = 2
 	self_heal_delay = 2 SECONDS
@@ -457,7 +489,14 @@
 		TRAIT_LAVA_IMMUNE,
 	)
 
-	material_heal = 30
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/titanium,
+		/obj/item/stack/ore/plasma,
+		/obj/item/stack/sheet/mineral/titanium,
+		/obj/item/stack/sheet/mineral/plasma,
+		/obj/item/stack/sheet/mineral/plastitanium,
+	)
+	material_heal = 20
 	amount_required_for_heal = 2
 	self_heal_delay = 2 SECONDS
 
@@ -480,6 +519,7 @@
 	chance_name_male = 80
 	chance_name_female = 30
 
+	suitable_materials_for_heal = list(/obj/item/stack/sheet/mineral/abductor)
 	material_heal = 50
 	amount_required_for_heal = 1
 	self_heal_delay = 1 SECONDS
@@ -545,6 +585,7 @@
 	chance_name_female = 70
 	special_name_chance = 100
 
+	suitable_materials_for_heal = list(/obj/item/stack/sheet/wood)
 	material_heal = 20
 	amount_required_for_heal = 5
 	self_heal_delay = 2 SECONDS
@@ -584,7 +625,7 @@
 /datum/species/golem/uranium
 	name = SPECIES_GOLEM_URANIUM
 	golem_colour = rgb(119, 255, 0)
-	skinned_type = /obj/item/stack/sheet/mineral/uranium
+	skinned_type = /obj/item/stack/ore/uranium
 	info_text = "Будучи <span class='danger'>урановым големом</span>, вы излучаете радиацию. Это не вредит другим големам, но влияет на органические формы жизни."
 	prefix = "Уранов" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
 	special_names = list(
@@ -597,6 +638,10 @@
 	chance_name_neuter = 10
 	special_name_chance = 60
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/uranium,
+		/obj/item/stack/sheet/mineral/uranium,
+	)
 	material_heal = 25
 	amount_required_for_heal = 3
 	self_heal_delay = 2 SECONDS
@@ -633,6 +678,7 @@
 	skinned_type = /obj/item/stack/sheet/plastic
 	info_text = "Будучи <span class='danger'>пластиковым големом</span>, вы способны ползать по вентиляции, если вы раздеты."
 
+	suitable_materials_for_heal = list(/obj/item/stack/sheet/plastic)
 	material_heal = 40
 	amount_required_for_heal = 8
 	self_heal_delay = 1 SECONDS
@@ -658,6 +704,7 @@
 		)
 	special_name_chance = 30
 
+	suitable_materials_for_heal = list(/obj/item/stack/ore/glass)
 	material_heal = 25
 	amount_required_for_heal = 5
 	self_heal_delay = 1 SECONDS
@@ -707,6 +754,7 @@
 	chance_name_neuter = 30
 	special_name_chance = 50
 
+	suitable_materials_for_heal = list(/obj/item/stack/sheet/glass)
 	material_heal = 25
 	amount_required_for_heal = 5
 	self_heal_delay = 1 SECONDS
@@ -739,7 +787,7 @@
 /datum/species/golem/bluespace
 	name = SPECIES_GOLEM_BLUESPACE
 	golem_colour = rgb(51, 51, 255)
-	skinned_type = /obj/item/stack/ore/bluespace_crystal/refined
+	skinned_type = /obj/item/stack/ore/bluespace_crystal
 	info_text = "Будучи <span class='danger'>блюспейс-големом</span>, вы пространственно нестабильны: вы будете телепортироваться при получении ударов. Также вы можете телепортироваться вручную на большое расстояние."
 	prefix = "Блюспейс"
 	prefix_type = 3
@@ -756,6 +804,10 @@
 	var/last_teleport = 0
 	var/tele_range = 6
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/bluespace_crystal,
+		/obj/item/stack/sheet/bluespace_crystal,
+	)
 	material_heal = 40
 	amount_required_for_heal = 1
 	self_heal_delay = 0.5 SECONDS
@@ -885,7 +937,7 @@
 	punchdamagelow = 0
 	punchdamagehigh = 1
 	punchstunthreshold = 2 //Harmless and can't stun
-	skinned_type = /obj/item/stack/sheet/mineral/bananium
+	skinned_type = /obj/item/stack/ore/bananium
 	info_text = "Будучи <span class='danger'>бананиевым големом</span>, вы созданы для розыгрышей. Ваше тело издает естественные гудки, и удары по людям издают безвредные гудки. Если вас ранить, вы будете бананоточить."
 	prefix = "Бананиев" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
 	special_names = list(
@@ -902,6 +954,10 @@
 	var/banana_cooldown = 100
 	var/active = null
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/bananium,
+		/obj/item/stack/sheet/mineral/bananium,
+	)
 	material_heal = 80
 	amount_required_for_heal = 2
 	self_heal_delay = 1 SECONDS
@@ -990,10 +1046,14 @@
 		NEUTER = null
 		)
 	golem_colour = rgb(255, 255, 255)
-	skinned_type = /obj/item/stack/sheet/mineral/tranquillite
+	skinned_type = /obj/item/stack/ore/tranquillite
 	info_text = "Будучи <span class='danger'>транквилитовым големом</span>, вы можете создавать невидимые стены и регенерировать, выпивая бутылки с ничем."
 	unarmed_type = /datum/unarmed_attack/golem/tranquillite
 
+	suitable_materials_for_heal = list(
+		/obj/item/stack/ore/tranquillite,
+		/obj/item/stack/sheet/mineral/tranquillite,
+	)
 	material_heal = 40
 	amount_required_for_heal = 1
 	self_heal_delay = 2 SECONDS
@@ -1036,9 +1096,10 @@
 	chance_name_neuter = 10
 	special_name_chance = 40
 
+	suitable_materials_for_heal = list(/obj/item/stack/sheet/brass)
 	material_heal = 40
 	amount_required_for_heal = 2
-	self_heal_delay = 2 SECONDS
+	self_heal_delay = 1 SECONDS
 
 /datum/species/golem/clockwork/on_species_gain(mob/living/carbon/human/H)
 	. = ..()
