@@ -58,6 +58,8 @@
 		if(!do_after(user, target_species.self_heal_delay, target, DA_IGNORE_USER_LOC_CHANGE))
 			return .
 
+	. |= ATTACK_CHAIN_SUCCESS
+
 	heal_golem(target, user, bodypart, target_species.material_heal)
 	target.UpdateDamageIcon()
 
