@@ -31,7 +31,7 @@
 		return .
 	if(!user.can_unEquip(src))
 		return .
-	if(!target.can_inject(user, TRUE))
+	if(!target.can_inject(user, FALSE))
 		return .
 	bitesize = 0
 	if(!target.eat(src, user) || !user.can_unEquip(src))

@@ -91,7 +91,7 @@
 
 	var/protection = 0
 	if(!ignore_flags)
-		if(!target.can_inject(user, TRUE))
+		if(!target.can_inject(user, FALSE))
 			return .
 
 		if(ishuman(target))
@@ -120,7 +120,7 @@
 
 	applying = TRUE
 	update_icon()
-	apply_to(target, user, 0.25 * reacting_to_applied_ratio, TRUE, def_zone) // We apply a very weak application up front, then loop.
+	apply_to(target, user, 0.2 * reacting_to_applied_ratio, TRUE, def_zone) // We apply a very weak application up front, then loop.
 	add_attack_logs(user, target, "Started mending with [src] containing ([reagents.log_list()])", (emagged && !(reagents.harmless_helper())) ? null : ATKLOG_ALMOSTALL)
 	var/cycle_count = 0
 
