@@ -855,24 +855,29 @@ so that different stomachs can handle things in different ways VB*/
 		playsound(loc, toEat.consume_sound, rand(10,50), 1)
 	if(toEat.has_special_eating_effects)
 		toEat.on_mob_eating_effect(src)
-	if(toEat.reagents.total_volume)
-		var/fraction = min(this_bite/toEat.reagents.total_volume, 1)
-		if(!fraction)
-			return
 
-		if(can_taste_container)
-			taste(toEat.reagents)
-			toEat.check_liked(fraction, src)
-		toEat.reagents.reaction(src, toEat.apply_type, fraction)
-		toEat.reagents.trans_to(src, this_bite*toEat.transfer_efficiency)
+	if(!toEat.reagents.total_volume)
+		return
 
-		if(toEat.check_for_dirt_poisoning())
-			if(HAS_TRAIT(src, TRAIT_NO_HUNGER))
-				return
-			if(HAS_TRAIT(src, TRAIT_CLEANED_HANDS))
-				return
-			var/datum/disease/food_poisoning/disease = new
-			disease.Contract(src)
+	var/fraction = min(this_bite/toEat.reagents.total_volume, 1)
+	if(!fraction)
+		return
+
+	if(can_taste_container)
+		taste(toEat.reagents)
+		toEat.check_liked(fraction, src)
+	toEat.reagents.reaction(src, toEat.apply_type, fraction)
+	toEat.reagents.trans_to(src, this_bite*toEat.transfer_efficiency)
+
+	if(!toEat.check_for_dirt_poisoning())
+		return
+
+	if(HAS_TRAIT(src, TRAIT_NO_HUNGER))
+		return
+	if(HAS_TRAIT(src, TRAIT_CLEANED_HANDS))
+		return
+	var/datum/disease/food_poisoning/disease = new
+	disease.Contract(src)
 
 /mob/living/carbon/proc/can_breathe_gas()
 	if(HAS_TRAIT(src, TRAIT_NO_BREATH))
