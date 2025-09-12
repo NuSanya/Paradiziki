@@ -481,7 +481,7 @@
 	heal_golem(target, user, bodypart, target_species.material_heal)
 	target.UpdateDamageIcon()
 
-/obj/item/stack/proc/heal_golem(mob/living/carbon/human/target, mob/living/user, obj/item/organ/external/bodypart, var/heal_amount)
+/obj/item/stack/proc/heal_golem(mob/living/carbon/human/target, mob/living/user, obj/item/organ/external/bodypart, heal_amount)
 	heal_message(target, user, bodypart)
 	var/remheal = max(0, heal_amount * 2 - (bodypart.brute_dam + bodypart.burn_dam)) // Maxed with 0 since heal_damage let you pass in a negative value
 	var/nremheal = remheal
