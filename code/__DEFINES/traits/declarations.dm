@@ -281,7 +281,7 @@
 /// This human mob will never suffer from the malnutrition
 #define TRAIT_NO_HUNGER "no_hunger"
 /// This human mob can't get food poisoning from eating food in dirty places
-#define TRAIT_CLEANED_HANDS "cleaned_hands"
+#define TRAIT_CLEAN_HANDS "clean_hands"
 /// This human mob will not obtain additional bonuses/penalties from nutrition level (look at /datum/element/nutrition_effects)
 #define TRAIT_NO_NUTRITION_EFFECTS "no_nutrition_effects"
 /// This human mob can repats surgeris attempts indefinitely

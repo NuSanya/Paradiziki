@@ -874,7 +874,7 @@ so that different stomachs can handle things in different ways VB*/
 
 	if(HAS_TRAIT(src, TRAIT_NO_HUNGER))
 		return
-	if(HAS_TRAIT(src, TRAIT_CLEANED_HANDS))
+	if(HAS_TRAIT(src, TRAIT_CLEAN_HANDS))
 		return
 	var/datum/disease/food_poisoning/disease = new
 	disease.Contract(src)

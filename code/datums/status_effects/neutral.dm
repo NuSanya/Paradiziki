@@ -407,9 +407,9 @@
 
 /datum/status_effect/clean_hands/on_apply()
 	if(ishuman(owner))
-		ADD_TRAIT(owner, TRAIT_CLEANED_HANDS, UNIQUE_TRAIT_SOURCE(src))
+		ADD_TRAIT(owner, TRAIT_CLEAN_HANDS, UNIQUE_TRAIT_SOURCE(src))
 
 	return TRUE
 
 /datum/status_effect/clean_hands/on_remove()
-	REMOVE_TRAIT(owner, TRAIT_CLEANED_HANDS, UNIQUE_TRAIT_SOURCE(src))
+	REMOVE_TRAIT(owner, TRAIT_CLEAN_HANDS, UNIQUE_TRAIT_SOURCE(src))
