@@ -392,3 +392,24 @@
 	if(!.)
 		return
 	new_owner.start_leaning(object, leaning_offset)
+
+/atom/movable/screen/alert/status_effect/clean_hands
+	name = "Чистые руки"
+	desc = "Ваши руки промыты, и риск подхватить болячку при поедании пищи гораздо меньше."
+	icon_state = "clean_hands"
+
+/datum/status_effect/clean_hands
+	id = "clean_hands"
+	duration = 1 MINUTES
+	status_type = STATUS_EFFECT_REPLACE
+	tick_interval = -1
+	alert_type = /atom/movable/screen/alert/status_effect/clean_hands
+
+/datum/status_effect/clean_hands/on_apply()
+	if(ishuman(owner))
+		ADD_TRAIT(owner, TRAIT_CLEANED_HANDS, UNIQUE_TRAIT_SOURCE(src))
+
+	return TRUE
+
+/datum/status_effect/clean_hands/on_remove()
+	REMOVE_TRAIT(owner, TRAIT_CLEANED_HANDS, UNIQUE_TRAIT_SOURCE(src))

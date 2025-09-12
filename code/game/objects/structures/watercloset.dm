@@ -673,6 +673,9 @@
 			H.regenerate_icons()
 			H.AdjustDrowsy(-rand(4 SECONDS, 6 SECONDS)) //Washing your face wakes you up if you're falling asleep
 	else
+		if(ishuman(user))
+			var/mob/living/carbon/human/human_user = user
+			human_user.apply_status_effect(STATUS_EFFECT_CLEAN_HANDS)
 		user.clean_blood()
 
 

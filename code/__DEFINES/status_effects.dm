@@ -210,3 +210,6 @@
 
 /// Makes you lean on something
 #define STATUS_EFFECT_LEANING /datum/status_effect/leaning
+
+/// Makes you immune to dirt based food poisonings
+#define STATUS_EFFECT_CLEAN_HANDS /datum/status_effect/clean_hands

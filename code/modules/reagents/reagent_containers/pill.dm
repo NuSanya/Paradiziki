@@ -15,6 +15,7 @@
 	antable = FALSE
 	pickup_sound = 'sound/items/handling/pickup/generic_small_pickup.ogg'
 	drop_sound = 'sound/items/handling/drop/generic_small_drop.ogg'
+	based_on_dirt_poisoning = FALSE
 
 /obj/item/reagent_containers/food/pill/get_ru_names()
 	return list(

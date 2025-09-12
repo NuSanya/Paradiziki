@@ -15,6 +15,7 @@
 	antable = FALSE
 	var/chugging = FALSE
 	foodtype = ALCOHOL
+	based_on_dirt_poisoning = FALSE
 
 /obj/item/reagent_containers/food/drinks/New()
 	..()

@@ -56,6 +56,9 @@
 			qdel(C)
 			target.clean_blood()
 			SEND_SIGNAL(target, COMSIG_COMPONENT_CLEAN_ACT, 5)
+			if(ishuman(target))
+				var/mob/living/carbon/human/human_target = user
+				human_target.apply_status_effect(STATUS_EFFECT_CLEAN_HANDS)
 
 /obj/item/soap/proc/clean_turf(turf/simulated/T)
 	T.clean_blood()

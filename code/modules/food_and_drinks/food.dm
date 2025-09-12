@@ -6,12 +6,19 @@
 #define DISLIKE_MESSAGES list("Не очень вкусно. Мне, как $ASPECIES, лучше избегать <b>$TYPE</b>.", "<b>$CAPITALTYPE</b> $IS не лучшая еда для $PLURALSPECIES. Больше не буду это есть.", "Фу. <b>$CAPITALTYPE</b> $IS не то, что должен есть $ASPECIES.")
 #define LOVE_MESSAGES list("Восхитительно! Обожаю <b>$TYPE</b>!", "Ням. Я создан, чтобы есть <b>$TYPE</b>.", "Обожаю этот вкус. <b>$CAPITALTYPE</b> $IS прекрасно.", "<b>$CAPITALTYPE</b> $IS потрясающе. Надо есть это чаще.")
 
+#define DIRT_CHECK_RANGE 2	// in what range do we look for dirt around us
+#define DIRT_SCALING 10		// how much the chance of getting poisoned increases for each dirt
+
 /obj/item/reagent_containers/food
 	possible_transfer_amounts = null
 	volume = 50 //Sets the default container amount for all food items.
 	visible_transfer_rate = FALSE
 	righthand_file = 'icons/mob/inhands/foods_righthand.dmi'
 	lefthand_file = 'icons/mob/inhands/foods_lefthand.dmi'
+	resistance_flags = FLAMMABLE
+	container_type = INJECTABLE
+	light_system = MOVABLE_LIGHT
+	light_on = FALSE
 	var/filling_color = "#FFFFFF" //Used by sandwiches.
 	var/junkiness = 0  //for junk food. used to lower human satiety.
 	var/bitesize = 2
@@ -25,15 +32,11 @@
 	var/can_taste = TRUE//whether you can taste eating from this
 	var/antable = TRUE // Will ants come near it?
 	var/ant_location = null
-	// Time we last checked for ants
-	var/last_ant_time = 0
+	var/last_ant_time = 0 // Time we last checked for ants
 	var/foodtype = NONE
 	var/last_check_time
-	resistance_flags = FLAMMABLE
-	container_type = INJECTABLE
 	var/log_eating = FALSE // do we log if someone eats us?
-	light_system = MOVABLE_LIGHT
-	light_on = FALSE
+	var/based_on_dirt_poisoning = TRUE // can we get poisoned by having dirt nearby
 
 /obj/item/reagent_containers/food/Initialize(mapload)
 	. = ..()
@@ -78,6 +81,22 @@
 			ant_location = T
 
 	last_ant_time = world.time
+
+/obj/item/reagent_containers/food/proc/check_for_dirt_poisoning()
+	if(!antable) // basically check for vendor junk food
+		return
+	if(!based_on_dirt_poisoning)
+		return
+
+	var/poisoning_chance = 0
+	var/turf/center_turf = get_turf(src)
+	for(var/obj/effect/decal/cleanable/dirt in range(DIRT_CHECK_RANGE, center_turf))
+		poisoning_chance += DIRT_SCALING
+
+	if(!prob(poisoning_chance))
+		return
+
+	return TRUE
 
 /obj/item/reagent_containers/food/proc/check_liked(fraction, mob/M)
 	if(last_check_time + 2 SECONDS < world.time)
@@ -173,6 +192,8 @@
 			var/datum/reagent/R = I
 			. += "<span class='notice'>[R.volume] units of [R.name]</span>"
 
+#undef DIRT_SCALING
+#undef DIRT_CHECK_RANGE
 #undef HATE_MESSAGES
 #undef DISLIKE_MESSAGES
 #undef LOVE_MESSAGES
