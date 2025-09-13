@@ -18,7 +18,7 @@
 /// Range (in tiles) to search for dirt around food items
 #define DIRT_CHECK_RANGE 2
 /// Probability increase per dirt object found within range (percentage points)
-#define DIRT_SCALING 10
+#define DIRT_SCALING 5
 
 /obj/item/reagent_containers/food
 	possible_transfer_amounts = null
