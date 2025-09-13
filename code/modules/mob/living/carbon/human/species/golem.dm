@@ -16,7 +16,7 @@
 	)
 	dies_at_threshold = TRUE
 	speed_mod = 2
-	brute_mod = 0.45 //55% damage reduction
+	brute_mod = 0.45
 	burn_mod = 0.45
 	tox_mod = 0.45
 	clone_mod = 0.45
@@ -75,37 +75,63 @@
 		"рассыпается в прах!",
 		"разбивает своё тело на части!")
 
-	var/golem_colour = rgb(170, 170, 170)
-	var/info_text = "Будучи <span class='danger'>железным големом</span>, вы не обладаете отличительными особенностями."
-	var/random_eligible = TRUE
-	var/prefix = "Железн"		// неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
-	var/prefix_type = 1			// Тип гендеризации префикса для более гладких переводов. 1-й = "-ый", 2-й = "-ой", 3-й = ""
+/// Default color for the golem (RGB: 170,170,170 - medium gray)
+var/golem_colour = rgb(170, 170, 170)
 
-	var/gender_name = MALE	// Пол для имени голема. Default - мужской
-	var/chance_name_male = 80	// Шанс на выпадение пола для имени
-	var/chance_name_female = 60
-	var/chance_name_neuter = 5
+/// Description text shown to players when they become this golem type
+var/info_text = "As an <span class='danger'>Iron Golem</span>, you have no distinctive features."
 
-	var/list/special_names = list(
-		MALE = list("Человек", "Биба", "Боба", "Ржавчик", "Утюг", "Металлист", "Мужик", "Сплав", "Брусок", "Кусок", "Минерал", "Кирпич", "Тяжеступ", "Работяга", "Тяжеловес", "Увалень", "Бугай", "Пупс"),
-		FEMALE = list("Дева"),
-		NEUTER = null
-		)
+/// Whether this golem species is eligible for random selection
+var/random_eligible = TRUE
 
-	var/human_surname_chance = 5
-	var/special_name_chance = 10
-	var/owner //dobby is a free golem
+/// Name prefix without gender ending (completed by genderization function)
+var/prefix = "Iron"
+/// Type of prefix genderization for smoother translations (1 = "-y", 2 = "-oy", 3 = "")
+var/prefix_type = 1
+/// Default gender for golem names (MALE)
+var/gender_name = MALE
+/// Chance for male name generation (80%)
+var/chance_name_male = 80
+/// Chance for female name generation (60%)
+var/chance_name_female = 60
+/// Chance for neuter name generation (5%)
+var/chance_name_neuter = 5
+/// Special names available for this golem type, organized by gender
+var/list/special_names = list(
+	MALE = list("Man", "Biba", "Boba", "Rusty", "Iron", "Metallist", "Guy", "Alloy", "Ingot", "Chunk", "Mineral", "Brick", "Heavystep", "Workerguy", "Heavyweight", "Lummox", "Hulk", "Pups"),
+	FEMALE = list("Maiden"),
+	NEUTER = null
+)
+/// Chance to use a human surname instead of a special name (5%)
+var/human_surname_chance = 5
+/// Chance to use a special name from the list instead of a generated one (10%)
+var/special_name_chance = 10
 
-	var/list/suitable_materials_for_heal = list(
-		/obj/item/stack/ore/iron,
-		/obj/item/stack/sheet/metal,
-	)											// подходящие для лечения материалы
-	var/material_heal = 20						// лечение с материала, из которого сделан голем
-	var/amount_required_for_heal = 5			// сколько требуется материала для лечениея
-	var/self_heal_delay = 2 SECONDS				// время, требуемое для лечение самого себя
+/// Reference to the golem's owner, if any (Dobby is a free golem reference)
+var/owner
 
+/// Material types that can be used to heal this golem
+var/list/suitable_materials_for_heal = list(
+	/obj/item/stack/ore/iron,
+	/obj/item/stack/sheet/metal,
+)
+/// Amount of damage healed when using the golem's native material
+var/material_heal = 20
+/// Amount of material required for each healing action
+var/amount_required_for_heal = 5
+/// Time required to perform self-healing (2 seconds)
+var/self_heal_delay = 2 SECONDS
+
+
+/**
+ * Generates a random name for a golem
+ *
+ * Determines a random gender for the name based on configured probabilities,
+ * then selects an appropriate name from various sources including special golem names,
+ * human names, or fallback names. Handles Russian language genderization for prefixes.
+ */
 /datum/species/golem/get_random_name()
-	//определяем случайный пол для ИМЕНИ голема. Если же все шансы провалились, то берется дефолтное значение пола
+	// Determine random gender for the golem's NAME. If all chances fail, use default gender
 	if (prob(chance_name_male))
 		gender_name = MALE
 	else if (prob(chance_name_female))
@@ -113,12 +139,12 @@
 	else if (prob(chance_name_neuter))
 		gender_name = NEUTER
 
-	var/golem_surname //Имя голема
+	var/golem_surname // Golem's name
 
-	//выбираем изначально случайное големское имя аля "Андезит"
+	// Initially select a random golem name like "Andesite"
 	switch (gender_name)
 		if (MALE)
-			if (length(GLOB.golem_male)) //Бйонд имеет привычку с отваливанием файлов. Чтобы такого не допустить, мы проверяем длину файла
+			if (length(GLOB.golem_male)) // BYOND has a habit of file failures. We check file length to prevent this
 				golem_surname = "[pick(GLOB.golem_male)]"
 		if (FEMALE)
 			if (length(GLOB.golem_female))
@@ -127,38 +153,39 @@
 			if (length(GLOB.golem_neuter))
 				golem_surname = "[pick(GLOB.golem_neuter)]"
 
-
-	//10% шанс выбрать спец. имя или имя выдастся если оно до сих пор пустое, с условием что у голема имеются спец. имена для данного гендера
+	// 10% chance to choose a special name, or use one if no name has been selected yet
+	// (provided the golem has special names for this gender)
 	if(special_names && special_names.len && (prob(special_name_chance) || (golem_surname == null)))
 		golem_surname = pick(special_names[gender_name])
 
-	// 5% шанс выбрать человеческое имя или фамилию, ну или если голем до сих пор не имеет имени
-	if(prob(human_surname_chance) || (golem_surname == null) || golem_surname == "" || golem_surname == " ") //игра по прежнему не считает строчные пустые элементы != null элементами. Из-за чего нужна такая проверка
+	// 5% chance to choose a human first or last name, or if golem still doesn't have a name
+	// The game still doesn't consider empty string elements != null, hence this check
+	if(prob(human_surname_chance) || (golem_surname == null) || golem_surname == "" || golem_surname == " ")
 		switch (gender_name)
 			if (MALE)
-				if (prob(50)) //выбираем мужское имя или фамилию
+				if (prob(50)) // Choose male first name or last name
 					golem_surname = pick(GLOB.first_names_male)
 				else
 					golem_surname = pick(GLOB.last_names)
 			if (FEMALE)
-				if (prob(50)) //выбираем женское имя или фамилию
+				if (prob(50)) // Choose female first name or last name
 					golem_surname = pick(GLOB.first_names_female)
 				else
 					golem_surname = pick(GLOB.last_names_female)
 			if (NEUTER)
-				golem_surname = pick("Нечто", "Чудо") //Средний пол голема
+				golem_surname = pick("Something", "Wonder") // Neuter gender golem
 
-	//устанавливаем окончание прилагательных префиксов (золотой мужик теперь золотОЙ, а не золотЫЙ)
+	// Set the adjective ending for prefix (e.g., "golden" becomes "golden" instead of "gold")
 	var/end_pr
 	switch (prefix_type)
 		if (1)
-			end_pr = genderize_ru(gender_name,"ый","ая","ое","ые")
+			end_pr = genderize_ru(gender_name,"yy","aya","oye","yye") // Male, Female, Neuter, Plural endings
 		if (2)
-			end_pr = genderize_ru(gender_name,"ой","ая","ое","ые")
+			end_pr = genderize_ru(gender_name,"oy","aya","oye","yye")
 		if (3)
 			end_pr = ""
 
-	//гендеризируем прилагательное-префикс и приписываем наше половое имя
+	// Genderize the adjective prefix and append our gender-specific name
 	var/golem_name
 	if(prefix_type == 3)
 		golem_name = "[prefix][end_pr]-[golem_surname]"
@@ -209,7 +236,12 @@
 
 //Golem subtypes
 
-//Leader golems, can resonate to communicate with all other golems
+/**
+ * Adamantine Golem - Leader type with resonance communication
+ *
+ * Leader golems that can resonate to communicate with all other golems.
+ * Features special organs for resonance and vocal communication.
+ */
 /datum/species/golem/adamantine
 	name = SPECIES_GOLEM_ADAMANTINE
 	skinned_type = /obj/item/stack/sheet/mineral/adamantine
@@ -223,7 +255,7 @@
 
 	golem_colour = rgb(68, 238, 221)
 	info_text = "Будучи <span class='danger'>адамантиновым големом</span>, вы обладаете особыми голосовыми связками, позволяющие вам «резонировать» послания всем големам."
-	prefix = "Адамантинов" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Адамантинов"
 	special_names = list(
 		MALE = list("Сплав", "Брусок", "Мужик", "Кусок", "Минерал", "Кирпич", "Тяжеступ", "Работяга", "Тяжеловес", "Увалень", "Бугай", "Пупс"),
 		FEMALE = list("Дева"),
@@ -235,7 +267,12 @@
 	amount_required_for_heal = 1
 	self_heal_delay = 2 SECONDS
 
-//The suicide bombers of golemkind
+/**
+ * Plasma Golem - Explosive suicide bomber type
+ *
+ * The suicide bombers of golemkind. Burns easily and explodes when overheated.
+ * Features self-ignition ability and explosion mechanics.
+ */
 /datum/species/golem/plasma
 	name = SPECIES_GOLEM_PLASMA
 	skinned_type = /obj/item/stack/ore/plasma
@@ -245,7 +282,7 @@
 	heat_level_3 = 460
 	info_text = "Будучи <span class='danger'>плазменным големом</span>, вы легко сгораете. Будьте осторожны, если вы сильно нагреетесь &mdash; взорвётесь!"
 	heatmod = 0 //fine until they blow up
-	prefix = "Плазменн" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Плазменн"
 	special_names = list(
 		MALE = list("Потоп", "Прилив", "Разлив", "Залив", "Мужик", "Наводнение", "Поток", "Ливень", "Пожар", "Стержень", "Минерал", "Мужик", "Горец", "Сгоратель", "Пупс"),
 		FEMALE = list("Дева"),
@@ -310,7 +347,12 @@
 			to_chat(owner, span_warning("Вы попытались поджечь себя, но неудачно!"))
 		H.IgniteMob() //firestacks are already there passively
 
-//Harder to hurt
+/**
+ * Diamond Golem - Extremely durable type
+ *
+ * Harder to hurt with significantly increased damage resistance across all types.
+ * Features high damage reduction and special naming conventions.
+ */
 /datum/species/golem/diamond
 	name = SPECIES_GOLEM_DIAMOND
 	golem_colour = rgb(0, 255, 255)
@@ -322,7 +364,7 @@
 	stamina_mod = 0.3
 	skinned_type = /obj/item/stack/ore/diamond
 	info_text = "Будучи <span class='danger'>алмазным големом</span>, вы прочнее обычных големов."
-	prefix = "Алмазн" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Алмазн"
 	special_names = list(
 		MALE = list("Сплав", "Брусок", "Мужик", "Кусок", "Минерал", "Кирпич", "Тяжеступ", "Работяга", "Тяжеловес", "Увалень", "Бугай", "Пупс"),
 		FEMALE = list("Дева", "Ювелирка", "Драгоценность", "Серёжка"),
@@ -341,12 +383,17 @@
 	amount_required_for_heal = 2
 	self_heal_delay = 3 SECONDS
 
-//Faster but softer and less armoured
+/**
+ * Gold Golem - Faster but less durable type
+ *
+ * Faster movement speed but reduced damage resistance compared to standard golems.
+ * Features speed bonus at the cost of durability.
+ */
 /datum/species/golem/gold
 	name = SPECIES_GOLEM_GOLD
 	golem_colour = rgb(204, 204, 0)
 	speed_mod = 1
-	brute_mod = 0.75 //25% damage reduction down from 55%
+	brute_mod = 0.75 // 25% damage reduction down from 55%
 	burn_mod = 0.75
 	tox_mod = 0.75
 	clone_mod = 0.75
@@ -354,7 +401,7 @@
 	stamina_mod = 0.75
 	skinned_type = /obj/item/stack/ore/gold
 	info_text = "Будучи <span class='danger'>золотым големом</span>, вы более быстры, но менее прочны, нежели обычный голем."
-	prefix = "Золот" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Золот"
 	prefix_type = 2
 	special_names = list(
 		MALE = list("Мальчик", "Мужик", "Человек", "Ручник", "Молодежник", "Понтовщик", "Мост", "Яблочник", "Ювелир", "Дорогуша", "Дурак", "Брусок", "Закат", "Дым", "Шелк", "Сплав", "Ремесленник", "Мёд", "Сплав", "Брусок", "Мужик", "Кусок", "Минерал", "Кирпич", "Тяжеступ", "Работяга", "Тяжеловес", "Увалень", "Бугай", "Пупс"),
@@ -371,14 +418,18 @@
 	amount_required_for_heal = 3
 	self_heal_delay = 2 SECONDS
 
-//Heavier, thus higher chance of stunning when punching
+/**
+ * Silver Golem - Stunner
+ *
+ * Slower, but higher stun chance.
+ */
 /datum/species/golem/silver
 	name = SPECIES_GOLEM_SILVER
 	golem_colour = rgb(221, 221, 221)
-	punchstunthreshold = 9 //60% chance, from 40%
+	punchstunthreshold = 9 // 60% chance, from 40%
 	skinned_type = /obj/item/stack/ore/silver
 	info_text = "Будучи <span class='danger'>серебряным големом</span>, вы с большей вероятностью можете оглушить противников атаками."
-	prefix = "Серебрян" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Серебрян"
 	special_names = list(
 		MALE = list("Серфер", "Чарриот", "Мужик", "Глушитель", "Тихон", "Анестетик", "Ювелир", "Пупс"),
 		FEMALE = list("Дева", "Ювелирка", "Драгоценность", "Серёжка"),
@@ -397,7 +448,12 @@
 	amount_required_for_heal = 3
 	self_heal_delay = 2 SECONDS
 
-//Harder to stun, deals more damage, but it's even slower
+/**
+ * Plasteel Golem - Very slow, high damage
+ *
+ * Higher damage and stun threshold at the cost of speed.
+ * Also tankier.
+ */
 /datum/species/golem/plasteel
 	name = SPECIES_GOLEM_PLASTEEL
 	golem_colour = rgb(187, 187, 187)
@@ -405,11 +461,11 @@
 	stamina_mod = 0.5
 	punchdamagelow = 12
 	punchdamagehigh = 21
-	punchstunthreshold = 18 //still 40% stun chance
-	speed_mod = 4 //pretty fucking slow
+	punchstunthreshold = 18 // Still 40% stun chance
+	speed_mod = 4 // Pretty fucking slow
 	skinned_type = /obj/item/stack/sheet/plasteel
 	info_text = "Будучи <span class='danger'>пласталиевым големом</span>, вы медлительны, но вас сложнее оглушить, а ваши кулаки причиняют серьёзные повреждения."
-	prefix = "Пласталиев" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Пласталиев"
 	special_names = list(
 		MALE = list("Сплав", "Брусок", "Мужик", "Кусок", "Минерал", "Кирпич", "Тяжеступ", "Работяга", "Тяжеловес", "Увалень", "Бугай", "Пупс"),
 		FEMALE = list("Дева"),
@@ -432,14 +488,19 @@
 	attack_verb = list("ударил")
 	attack_sound = 'sound/effects/meteorimpact.ogg'
 
-//More resistant to burn damage and immune to ashstorm
+/**
+ * Titanium Golem - Plasteel, but burn protected
+ *
+ * High burn resistance at the cost of speed.
+ * Also immune to ashstorm.
+ */
 /datum/species/golem/titanium
 	name = SPECIES_GOLEM_TITANIUM
 	golem_colour = rgb(255, 255, 255)
 	skinned_type = /obj/item/stack/ore/titanium
 	info_text = "Будучи <span class='danger'>титановым големом</span>, вы частично устойчивы к ожогам и невосприимчивы к пепельным бурям."
 	burn_mod = 0.405
-	prefix = "Титанов" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Титанов"
 	special_names = list(
 		MALE = list("Диоксид", "Сплав", "Брусок", "Мужик", "Минерал", "Кусок", "Кирпич", "Буреходец", "Пожарник", "Тяжеступ", "Работяга", "Тяжеловес", "Увалень", "Бугай", "Пупс"),
 		FEMALE = list("Дева"),
@@ -464,14 +525,18 @@
 	amount_required_for_heal = 2
 	self_heal_delay = 2 SECONDS
 
-//Even more resistant to burn damage and immune to ashstorms and lava
+/**
+ * Plastitanium Golem - Better Titanium
+ *
+ * Basically a better titanium golem.
+ */
 /datum/species/golem/plastitanium
 	name = SPECIES_GOLEM_PLASTITANIUM
 	golem_colour = rgb(136, 136, 136)
 	skinned_type = /obj/item/stack/sheet/mineral/plastitanium
 	info_text = "Будучи <span class='danger'>пластитановым големом</span>, вы крайне устойчивы к ожогам и невосприимчивы к пепельным бурям и лаве."
 	burn_mod = 0.36
-	prefix = "Пластитанов" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Пластитанов"
 	special_names = list(
 		MALE = list("Сплав", "Брусок", "Кусок", "Мужик", "Кирпич", "Минерал", "Буреходец", "Пожарник", "Лавоходец", "Лавоплавунец", "Тяжеступ", "Работяга", "Тяжеловес", "Увалень", "Бугай", "Пупс"),
 		FEMALE = list("Дева"),
@@ -500,16 +565,21 @@
 	amount_required_for_heal = 2
 	self_heal_delay = 2 SECONDS
 
-//Fast and regenerates... but can only speak like an abductor
+/**
+ * Alien Alloy Golem - Best stats, but mute
+ *
+ * Can't speak, but has the most speed of all.
+ * Also regenerates health passively.
+ */
 /datum/species/golem/alloy
 	name = SPECIES_GOLEM_ALLOY
 	golem_colour = rgb(51, 51, 51)
 	skinned_type = /obj/item/stack/sheet/mineral/abductor
 	language = LANGUAGE_HIVE_GOLEM
 	default_language = LANGUAGE_HIVE_GOLEM
-	speed_mod = 1 //faster
+	speed_mod = 1 // Faster
 	info_text = "Будучи <span class='danger'>големом из инопланетных сплавов</span>, вы быстрее двигаетесь и со временем регенерируете. Однако, вы можете разговаривать только с големами из того же материала, что и вы."
-	prefix = "Инопланетн" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Инопланетн"
 	special_names = list(
 		MALE = list("Инопришеленец", "Технологичный Голем", "Наблюдатель", "Незнакомец", "Странник", "Чужак", "Посланник", "Минерал", "Мужик", "Пришеленец", "Пупс"),
 		FEMALE = null,
@@ -536,16 +606,21 @@
 		human.updatehealth()
 
 
-/datum/species/golem/alloy/can_understand(mob/other) //Can understand everyone, but they can only speak over their mindlink
+/datum/species/golem/alloy/can_understand(mob/other) // Can understand everyone, but they can only speak over their mindlink
 	return TRUE
 
 /datum/species/golem/alloy/on_species_gain(mob/living/carbon/human/H)
 	. = ..()
 	LAZYREINITLIST(H.languages)
 	H.add_language(LANGUAGE_HIVE_GOLEM)
-	H.add_language(LANGUAGE_GREY) // still grey enouhg to speak in psi link
+	H.add_language(LANGUAGE_GREY) // Still grey enouhg to speak in psi link
 
-//Regenerates like dionas, less resistant
+/**
+ * Wood Golem - Dionas, but bad
+ *
+ * Regenerates health slowly when in light.
+ * Quite frail.
+ */
 /datum/species/golem/wood
 	name = SPECIES_GOLEM_WOOD
 	golem_colour = rgb(158, 112, 75)
@@ -560,8 +635,7 @@
 		TRAIT_PIERCEIMMUNE,
 		TRAIT_EMBEDIMMUNE,
 	)
-	//Can burn and take damage from heat
-	brute_mod = 0.7 //30% damage reduction down from 55%
+	brute_mod = 0.7 // 30% damage reduction down from 55%
 	burn_mod = 0.875
 	tox_mod = 0.7
 	clone_mod = 0.7
@@ -574,7 +648,7 @@
 	heat_level_3 = 400
 
 	info_text = "Будучи <span class='danger'>деревянным големом</span>, вы обладаете некоторыми особенностями растений: Вы получаете урон от экстремальных температур, вас можно поджечь и у вас меньше брони, чем у обычного голема. Вы регенерируете на свету и увядаете во тьме."
-	prefix = "Деревянн" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Деревянн"
 	special_names = list(
 		MALE = list("Короед", "Грут", "Пень", "Дубень", "Дуболом", "Дуб", "Рогоз", "Сок", "Клен", "Вяз", "Тополь ", "Осина", "Ясень", "Бук", "Каштан", "Кедр", "Каштан", "Кипарис", "Пихта", "Боярышник", "Гикори", "Айронвуд", "Можжевельник", "Лист", "Мангровый Лес", "Тополь", "Редбад", "Сассафрас", "Ель", "Сумак", "Ствол", "Орех", "Тис", "Пупс"),
 		FEMALE = list("Дева", "Ива", "Катальпа", "Ветка", "Тростинка", "Палка", "Береза", "Лиственница", "Липа", "Лещина", "Пальма", "Азимина", "Сосна"),
@@ -591,9 +665,9 @@
 	self_heal_delay = 2 SECONDS
 
 /datum/species/golem/wood/handle_life(mob/living/carbon/human/H)
-	var/light_amount = 0 //how much light there is in the place, affects receiving nutrition and healing
+	var/light_amount = 0 // How much light there is in the place, affects receiving nutrition and healing
 	var/is_vamp = isvampire(H)
-	if(isturf(H.loc)) //else, there's considered to be no light
+	if(isturf(H.loc)) // Else, there's considered to be no light
 		var/turf/T = H.loc
 		light_amount = min(1, T.get_lumcount()) - 0.5
 		if(light_amount > 0)
@@ -604,7 +678,7 @@
 			H.adjust_nutrition(light_amount * 10)
 			if(H.nutrition > NUTRITION_LEVEL_ALMOST_FULL)
 				H.set_nutrition(NUTRITION_LEVEL_ALMOST_FULL)
-		if(light_amount > 0.2 && !H.suiciding) //if there's enough light, heal
+		if(light_amount > 0.2 && !H.suiciding) // If there's enough light, heal
 			var/update = NONE
 			update |= H.heal_overall_damage(1, 1, updating_health = FALSE)
 			update |= H.heal_damages(tox = 1, oxy = 1, updating_health = FALSE)
@@ -617,17 +691,21 @@
 
 /datum/species/golem/wood/handle_reagents(mob/living/carbon/human/H, datum/reagent/R)
 	if(R.id == "glyphosate" || R.id == "atrazine")
-		H.adjustToxLoss(3) //Deal aditional damage
+		H.adjustToxLoss(3) // Deal aditional damage
 		return TRUE
 	return ..()
 
-//Radioactive
+/**
+ * Uranium Golem - Free Grief Permit
+ *
+ * Irradiates everyone around them. Thats all.
+ */
 /datum/species/golem/uranium
 	name = SPECIES_GOLEM_URANIUM
 	golem_colour = rgb(119, 255, 0)
 	skinned_type = /obj/item/stack/ore/uranium
 	info_text = "Будучи <span class='danger'>урановым големом</span>, вы излучаете радиацию. Это не вредит другим големам, но влияет на органические формы жизни."
-	prefix = "Уранов" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Уранов"
 	special_names = list(
 		MALE = list("Оксид", "Стержень", "Мужик", "Сплав", "Расплав", "Светоч", "Сиятель", "Свет", "Блеск", "Лучезарец", "Луч", "Блестатель", "Пупс"),
 		FEMALE = list("Яркость", "Светлость", "Яркость"),
@@ -651,14 +729,18 @@
 		if(HAS_TRAIT(victim, TRAIT_RADIMMUNE))
 			continue
 		victim.apply_effect(10, IRRADIATE)
-		if(prob(25)) //reduce spam
+		if(prob(25)) // Reduce spam
 			to_chat(victim, span_danger("Вас окутывает мягкое зелёное свечение, исходящее от [user]."))
 	..()
 
-//Ventcrawler
+/**
+ * Plastic Golem - Ventcrawlers
+ *
+ * Can ventcrawl when nude.
+ */
 /datum/species/golem/plastic
 	name = SPECIES_GOLEM_PLASTIC
-	prefix = "Пластиков" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Пластиков"
 	special_names = list(
 		MALE = list("Стаканчик", "Сервиз"),
 		FEMALE = list("Тарелка", "Посуда", "Утварь"),
@@ -683,20 +765,25 @@
 	amount_required_for_heal = 8
 	self_heal_delay = 1 SECONDS
 
-//Immune to physical bullets and resistant to brute, but very vulnerable to burn damage. Dusts on death.
+/**
+ * Sand Golem - Bulletproof
+ *
+ * Immune to bullets, has high brute resistance at the cost of high burn vulnerability.
+ * Also dusts on death.
+ */
 /datum/species/golem/sand
 	name = SPECIES_GOLEM_SAND
 	golem_colour = rgb(255, 220, 143)
 	skinned_type = /obj/item/stack/ore/glass //this is sand
 	brute_mod = 0.25
-	burn_mod = 3 //melts easily
+	burn_mod = 3 // Melts easily
 	tox_mod = 1
 	clone_mod = 1
 	brain_mod = 1
 	stamina_mod = 1
 	info_text = "Будучи <span class='danger'>песчаным големом</span>, вы невосприимчивы к физическим боеприпасам и получаете очень мало грубого урона. Однако вы чрезвычайно уязвимы к лучам лазерного и энергетического оружия, а также к ожогам. К тому же, вы превратитесь в песок после смерти, что предотвратит любую форму восстановления."
 	unarmed_type = /datum/unarmed_attack/golem/sand
-	prefix = "Песчан" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Песчан"
 	special_names = list(
 		MALE = list("Замок", "Берег", "Домик", "Вихрь", "Мужик", "Ураган", "Смерч", "Волчок", "Бархан", "Червь", "Шторм", "Пупс"),
 		FEMALE = list("Башня"),
@@ -730,12 +817,17 @@
 /datum/unarmed_attack/golem/sand
 	attack_sound = 'sound/effects/shovel_dig.ogg'
 
-//Reflects lasers and resistant to burn damage, but very vulnerable to brute damage. Shatters on death.
+/**
+ * Glass Golem - Laserproof
+ *
+ * Reflects lasers, has high burn resistance at the cost of high brute vulnerability.
+ * Shatters on death.
+ */
 /datum/species/golem/glass
 	name = SPECIES_GOLEM_GLASS
 	golem_colour = rgb(90, 150, 180)
 	skinned_type = /obj/item/stack/sheet/glass
-	brute_mod = 3 //very fragile
+	brute_mod = 3 // Very fragile
 	burn_mod = 0.25
 	tox_mod = 1
 	clone_mod = 1
@@ -743,7 +835,7 @@
 	stamina_mod = 1
 	info_text = "Будучи <span class='danger'>стеклянным големом</span>, вы отражаете лучи лазерного и энергетического оружия, а также крайне устойчивы к ожогам. Однако вы чрезвычайно уязвимы к грубому урону и баллистическому оружию. К тому же, после смерти вы разобьётесь без всякой надежды на восстановление."
 	unarmed_type = /datum/unarmed_attack/golem/glass
-	prefix = "Стеклянн" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Стеклянн"
 	special_names = list(
 		MALE = list("Изолятор", "Изолятор Тока", "Преломлятор", "Пупс"),
 		FEMALE = list("Линза", "Призма", "Бусинка", "Жемчужина", "Оптика"),
@@ -769,7 +861,7 @@
 	qdel(H)
 
 /datum/species/golem/glass/bullet_act(obj/projectile/P, mob/living/carbon/human/H)
-	if(!(P.original == H && P.firer == H)) //self-shots don't reflect
+	if(!(P.original == H && P.firer == H)) // Self-shots don't reflect
 		if(P.is_reflectable(REFLECTABILITY_ENERGY))
 			H.visible_message(span_danger("[P.name] отражается от стеклянной кожи [H]!"), \
 			span_userdanger("[P.name] отражается от стеклянной кожи [H]!"), \
@@ -783,7 +875,11 @@
 /datum/unarmed_attack/golem/glass
 	attack_sound = 'sound/effects/glassbr2.ogg'
 
-//Teleports when hit or when it wants to
+/**
+ * Bluespace Golem - Can't touch me
+ *
+ * Teleports on being hit, or by will.
+ */
 /datum/species/golem/bluespace
 	name = SPECIES_GOLEM_BLUESPACE
 	golem_colour = rgb(51, 51, 255)
@@ -838,7 +934,7 @@
 	var/obj/item/I
 	if(isitem(AM))
 		I = AM
-		if(locateUID(I.thrownby) == H) //No throwing stuff at yourself to trigger the teleport
+		if(locateUID(I.thrownby) == H) // No throwing stuff at yourself to trigger the teleport
 			return FALSE
 		else
 			reactive_teleport(H)
@@ -922,24 +1018,28 @@
 		H.buckled.unbuckle_mob(H, force = TRUE)
 	do_teleport(H, picked)
 	last_teleport = world.time
-	UpdateButtonIcon() //action icon looks unavailable
+	UpdateButtonIcon() // Action icon looks unavailable
 	sleep(cooldown + 5)
-	UpdateButtonIcon() //action icon looks available again
+	UpdateButtonIcon() // Action icon looks available again
 
 /datum/unarmed_attack/golem/bluespace
 	attack_verb = list("блюспейс ударил")
 	attack_sound = 'sound/effects/phasein.ogg'
 
-//honk
+/**
+ * Bananium Golem - honk
+ *
+ * Makes funny sounds, and makes bananas on being hit, or by will.
+ */
 /datum/species/golem/bananium
 	name = SPECIES_GOLEM_BANANIUM
 	golem_colour = rgb(255, 255, 0)
 	punchdamagelow = 0
 	punchdamagehigh = 1
-	punchstunthreshold = 2 //Harmless and can't stun
+	punchstunthreshold = 2 // Harmless and can't stun
 	skinned_type = /obj/item/stack/ore/bananium
 	info_text = "Будучи <span class='danger'>бананиевым големом</span>, вы созданы для розыгрышей. Ваше тело издает естественные гудки, и удары по людям издают безвредные гудки. Если вас ранить, вы будете бананоточить."
-	prefix = "Бананиев" //неполное окончание т.к. гендеризация идет через другую функцию (/datum/species/golem/get_random_name())
+	prefix = "Бананиев"
 	special_names = list(
 		MALE = null,
 		FEMALE = null,
@@ -983,7 +1083,7 @@
 
 /datum/species/golem/bananium/get_random_name()
 	var/clown_name = pick(GLOB.clown_names)
-	var/golem_name = "[prefix][genderize_ru(gender_name,"ый","ая","ое","ые")] [clown_name]" //Без перевода, так как требуется переводы имен роли
+	var/golem_name = "[prefix][genderize_ru(gender_name,"ый","ая","ое","ые")] [clown_name]"
 	return golem_name
 
 /datum/species/golem/bananium/spec_attack_hand(mob/living/carbon/human/M, mob/living/carbon/human/H, datum/martial_art/attacker_style)
@@ -1011,7 +1111,7 @@
 	var/obj/item/I
 	if(isitem(AM))
 		I = AM
-		if(locateUID(I.thrownby) == H) //No throwing stuff at yourself to make bananas
+		if(locateUID(I.thrownby) == H) // No throwing stuff at yourself to make bananas
 			return FALSE
 		else
 			new/obj/item/grown/bananapeel/specialpeel(get_turf(H))
@@ -1036,10 +1136,14 @@
 	animation_type = ATTACK_EFFECT_DISARM
 	harmless = TRUE
 
-//...
+/**
+ * Tranquillite Golem - ...
+ *
+ * Mime, but golem.
+ */
 /datum/species/golem/tranquillite
 	name = SPECIES_GOLEM_TRANQUILLITITE
-	prefix = "Транквилитов" //требуется перевод имен Мима
+	prefix = "Транквилитов"
 	special_names = list(
 		MALE = null,
 		FEMALE = null,
@@ -1060,7 +1164,7 @@
 
 /datum/species/golem/tranquillite/get_random_name()
 	var/mime_name = pick(GLOB.mime_names)
-	var/golem_name = "[prefix][genderize_ru(gender_name,"ый","ая","ое","ые")] [mime_name]" //Без перевода, так как требуется переводы имен роли
+	var/golem_name = "[prefix][genderize_ru(gender_name,"ый","ая","ое","ые")] [mime_name]"
 	return golem_name
 
 /datum/species/golem/tranquillite/on_species_gain(mob/living/carbon/human/H)
@@ -1077,7 +1181,12 @@
 	attack_sound = null
 
 
-//FOR RATVAR!!!!!
+/**
+ * Clockwork Golem - Servant of Ratvar
+ *
+ * Fragile but empowered by Ratvar. Becomes a clock cultist upon creation.
+ * Features brass construction and special cult abilities.
+ */
 /datum/species/golem/clockwork
 	name = SPECIES_GOLEM_CLOCKWORK
 	prefix = "Латунн"
