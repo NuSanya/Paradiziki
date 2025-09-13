@@ -101,34 +101,34 @@
 /obj/item/reagent_containers/food/examine(mob/user)
 	. = ..()
 	if(foodtype & MEAT)
-		. += "<span class='notice'>It contains meat.</span>"
+		. += span_notice("Содержит мясо.")
 	if(foodtype & VEGETABLES)
-		. += "<span class='notice'>It contains vegetables.</span>"
+		. += span_notice("Содержит овощи.")
 	if(foodtype & RAW)
-		. += "<span class='notice'>It is not properly cooked.</span>"
+		. += span_notice("Не приготовлено должным образом.")
 	if(foodtype & JUNKFOOD)
-		. += "<span class='notice'>It is junkfood.</span>"
+		. += span_notice("Это вредная еда.")
 	if(foodtype & GRAIN)
-		. += "<span class='notice'>It is made of grain.</span>"
+		. += span_notice("Сделано из зерна.")
 	if(foodtype & FRUIT)
-		. += "<span class='notice'>It contains fruits.</span>"
+		. += span_notice("Содержит фрукты.")
 	if(foodtype & DAIRY)
-		. += "<span class='notice'>It contains dairy.</span>"
+		. += span_notice("Содержит молочные продукты.")
 	if(foodtype & FRIED)
-		. += "<span class='notice'>It is fried.</span>"
+		. += span_notice("Жареное.")
 	if(foodtype & SUGAR)
-		. += "<span class='notice'>It is sugary.</span>"
+		. += span_notice("Содержит сахар.")
 	if(foodtype & EGG)
-		. += "<span class='notice'>It contains eggs.</span>"
+		. += span_notice("Содержит яйца.")
 	if(foodtype & GROSS)
-		. += "<span class='notice'>This is pure garbage.</span>"
+		. += span_notice("Это чистейший мусор.")
 	if(foodtype & TOXIC)
-		. += "<span class='notice'>This is straight up poisonous.</span>"
+		. += span_notice("Это буквально яд.")
 	if(user.can_see_food()) //Show each individual reagent
-		. += "<span class='notice'>It contains:</span>"
+		. += span_notice("Содержит:")
 		for(var/I in reagents.reagent_list)
 			var/datum/reagent/R = I
-			. += "<span class='notice'>[R.volume] units of [R.name]</span>"
+			. += span_notice("[R.volume] единиц [R.name]")
 
 /**
  * Check for ant attraction to this food item
