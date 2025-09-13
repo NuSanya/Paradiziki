@@ -75,52 +75,52 @@
 		"рассыпается в прах!",
 		"разбивает своё тело на части!")
 
-/// Default color for the golem (RGB: 170,170,170 - medium gray)
-var/golem_colour = rgb(170, 170, 170)
+	/// Default color for the golem (RGB: 170,170,170 - medium gray)
+	var/golem_colour = rgb(170, 170, 170)
 
-/// Description text shown to players when they become this golem type
-var/info_text = "As an <span class='danger'>Iron Golem</span>, you have no distinctive features."
+	/// Description text shown to players when they become this golem type
+	var/info_text = "As an <span class='danger'>Iron Golem</span>, you have no distinctive features."
 
-/// Whether this golem species is eligible for random selection
-var/random_eligible = TRUE
+	/// Whether this golem species is eligible for random selection
+	var/random_eligible = TRUE
 
-/// Name prefix without gender ending (completed by genderization function)
-var/prefix = "Iron"
-/// Type of prefix genderization for smoother translations (1 = "-y", 2 = "-oy", 3 = "")
-var/prefix_type = 1
-/// Default gender for golem names (MALE)
-var/gender_name = MALE
-/// Chance for male name generation (80%)
-var/chance_name_male = 80
-/// Chance for female name generation (60%)
-var/chance_name_female = 60
-/// Chance for neuter name generation (5%)
-var/chance_name_neuter = 5
-/// Special names available for this golem type, organized by gender
-var/list/special_names = list(
-	MALE = list("Man", "Biba", "Boba", "Rusty", "Iron", "Metallist", "Guy", "Alloy", "Ingot", "Chunk", "Mineral", "Brick", "Heavystep", "Workerguy", "Heavyweight", "Lummox", "Hulk", "Pups"),
-	FEMALE = list("Maiden"),
-	NEUTER = null
-)
-/// Chance to use a human surname instead of a special name (5%)
-var/human_surname_chance = 5
-/// Chance to use a special name from the list instead of a generated one (10%)
-var/special_name_chance = 10
+	/// Name prefix without gender ending (completed by genderization function)
+	var/prefix = "Iron"
+	/// Type of prefix genderization for smoother translations (1 = "-y", 2 = "-oy", 3 = "")
+	var/prefix_type = 1
+	/// Default gender for golem names (MALE)
+	var/gender_name = MALE
+	/// Chance for male name generation (80%)
+	var/chance_name_male = 80
+	/// Chance for female name generation (60%)
+	var/chance_name_female = 60
+	/// Chance for neuter name generation (5%)
+	var/chance_name_neuter = 5
+	/// Special names available for this golem type, organized by gender
+	var/list/special_names = list(
+		MALE = list("Man", "Biba", "Boba", "Rusty", "Iron", "Metallist", "Guy", "Alloy", "Ingot", "Chunk", "Mineral", "Brick", "Heavystep", "Workerguy", "Heavyweight", "Lummox", "Hulk", "Pups"),
+		FEMALE = list("Maiden"),
+		NEUTER = null
+	)
+	/// Chance to use a human surname instead of a special name (5%)
+	var/human_surname_chance = 5
+	/// Chance to use a special name from the list instead of a generated one (10%)
+	var/special_name_chance = 10
 
-/// Reference to the golem's owner, if any (Dobby is a free golem reference)
-var/owner
+	/// Reference to the golem's owner, if any (Dobby is a free golem reference)
+	var/owner
 
-/// Material types that can be used to heal this golem
-var/list/suitable_materials_for_heal = list(
-	/obj/item/stack/ore/iron,
-	/obj/item/stack/sheet/metal,
-)
-/// Amount of damage healed when using the golem's native material
-var/material_heal = 20
-/// Amount of material required for each healing action
-var/amount_required_for_heal = 5
-/// Time required to perform self-healing (2 seconds)
-var/self_heal_delay = 2 SECONDS
+	/// Material types that can be used to heal this golem
+	var/list/suitable_materials_for_heal = list(
+		/obj/item/stack/ore/iron,
+		/obj/item/stack/sheet/metal,
+	)
+	/// Amount of damage healed when using the golem's native material
+	var/material_heal = 20
+	/// Amount of material required for each healing action
+	var/amount_required_for_heal = 5
+	/// Time required to perform self-healing (2 seconds)
+	var/self_heal_delay = 2 SECONDS
 
 
 /**
