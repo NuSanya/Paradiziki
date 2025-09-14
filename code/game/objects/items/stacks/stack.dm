@@ -458,7 +458,7 @@
  * Used for healing golem-type mobs with appropriate materials.
  */
 /obj/item/stack/attack(mob/living/carbon/target, mob/living/user, params, def_zone, skip_attack_anim = FALSE)
-	if(user.a_intent <> INTENT_HELP)
+	if(user.a_intent != INTENT_HELP)
 		return ..()
 	if(!ishuman(target))
 		return ..()

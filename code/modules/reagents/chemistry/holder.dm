@@ -937,11 +937,11 @@
  */
 /datum/reagents/proc/get_average_clothing_pen()
 	var/clothing_pen = 0
-	for(var/datum/reagent/R in reagent_list)
-		if(!R.clothing_penetration)
+	for(var/datum/reagent/reagent in reagent_list)
+		if(!reagent.clothing_penetration)
 			continue
 
-		clothing_pen += R.clothing_penetration * (R.volume / total_volume)
+		clothing_pen += reagent.clothing_penetration * (reagent.volume / total_volume)
 
 	return clothing_pen
 
