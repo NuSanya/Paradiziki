@@ -213,6 +213,117 @@
 /datum/species/golem/get_vision_organ(mob/living/carbon/human/user)
 	return NO_VISION_ORGAN
 
+/**
+ * Attack on golems override
+ *
+ * Overrides item attack (if not FALSE)
+ * Used for healing golem-type mobs with appropriate materials.
+ */
+/datum/species/golem/spec_item_attack_override(obj/item/stack/stack_item, mob/living/carbon/target, mob/living/user, params, def_zone, skip_attack_anim)
+	if(!istype(stack_item))
+		return FALSE
+	if(user.a_intent != INTENT_HELP)
+		return FALSE
+	if(!isgolem(target))
+		return FALSE
+
+	. = ATTACK_CHAIN_PROCEED
+
+	var/found_material = FALSE
+	for(var/required_type as anything in suitable_materials_for_heal)
+		if(!istype(stack_item, required_type))
+			continue
+		found_material = TRUE
+		break
+
+	if(!found_material)
+		user.balloon_alert(user, "требуется другой материал!")
+		return .
+
+	var/obj/item/organ/external/bodypart = target.get_organ(check_zone(def_zone))
+	if(bodypart.is_robotic())
+		user.balloon_alert(user, "конечность роботическая!")
+		return .
+	if(bodypart.open != ORGAN_CLOSED)
+		user.balloon_alert(user, "конечность вскрыта!")
+		return .
+
+	if(!stack_item.get_amount())
+		user.balloon_alert(user, "недостаточно материала!")
+		return .
+	if(!stack_item.use(amount_required_for_heal))
+		user.balloon_alert(user, "недостаточно материала!")
+		return .
+
+	if(target == user)
+		user.visible_message(
+			span_notice("[user] начина[pluralize_ru(user.gender, "ет", "ют")] лечить свои раны на [genderize_ru(target.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [stack_item.declent_ru(ACCUSATIVE)]."),
+			span_notice("Вы начинаете лечить раны на своей [bodypart.declent_ru(PREPOSITIONAL)], используя [stack_item.declent_ru(ACCUSATIVE)]."),
+		)
+		if(!do_after(user, self_heal_delay, target, DA_IGNORE_USER_LOC_CHANGE))
+			return .
+
+	. |= ATTACK_CHAIN_SUCCESS
+
+	heal_golem(stack_item, target, user, bodypart, material_heal)
+	target.UpdateDamageIcon()
+
+/**
+ * Heals golem limbs using stack material
+ *
+ * Basically a copy of gauze/ointment mechanics, but heals both brute and burn damages.
+ */
+/datum/species/golem/proc/heal_golem(obj/item/stack_item, mob/living/carbon/human/target, mob/living/user, obj/item/organ/external/bodypart, heal_amount)
+	heal_message(stack_item, target, user, bodypart)
+	var/remheal = max(0, heal_amount * 2 - (bodypart.brute_dam + bodypart.burn_dam)) // Maxed with 0 since heal_damage let you pass in a negative value
+	var/nremheal = remheal
+	var/should_update_health = FALSE
+	var/update_damage_icon = NONE
+	var/bodypart_damage_was = bodypart.brute_dam + bodypart.burn_dam
+	update_damage_icon |= bodypart.heal_damage(heal_amount, heal_amount, updating_health = FALSE)
+	if(bodypart.brute_dam + bodypart.burn_dam != bodypart_damage_was)
+		should_update_health = TRUE
+	var/list/achildlist
+	if(LAZYLEN(bodypart.children))
+		achildlist = bodypart.children.Copy()
+	var/parenthealed = FALSE
+	while(remheal > 0) // Don't bother if there's not enough leftover heal
+		var/obj/item/organ/external/bodypart_child
+		if(LAZYLEN(achildlist))
+			bodypart_child = pick_n_take(achildlist) // Pick a random children and then remove it from the list
+		else if(bodypart.parent && !parenthealed) // If there's a parent and no healing attempt was made on it
+			bodypart_child = bodypart.parent
+			parenthealed = TRUE
+		else
+			break // If the organ have no child left and no parent / parent healed, break
+		if(bodypart_child.is_robotic() || bodypart_child.open) // Ignore robotic or open limb
+			continue
+		else if(!bodypart_child.brute_dam && !bodypart_child.burn_dam) // Ignore undamaged limb
+			continue
+		nremheal = max(0, remheal - (bodypart_child.brute_dam + bodypart_child.burn_dam)) // Deduct the healed damage from the remain
+		var/damage_was = bodypart_child.brute_dam + bodypart_child.burn_dam
+		update_damage_icon |= bodypart_child.heal_damage(remheal, remheal, updating_health = FALSE)
+		if(bodypart.brute_dam + bodypart.burn_dam != damage_was)
+			should_update_health = TRUE
+		remheal = nremheal
+		heal_message(stack_item, target, user, bodypart_child)
+	if(should_update_health)
+		target.updatehealth("[name] heal")
+	if(update_damage_icon)
+		target.UpdateDamageIcon()
+
+/**
+ * Shows healing message for golem repair
+ *
+ * Varies depending on if we are healing ourselves, or someone else
+ */
+/datum/species/golem/proc/heal_message(obj/item/stack_item, mob/living/carbon/human/target, mob/living/user, obj/item/organ/external/bodypart)
+	if(user == target)
+		user.visible_message(span_green("[user] залечива[pluralize_ru(user.gender, "ет", "ют")] раны на [genderize_ru(target.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [stack_item.declent_ru(ACCUSATIVE)]."), \
+							span_green("Вы залечиваете раны на своей [bodypart.declent_ru(PREPOSITIONAL)], используя [stack_item.declent_ru(ACCUSATIVE)]."))
+	else
+		user.visible_message(span_green("[user] залечива[pluralize_ru(user.gender, "ет", "ют")] раны [target] на [genderize_ru(target.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [stack_item.declent_ru(ACCUSATIVE)]."), \
+							span_green("Вы залечиваете раны [target] на [genderize_ru(target.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [stack_item.declent_ru(ACCUSATIVE)]."))
 
 //Random Golem
 

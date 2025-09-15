@@ -1183,14 +1183,14 @@ It'll return null if the organ doesn't correspond, so include null checks when u
 /datum/species/proc/spec_hitby(atom/movable/AM, mob/living/carbon/human/H)
 	return
 
-
 /datum/species/proc/spec_proceed_attack_results(obj/item/I, mob/living/carbon/human/defender, mob/living/attacker, obj/item/organ/external/affecting)
 	return ATTACK_CHAIN_PROCEED
 
 /**
  * Item attack override on ourselves (target = src)
  *
- * Return TRUE to override item attack. FALSE otherwise
+ * Return FALSE to not override item attack.
+ * Make sure to return attack chain bitflags otherwise.
  */
 /datum/species/proc/spec_item_attack_override(obj/item/item, mob/living/carbon/target, mob/living/user, params, def_zone, skip_attack_anim)
 	return FALSE
