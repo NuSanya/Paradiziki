@@ -1187,7 +1187,7 @@ It'll return null if the organ doesn't correspond, so include null checks when u
 	return ATTACK_CHAIN_PROCEED
 
 /**
- * Item attack override on ourselves (target = src)
+ * Item attack override
  *
  * Return FALSE to not override item attack.
  * Make sure to return attack chain bitflags otherwise.

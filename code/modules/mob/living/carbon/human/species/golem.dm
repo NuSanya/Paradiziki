@@ -79,13 +79,13 @@
 	var/golem_colour = rgb(170, 170, 170)
 
 	/// Description text shown to players when they become this golem type
-	var/info_text = "As an <span class='danger'>Iron Golem</span>, you have no distinctive features."
+	var/info_text = "Будучи [span_danger("железным големом")], вы не обладаете отличительными особенностями."
 
 	/// Whether this golem species is eligible for random selection
 	var/random_eligible = TRUE
 
 	/// Name prefix without gender ending (completed by genderization function)
-	var/prefix = "Iron"
+	var/prefix = "Железн"
 	/// Type of prefix genderization for smoother translations (1 = "-y", 2 = "-oy", 3 = "")
 	var/prefix_type = 1
 	/// Default gender for golem names (MALE)
@@ -98,8 +98,8 @@
 	var/chance_name_neuter = 5
 	/// Special names available for this golem type, organized by gender
 	var/list/special_names = list(
-		MALE = list("Man", "Biba", "Boba", "Rusty", "Iron", "Metallist", "Guy", "Alloy", "Ingot", "Chunk", "Mineral", "Brick", "Heavystep", "Workerguy", "Heavyweight", "Lummox", "Hulk", "Pups"),
-		FEMALE = list("Maiden"),
+		MALE = list("Человек", "Биба", "Боба", "Ржавчик", "Утюг", "Металлист", "Мужик", "Сплав", "Брусок", "Кусок", "Минерал", "Кирпич", "Тяжеступ", "Работяга", "Тяжеловес", "Увалень", "Бугай", "Пупс"),
+		FEMALE = list("Дева"),
 		NEUTER = null
 	)
 	/// Chance to use a human surname instead of a special name (5%)
@@ -173,15 +173,15 @@
 				else
 					golem_surname = pick(GLOB.last_names_female)
 			if (NEUTER)
-				golem_surname = pick("Something", "Wonder") // Neuter gender golem
+				golem_surname = pick("Нечто", "Чудо") // Neuter gender golem
 
 	// Set the adjective ending for prefix (e.g., "golden" becomes "golden" instead of "gold")
 	var/end_pr
 	switch (prefix_type)
 		if (1)
-			end_pr = genderize_ru(gender_name,"yy","aya","oye","yye") // Male, Female, Neuter, Plural endings
+			end_pr = genderize_ru(gender_name,"ый","ая","ое","ые") // Male, Female, Neuter, Plural endings
 		if (2)
-			end_pr = genderize_ru(gender_name,"oy","aya","oye","yye")
+			end_pr = genderize_ru(gender_name,"ой","ая","ое","ые")
 		if (3)
 			end_pr = ""
 
