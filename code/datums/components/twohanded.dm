@@ -241,7 +241,7 @@
 	if(istype(item))
 		item.wielded = TRUE
 
-	ADD_TRAIT(parent, TRAIT_WIELDED, src)
+	ADD_TRAIT(parent, TRAIT_WIELDED, ref(src))
 	RegisterSignal(user, COMSIG_MOB_SWAPPING_HANDS, PROC_REF(on_swapping_hands))
 	wield_callback?.Invoke(parent, user)
 
@@ -309,7 +309,7 @@
 	wielded = FALSE
 	UnregisterSignal(user, COMSIG_MOB_SWAPPING_HANDS)
 	SEND_SIGNAL(parent, COMSIG_TWOHANDED_UNWIELD, user)
-	REMOVE_TRAIT(parent, TRAIT_WIELDED, src)
+	REMOVE_TRAIT(parent, TRAIT_WIELDED, ref(src))
 	unwield_callback?.Invoke(parent, user)
 
 	// update item stats
@@ -450,12 +450,10 @@
  */
 /obj/item/twohanded/offhand
 	name = "offhand"
-	icon = 'icons/obj/items.dmi'
 	icon_state = "offhand"
 	w_class = WEIGHT_CLASS_HUGE
 	item_flags = ABSTRACT
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
-	wielded = FALSE // Off Hand tracking of wielded status
 
 /obj/item/twohanded/offhand/Initialize(mapload)
 	. = ..()

@@ -56,7 +56,6 @@
 	icon_state = "scanner_open"
 	density = TRUE
 	anchored = TRUE
-	use_power = IDLE_POWER_USE
 	idle_power_usage = 50
 	active_power_usage = 300
 	interact_offline = 1
@@ -139,10 +138,7 @@
 /obj/machinery/dna_scannernew/proc/eject_occupant(user, force)
 	go_out(user, force)
 	for(var/obj/O in src)
-		if(!istype(O,/obj/item/circuitboard/clonescanner) && \
-		   !istype(O,/obj/item/stock_parts) && \
-		   !istype(O,/obj/item/stack/cable_coil) && \
-		   O != beaker)
+		if(!istype(O,/obj/item/circuitboard/clonescanner) && !istype(O,/obj/item/stock_parts) && !istype(O,/obj/item/stack/cable_coil) && O != beaker)
 			O.forceMove(get_turf(src))//Ejects items that manage to get in there (exluding the components and beaker)
 	if(!occupant)
 		for(var/mob/M in src)//Failsafe so you can get mobs out
@@ -327,10 +323,8 @@
 /obj/machinery/computer/scan_consolenew
 	name = "DNA Modifier access console"
 	desc = "Консоль для работы с ДНК-модификатором."
-	icon = 'icons/obj/machines/computer.dmi'
 	icon_screen = "dna"
 	icon_keyboard = "med_key"
-	density = TRUE
 	circuit = /obj/item/circuitboard/scan_consolenew
 	var/selected_ui_block = 1.0
 	var/selected_ui_subblock = 1.0
@@ -346,8 +340,6 @@
 	var/obj/machinery/dna_scannernew/connected = null
 	var/obj/item/disk/data/disk = null
 	var/selected_menu_key = PAGE_UI
-	anchored = TRUE
-	use_power = IDLE_POWER_USE
 	idle_power_usage = 10
 	active_power_usage = 400
 
@@ -377,17 +369,20 @@
 	return ..()
 
 
-/obj/machinery/computer/scan_consolenew/New()
-	..()
+/obj/machinery/computer/scan_consolenew/Initialize(mapload)
+	. = ..()
 	for(var/i=0;i<3;i++)
 		buffers[i+1]=new /datum/dna2/record
-	spawn(5)
-		for(dir in list(NORTH,EAST,SOUTH,WEST))
-			connected = locate(/obj/machinery/dna_scannernew, get_step(src, dir))
-			if(!isnull(connected))
-				break
-		spawn(250)
-			injector_ready = TRUE
+	addtimer(CALLBACK(src, PROC_REF(find_machine)), 1 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(ready)), 25 SECONDS)
+
+/obj/machinery/computer/scan_consolenew/proc/find_machine()
+	for(var/obj/machinery/dna_scannernew/scanner in orange(1, src))
+		connected = scanner
+		return
+
+/obj/machinery/computer/scan_consolenew/proc/ready()
+	injector_ready = TRUE
 
 /obj/machinery/computer/scan_consolenew/proc/all_dna_blocks(list/buffer)
 	var/list/arr = list()
@@ -765,8 +760,8 @@
 
 					var/datum/dna2/record/buf = buffers[bufferId]
 
-					if((buf.types & DNA2_BUF_UI))
-						if((buf.types & DNA2_BUF_UE))
+					if(buf.types & DNA2_BUF_UI)
+						if(buf.types & DNA2_BUF_UE)
 							connected.occupant.real_name = buf.dna.real_name
 							connected.occupant.name = buf.dna.real_name
 						connected.occupant.UpdateAppearance(buf.dna.UI.Copy())

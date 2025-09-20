@@ -8,7 +8,6 @@
 	icon_living = "angel"
 	icon_dead = "angel"
 	gender = NEUTER
-	a_intent = INTENT_HARM
 	sentience_type = SENTIENCE_OTHER
 
 	response_help = "touches"
@@ -17,7 +16,7 @@
 	speed = -1
 	maxHealth = 50000
 	health = 50000
-	healable = 0
+	healable = FALSE
 
 	harm_intent_damage = 35
 	obj_damage = 100

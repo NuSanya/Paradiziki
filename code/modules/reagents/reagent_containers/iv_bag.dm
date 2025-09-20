@@ -178,6 +178,7 @@
 			return
 
 		var/trans = reagents.trans_to(target, amount_per_transfer_from_this)
+		after_transfer(target)
 		to_chat(user, span_notice("Вы перемещаете <b>[trans]</b> единиц[declension_ru(trans, "у", "ы", "")] вещества в [target.declent_ru(ACCUSATIVE)]."))
 
 	else if(istype(target, /obj/item/reagent_containers/glass) && !target.is_open_container())
@@ -298,7 +299,6 @@
 	blood_type = "O+"
 
 /obj/item/reagent_containers/iv_bag/blood/OMinus
-	blood_type = "O-"
 
 /obj/item/reagent_containers/iv_bag/blood/skrell
 	blood_species = "Skrell"

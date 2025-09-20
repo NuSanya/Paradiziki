@@ -478,9 +478,6 @@
 		else
 			return "<span class='notice'>[copytext_preserve_html(msg, 1, 57)]... <a href='byond://?src=[UID()];flavor_more=1'>More...</a></span>"
 
-/mob
-	var/newPlayerType = /mob/new_player
-
 /mob/verb/abandon_mob()
 	set name = "Возродиться"
 	set category = STATPANEL_OOC
@@ -1144,7 +1141,7 @@
 /world/proc/invoke_callback_with_usr(mob/user_mob, datum/callback/invoked_callback, ...)
 	var/temp = usr
 	usr = user_mob
-	if (length(args) > 2)
+	if(length(args) > 2)
 		. = invoked_callback.Invoke(arglist(args.Copy(3)))
 	else
 		. = invoked_callback.Invoke()
