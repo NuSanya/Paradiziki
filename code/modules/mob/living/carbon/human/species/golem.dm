@@ -132,25 +132,25 @@
  */
 /datum/species/golem/get_random_name()
 	// Determine random gender for the golem's NAME. If all chances fail, use default gender
-	if (prob(chance_name_male))
+	if(prob(chance_name_male))
 		gender_name = MALE
-	else if (prob(chance_name_female))
+	else if(prob(chance_name_female))
 		gender_name = FEMALE
-	else if (prob(chance_name_neuter))
+	else if(prob(chance_name_neuter))
 		gender_name = NEUTER
 
 	var/golem_surname // Golem's name
 
 	// Initially select a random golem name like "Andesite"
-	switch (gender_name)
-		if (MALE)
-			if (length(GLOB.golem_male)) // BYOND has a habit of file failures. We check file length to prevent this
+	switch(gender_name)
+		if(MALE)
+			if(length(GLOB.golem_male)) // BYOND has a habit of file failures. We check file length to prevent this
 				golem_surname = "[pick(GLOB.golem_male)]"
-		if (FEMALE)
-			if (length(GLOB.golem_female))
+		if(FEMALE)
+			if(length(GLOB.golem_female))
 				golem_surname = "[pick(GLOB.golem_female)]"
-		if (NEUTER)
-			if (length(GLOB.golem_neuter))
+		if(NEUTER)
+			if(length(GLOB.golem_neuter))
 				golem_surname = "[pick(GLOB.golem_neuter)]"
 
 	// 10% chance to choose a special name, or use one if no name has been selected yet
@@ -162,27 +162,27 @@
 	// The game still doesn't consider empty string elements != null, hence this check
 	if(prob(human_surname_chance) || (golem_surname == null) || golem_surname == "" || golem_surname == " ")
 		switch (gender_name)
-			if (MALE)
-				if (prob(50)) // Choose male first name or last name
+			if(MALE)
+				if(prob(50)) // Choose male first name or last name
 					golem_surname = pick(GLOB.first_names_male)
 				else
 					golem_surname = pick(GLOB.last_names)
-			if (FEMALE)
-				if (prob(50)) // Choose female first name or last name
+			if(FEMALE)
+				if(prob(50)) // Choose female first name or last name
 					golem_surname = pick(GLOB.first_names_female)
 				else
 					golem_surname = pick(GLOB.last_names_female)
-			if (NEUTER)
+			if(NEUTER)
 				golem_surname = pick("Нечто", "Чудо") // Neuter gender golem
 
 	// Set the adjective ending for prefix (e.g., "golden" becomes "golden" instead of "gold")
 	var/end_pr
-	switch (prefix_type)
-		if (1)
+	switch(prefix_type)
+		if(1)
 			end_pr = genderize_ru(gender_name,"ый","ая","ое","ые") // Male, Female, Neuter, Plural endings
-		if (2)
+		if(2)
 			end_pr = genderize_ru(gender_name,"ой","ая","ое","ые")
-		if (3)
+		if(3)
 			end_pr = ""
 
 	// Genderize the adjective prefix and append our gender-specific name
@@ -213,7 +213,7 @@
 /datum/species/golem/get_vision_organ(mob/living/carbon/human/user)
 	return NO_VISION_ORGAN
 
-/datum/species/golem/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+/datum/species/golem/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
 	..()
 	return item.golem_attackby(src, source, user, params)
 
@@ -440,7 +440,6 @@
 		NEUTER = list("Украшение", "Кольцо")
 		)
 	chance_name_male = 70
-	chance_name_female = 60
 	chance_name_neuter = 10
 	special_name_chance = 40
 
@@ -590,7 +589,6 @@
 		NEUTER = null
 		)
 	special_name_chance = 40
-	chance_name_male = 80
 	chance_name_female = 30
 
 	suitable_materials_for_heal = list(/obj/item/stack/sheet/mineral/abductor)
@@ -659,7 +657,6 @@
 		NEUTER = list("Красное Дерево", "Редкое Дерево", "Древо")
 		)
 	human_surname_chance = 0
-	chance_name_male = 80
 	chance_name_female = 70
 	special_name_chance = 100
 
@@ -715,7 +712,6 @@
 		FEMALE = list("Яркость", "Светлость", "Яркость"),
 		NEUTER = list("Сияние", "Светило")
 		)
-	chance_name_male = 80
 	chance_name_female = 40
 	chance_name_neuter = 10
 	special_name_chance = 60
@@ -980,7 +976,6 @@
 	name = "Нестабильный телепорт"
 	check_flags = AB_CHECK_CONSCIOUS|AB_CHECK_INCAPACITATED
 	button_icon_state = "blink"
-	icon_icon = 'icons/mob/actions/actions.dmi'
 	var/activated = FALSE // To prevent spamming
 	var/cooldown = 150
 	var/last_teleport = 0
@@ -1205,7 +1200,6 @@
 	)
 	speed_mod = 0
 	chance_name_male = 70
-	chance_name_female = 60
 	chance_name_neuter = 10
 	special_name_chance = 40
 

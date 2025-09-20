@@ -88,7 +88,7 @@
 /datum/species/monkey/can_understand(mob/other)
 	return istype(other, /mob/living/simple_animal/hostile/gorilla)
 
-/datum/species/monkey/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+/datum/species/monkey/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
 	..()
 	return item.monkey_attackby(src, source, user, params)
 

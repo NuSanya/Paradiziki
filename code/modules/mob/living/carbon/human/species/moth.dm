@@ -185,7 +185,7 @@
 	if(H.has_status_effect(STATUS_EFFECT_BURNT_WINGS))
 		return COMSIG_HUMAN_NO_CHANGE_APPEARANCE
 
-/datum/species/moth/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+/datum/species/moth/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
 	..()
 	return item.moth_attackby(src, source, user, params)
 

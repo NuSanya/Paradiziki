@@ -156,7 +156,7 @@
 		H.adjustBruteLoss(2)
 	..()
 
-/datum/species/diona/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+/datum/species/diona/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
 	..()
 	return item.diona_attackby(src, source, user, params)
 

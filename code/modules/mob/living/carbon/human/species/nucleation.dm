@@ -97,6 +97,6 @@
 
 	qdel(human)
 
-/datum/species/nucleation/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+/datum/species/nucleation/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
 	..()
 	return item.nucleation_attackby(src, source, user, params)

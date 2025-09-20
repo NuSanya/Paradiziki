@@ -166,7 +166,7 @@
 				H.AdjustSleeping(4 SECONDS)
 				to_chat(H, span_danger("Слишком холодно, я засыпаю..."))
 
-/datum/species/unathi/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+/datum/species/unathi/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
 	..()
 	return item.unathi_attackby(src, source, user, params)
 

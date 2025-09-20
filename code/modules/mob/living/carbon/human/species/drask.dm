@@ -209,7 +209,7 @@
 	. = ..()
 	. += DRASK_PITCH_SHIFT
 
-/datum/species/drask/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+/datum/species/drask/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
 	..()
 	return item.drask_attackby(src, source, user, params)
 

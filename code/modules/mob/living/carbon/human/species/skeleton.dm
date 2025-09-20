@@ -90,6 +90,6 @@
 /datum/species/skeleton/get_vision_organ(mob/living/carbon/human/user)
 	return NO_VISION_ORGAN
 
-/datum/species/skeleton/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+/datum/species/skeleton/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
 	..()
 	return item.skeleton_attackby(src, source, user, params)

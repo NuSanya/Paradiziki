@@ -451,6 +451,11 @@
 	fingerprintshidden	= material.fingerprintshidden
 	fingerprintslast	= material.fingerprintslast
 
+/**
+ * Stack item attackby behaviour override for golem healing
+ *
+ * Makes sure we can heal the current chosen limb.
+ */
 /obj/item/stack/golem_attackby(datum/species/golem/species, mob/living/carbon/human/target, mob/user, params)
 	if(user.a_intent != INTENT_HELP)
 		return
@@ -484,6 +489,8 @@
 		user.balloon_alert(user, "недостаточно материала!")
 		return
 
+	user.changeNext_move(CLICK_CD_MELEE)
+
 	if(target == user)
 		user.balloon_alert(user, "лечение...")
 		user.visible_message(
@@ -504,7 +511,7 @@
  * Basically a copy of gauze/ointment mechanics, but heals both brute and burn damages.
  */
 /obj/item/stack/proc/heal_golem(mob/living/carbon/human/target, mob/living/user, obj/item/organ/external/bodypart, heal_amount)
-	user.balloon_alert("вылечено!")
+	user.balloon_alert(user, "вылечено!")
 	heal_message(target, user, bodypart)
 	var/remheal = max(0, heal_amount * 2 - (bodypart.brute_dam + bodypart.burn_dam)) // Maxed with 0 since heal_damage let you pass in a negative value
 	var/nremheal = remheal
