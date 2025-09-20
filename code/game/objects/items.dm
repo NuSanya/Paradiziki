@@ -1413,3 +1413,93 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 		delta += addition
 
 	return force + delta
+
+/**
+ * Item attackby override procs based on species used in /datum/species/proc/spec_attackby.
+ *
+ * Override as needed. Return COMPONENT_CANCEL_ATTACK_CHAIN on success.
+ */
+
+/// Override proc to change the way an item attacks an abductor.
+/obj/item/proc/abductor_attackby(datum/species/abductor/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a diona.
+/obj/item/proc/diona_attackby(datum/species/diona/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a drask.
+/obj/item/proc/drask_attackby(datum/species/drask/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a golem.
+/obj/item/proc/golem_attackby(datum/species/golem/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a grey.
+/obj/item/proc/grey_attackby(datum/species/grey/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a human.
+/obj/item/proc/human_attackby(datum/species/human/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a kidan.
+/obj/item/proc/kidan_attackby(datum/species/kidan/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a machine.
+/obj/item/proc/machine_attackby(datum/species/machine/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a monkey.
+/obj/item/proc/monkey_attackby(datum/species/monkey/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a moth.
+/obj/item/proc/moth_attackby(datum/species/moth/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a nucleation.
+/obj/item/proc/nucleation_attackby(datum/species/nucleation/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a plasmaman.
+/obj/item/proc/plasmaman_attackby(datum/species/plasmaman/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a shadow.
+/obj/item/proc/shadow_attackby(datum/species/shadow/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a skeleton.
+/obj/item/proc/skeleton_attackby(datum/species/skeleton/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a skrell.
+/obj/item/proc/skrell_attackby(datum/species/skrell/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a slime.
+/obj/item/proc/slime_attackby(datum/species/slime/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a tajaran.
+/obj/item/proc/tajaran_attackby(datum/species/tajaran/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks an unathi.
+/obj/item/proc/unathi_attackby(datum/species/unathi/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a vox.
+/obj/item/proc/vox_attackby(datum/species/vox/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a vulpkanin.
+/obj/item/proc/vulpkanin_attackby(datum/species/vulpkanin/species, mob/living/carbon/human/target, mob/user, params)
+	return
+
+/// Override proc to change the way an item attacks a wryn.
+/obj/item/proc/wryn_attackby(datum/species/wryn/species, mob/living/carbon/human/target, mob/user, params)
+	return

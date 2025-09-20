@@ -160,6 +160,10 @@
 /datum/species/slime/get_vision_organ(mob/living/carbon/human/user)
 	return NO_VISION_ORGAN
 
+/datum/species/slime/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	..()
+	return item.slime_attackby(src, source, user, params)
+
 
 /datum/action/innate/slimecolor
 	name = "Изменить цвет слизи"

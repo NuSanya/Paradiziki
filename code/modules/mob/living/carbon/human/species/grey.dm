@@ -167,6 +167,9 @@
 
 	return COMSIG_SINK_ACT_SUCCESS
 
+/datum/species/grey/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	..()
+	return item.grey_attackby(src, source, user, params)
 
 #undef GREYS_ADDITIONAL_GENE_STABILITY
 #undef GREYS_WATER_DAMAGE

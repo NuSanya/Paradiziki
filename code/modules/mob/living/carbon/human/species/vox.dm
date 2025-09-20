@@ -200,6 +200,9 @@
 /datum/species/vox/get_emote_pitch(mob/living/carbon/human/H, tolerance)
 	return 1 + (0.01*rand(-tolerance,tolerance))
 
+/datum/species/vox/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	..()
+	return item.vox_attackby(src, source, user, params)
 
 /datum/species/vox/armalis
 	name = SPECIES_VOX_ARMALIS

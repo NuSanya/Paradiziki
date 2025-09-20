@@ -96,3 +96,7 @@
 	remove_verb(H, /mob/living/carbon/human/proc/emote_swag)
 	remove_verb(H, /mob/living/carbon/human/proc/emote_howl)
 	remove_verb(H, /mob/living/carbon/human/proc/emote_growl)
+
+/datum/species/vulpkanin/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	..()
+	return item.vulpkanin_attackby(src, source, user, params)

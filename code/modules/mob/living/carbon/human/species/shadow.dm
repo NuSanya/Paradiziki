@@ -112,6 +112,10 @@
 		return FALSE
 	return TRUE
 
+/datum/species/shadow/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	..()
+	return item.shadow_attackby(src, source, user, params)
+
 #undef LIGHT_AMOUNT_HEAL
 #undef LIGHT_AMOUNT_DAMAGE
 #undef TIME_TO_EMPOWER

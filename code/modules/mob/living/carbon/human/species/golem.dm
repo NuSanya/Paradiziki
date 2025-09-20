@@ -79,7 +79,7 @@
 	var/golem_colour = rgb(170, 170, 170)
 
 	/// Description text shown to players when they become this golem type
-	var/info_text = "Будучи [span_danger("железным големом")], вы не обладаете отличительными особенностями."
+	var/info_text = "Будучи <span class='danger'>железным големом</span>, вы не обладаете отличительными особенностями."
 
 	/// Whether this golem species is eligible for random selection
 	var/random_eligible = TRUE
@@ -212,6 +212,10 @@
 
 /datum/species/golem/get_vision_organ(mob/living/carbon/human/user)
 	return NO_VISION_ORGAN
+
+/datum/species/golem/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	..()
+	return item.golem_attackby(src, source, user, params)
 
 /**
  * Attack on golems override

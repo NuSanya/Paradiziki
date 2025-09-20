@@ -96,3 +96,7 @@
 	explosion(turf, devastation_range = 0, heavy_impact_range = 0, light_impact_range = 3, flash_range = 6, cause = human) // Create a small explosion burst upon death
 
 	qdel(human)
+
+/datum/species/nucleation/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	..()
+	return item.nucleation_attackby(src, source, user, params)

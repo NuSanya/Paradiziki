@@ -109,6 +109,10 @@
 		var/obj/item/organ/internal/wryn/hivenode/node = H.get_int_organ(/obj/item/organ/internal/wryn/hivenode)
 		qdel(node)
 
+/datum/species/wryn/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	..()
+	return item.wryn_attackby(src, source, user, params)
+
 /* Wryn Sting Action Begin */
 
 /datum/action/innate/wryn

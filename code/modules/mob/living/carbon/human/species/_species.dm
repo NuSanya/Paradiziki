@@ -418,6 +418,18 @@
 	gain_muscles(target, STRENGTH_LEVEL_DEFAULT, STRENGTH_LEVEL_MAXDEFAULT, TRUE)
 	target.update_body(TRUE)
 
+	RegisterSignal(target, COMSIG_PARENT_ATTACKBY, PROC_REF(spec_attackby))
+
+/**
+ * Item attackby override on the species holder.
+ *
+ * Returns an item proc based on existing species. Example: item.golem_attackby(...)
+ * Make sure to add a new proc for a new species.
+ */
+/datum/species/proc/spec_attackby(obj/item/item, mob/living/carbon/human/source, mob/living/user, params)
+	SIGNAL_HANDLER
+	return
+
 
 /datum/species/proc/gain_muscles(mob/living/carbon/human/target, default, max_level, can_become_stronger = TRUE)
 	target.AddComponent(/datum/component/muscles, max_level, default, can_become_stronger)
@@ -447,6 +459,8 @@
 			human.faction -= i
 
 	qdel(human?.GetComponent(/datum/component/muscles))
+
+	UnregisterSignal(human, COMSIG_PARENT_ATTACKBY)
 
 
 /datum/species/proc/updatespeciescolor(mob/living/carbon/human/H) //Handles changing icobase for species that have multiple skin colors.
