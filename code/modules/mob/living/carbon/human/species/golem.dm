@@ -161,7 +161,7 @@
 	// 5% chance to choose a human first or last name, or if golem still doesn't have a name
 	// The game still doesn't consider empty string elements != null, hence this check
 	if(prob(human_surname_chance) || (golem_surname == null) || golem_surname == "" || golem_surname == " ")
-		switch (gender_name)
+		switch(gender_name)
 			if(MALE)
 				if(prob(50)) // Choose male first name or last name
 					golem_surname = pick(GLOB.first_names_male)
