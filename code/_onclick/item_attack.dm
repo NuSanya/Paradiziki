@@ -171,13 +171,6 @@
  * * skip_attack_anim - If TRUE will not animate hitting mob's attack
  */
 /obj/item/proc/attack(mob/living/target, mob/living/user, params, def_zone, skip_attack_anim = FALSE)
-	if(ishuman(target)) //species attack override handling
-		var/datum/species/target_species = target.dna?.species
-
-		var/item_attack_overridden = target_species?.spec_item_attack_override(src, target, user, params, def_zone, skip_attack_anim)
-		if(item_attack_overridden)
-			return item_attack_overridden
-
 	. = ATTACK_CHAIN_PROCEED
 
 	var/signal_out = SEND_SIGNAL(src, COMSIG_ITEM_ATTACK, target, user, params, def_zone)
