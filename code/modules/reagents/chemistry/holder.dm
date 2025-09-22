@@ -937,7 +937,7 @@
  */
 /datum/reagents/proc/get_average_clothing_pen()
 	var/clothing_pen = 0
-	for(var/datum/reagent/reagent in reagent_list)
+	for(var/datum/reagent/reagent as anything in reagent_list)
 		if(!reagent.clothing_penetration)
 			continue
 
