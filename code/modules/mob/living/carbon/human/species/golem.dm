@@ -299,7 +299,6 @@
 	)
 	material_heal = 25
 	amount_required_for_heal = 2
-	self_heal_delay = 2 SECONDS
 
 /datum/species/golem/plasma/handle_life(mob/living/carbon/human/H)
 	if(H.bodytemperature > 750)
@@ -480,7 +479,6 @@
 		/obj/item/stack/sheet/metal,
 		/obj/item/stack/sheet/plasteel,
 	)
-	amount_required_for_heal = 5
 
 /datum/unarmed_attack/golem/plasteel
 	attack_verb = list("ударил")
@@ -520,8 +518,7 @@
 		/obj/item/stack/sheet/mineral/titanium,
 	)
 	material_heal = 25
-	amount_required_for_heal = 2
-	self_heal_delay = 2 SECONDS
+	amount_required_for_heal = 3
 
 /**
  * Plastitanium Golem - Better Titanium
@@ -559,7 +556,6 @@
 		/obj/item/stack/sheet/mineral/plasma,
 		/obj/item/stack/sheet/mineral/plastitanium,
 	)
-	amount_required_for_heal = 5
 
 /**
  * Alien Alloy Golem - Best stats, but mute
@@ -836,7 +832,6 @@
 	special_name_chance = 50
 
 	heal_material_typelist = list(/obj/item/stack/sheet/glass)
-	material_heal = 20
 
 /datum/species/golem/glass/handle_death(gibbed, mob/living/carbon/human/H)
 	playsound(H, SFX_SHATTER, 70, TRUE)
