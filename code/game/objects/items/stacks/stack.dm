@@ -460,14 +460,7 @@
 	if(user.a_intent != INTENT_HELP)
 		return
 
-	var/found_material = FALSE
-	for(var/required_type as anything in species.suitable_materials_for_heal)
-		if(!istype(src, required_type))
-			continue
-		found_material = TRUE
-		break
-
-	if(!found_material)
+	if(!is_type_in_list(src, species.heal_material_typelist))
 		user.balloon_alert(user, "требуется другой материал!")
 		return
 
@@ -482,10 +475,7 @@
 		user.balloon_alert(user, "конечность вскрыта!")
 		return
 
-	if(!get_amount())
-		user.balloon_alert(user, "недостаточно материала!")
-		return
-	if(!use(species.amount_required_for_heal))
+	if(!get_amount() || !use(species.amount_required_for_heal))
 		user.balloon_alert(user, "недостаточно материала!")
 		return
 
