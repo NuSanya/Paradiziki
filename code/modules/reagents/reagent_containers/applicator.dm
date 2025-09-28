@@ -1,3 +1,6 @@
+/// How much of the overall reagent gets applied before loop
+#define APPLICATOR_PRE_LOOP_RATIO 0.2
+
 /obj/item/reagent_containers/applicator
 	name = "auto-mender"
 	desc = "Небольшое электронное устройство, предназначенное для местного применения лекарственных препаратов."
@@ -121,12 +124,13 @@
 
 	applying = TRUE
 	update_icon()
-	apply_to(target, user, 0.2 * reacting_to_applied_ratio, TRUE, def_zone) // We apply a very weak application up front, then loop.
+	apply_to(target, user, APPLICATOR_PRE_LOOP_RATIO * reacting_to_applied_ratio, TRUE, def_zone) // We apply a very weak application up front, then loop.
 	add_attack_logs(user, target, "Started mending with [src] containing ([reagents.log_list()])", (emagged && !(reagents.harmless_helper())) ? null : ATKLOG_ALMOSTALL)
 	var/cycle_count = 0
 
 	var/measured_health = 0
-	while(do_after(user, 10 * (2 - reacting_to_applied_ratio), target))
+	var/cycle_delay = (2 - reacting_to_applied_ratio) * (1 SECONDS)
+	while(do_after(user, cycle_delay, target))
 		measured_health = target.health
 		apply_to(target, user, reacting_to_applied_ratio, FALSE, def_zone)
 		if(measured_health == target.health)
@@ -202,3 +206,4 @@
 /obj/item/reagent_containers/applicator/dual/syndi // It magically goes through hardsuits. Don't ask how.
 	ignore_flags = TRUE
 
+#undef APPLICATOR_PRE_LOOP_RATIO

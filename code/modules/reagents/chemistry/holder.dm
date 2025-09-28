@@ -933,7 +933,7 @@
  * Returns the average clothing pen of all chemicals combined in src.
  *
  * Can be used if you are using a certain amount of all reagents in an object.
- * Values returned should be in a range from 0 to 1.
+ * Values returned are in a range from 0 to 1.
  */
 /datum/reagents/proc/get_average_clothing_pen()
 	var/clothing_pen = 0

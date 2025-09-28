@@ -487,7 +487,7 @@
 			span_notice("[user] начина[pluralize_ru(user.gender, "ет", "ют")] лечить свои раны на [genderize_ru(target.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [declent_ru(ACCUSATIVE)]."),
 			ignored_mobs = user
 		)
-		if(!do_after(user, species.self_heal_delay, target, DA_IGNORE_USER_LOC_CHANGE))
+		if(!do_after(user, species.self_heal_delay, target, DA_IGNORE_USER_LOC_CHANGE, max_interact_count = 1))
 			return
 
 	heal_golem(target, user, bodypart, species.material_heal)
