@@ -1,3 +1,5 @@
+GLOBAL_LIST_EMPTY(cached_heal_materials)
+
 /datum/species/golem
 	name = SPECIES_GOLEM_BASIC
 	name_plural = "Golems"
@@ -110,11 +112,6 @@
 	/// Reference to the golem's owner, if any (Dobby is a free golem reference)
 	var/owner
 
-	/// Material types that can be used to heal this golem
-	var/list/heal_material_typelist = list(
-		/obj/item/stack/ore/iron,
-		/obj/item/stack/sheet/metal,
-	)
 	/// Amount of damage healed when using the golem's native material
 	var/material_heal = 20
 	/// Amount of material required for each healing action
@@ -193,17 +190,24 @@
 		golem_name = "[prefix][end_pr] [golem_surname]"
 	return golem_name
 
-/datum/species/golem/on_species_gain(mob/living/carbon/human/H)
+/datum/species/golem/on_species_gain(mob/living/carbon/human/human)
 	. = ..()
-	if(H.mind)
-		H.mind.assigned_role = "Golem"
+	if(human.mind)
+		human.mind.assigned_role = "Golem"
 		if(owner)
-			H.mind.special_role = SPECIAL_ROLE_GOLEM
+			human.mind.special_role = SPECIAL_ROLE_GOLEM
 		else
-			H.mind.special_role = SPECIAL_ROLE_FREE_GOLEM
-	H.real_name = get_random_name()
-	H.name = H.real_name
-	to_chat(H, info_text)
+			human.mind.special_role = SPECIAL_ROLE_FREE_GOLEM
+	human.real_name = get_random_name()
+	human.name = human.real_name
+	to_chat(human, info_text)
+
+	var/list/heal_material_types_list = get_heal_material_types_cached()
+	human.AddElement(/datum/element/material_heal, heal_material_types_list, amount_required_for_heal, material_heal, self_heal_delay)
+
+/datum/species/golem/on_species_loss(mob/living/carbon/human/human)
+	. = ..()
+	human.RemoveElement(/datum/element/material_heal)
 
 
 /datum/species/golem/gain_muscles(mob/living/target, default, max_level, can_become_stronger)
@@ -213,9 +217,24 @@
 /datum/species/golem/get_vision_organ(mob/living/carbon/human/user)
 	return NO_VISION_ORGAN
 
-/datum/species/golem/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.golem_attackby(src, source, user, params)
+
+/// Returns a list of material types required for healing
+/datum/species/golem/proc/get_heal_material_types()
+	return list(
+		/obj/item/stack/ore/iron,
+		/obj/item/stack/sheet/metal,
+	)
+
+/// Copy of get_ru_names_cached for golem heal materials
+/datum/species/golem/proc/get_heal_material_types_cached()
+	var/list/heal_materials = GLOB.cached_heal_materials[type]
+	if(heal_materials)
+		return heal_materials
+	heal_materials = get_heal_material_types()
+	if(heal_materials)
+		GLOB.cached_heal_materials[type] = heal_materials
+		return heal_materials
+	return
 
 
 //Random Golem
@@ -266,9 +285,13 @@
 		NEUTER = null
 		)
 
-	heal_material_typelist = list(/obj/item/stack/sheet/mineral/adamantine)
 	material_heal = 40
 	amount_required_for_heal = 1
+
+/datum/species/golem/adamantine/get_heal_material_types()
+	return list(
+		/obj/item/stack/sheet/mineral/adamantine,
+	)
 
 /**
  * Plasma Golem - Explosive suicide bomber type
@@ -293,10 +316,6 @@
 		)
 	var/boom_warning = FALSE
 
-	heal_material_typelist = list(
-		/obj/item/stack/ore/plasma,
-		/obj/item/stack/sheet/mineral/plasma,
-	)
 	material_heal = 25
 	amount_required_for_heal = 2
 
@@ -332,6 +351,12 @@
 	. = ..()
 	var/datum/action/innate/ignite/ignite = locate() in H.actions
 	ignite?.Remove(H)
+
+/datum/species/golem/plasma/get_heal_material_types()
+	return list(
+		/obj/item/stack/ore/plasma,
+		/obj/item/stack/sheet/mineral/plasma,
+	)
 
 
 /datum/action/innate/ignite
@@ -377,13 +402,15 @@
 	chance_name_neuter = 10
 	special_name_chance = 60
 
-	heal_material_typelist = list(
-		/obj/item/stack/ore/diamond,
-		/obj/item/stack/sheet/mineral/diamond,
-	)
 	material_heal = 35
 	amount_required_for_heal = 2
 	self_heal_delay = 3 SECONDS
+
+/datum/species/golem/diamond/get_heal_material_types()
+	return list(
+		/obj/item/stack/ore/diamond,
+		/obj/item/stack/sheet/mineral/diamond,
+	)
 
 /**
  * Gold Golem - Faster but less durable type
@@ -412,12 +439,14 @@
 		)
 	special_name_chance = 80
 
-	heal_material_typelist = list(
+	material_heal = 25
+	amount_required_for_heal = 3
+
+/datum/species/golem/gold/get_heal_material_types()
+	return list(
 		/obj/item/stack/ore/gold,
 		/obj/item/stack/sheet/mineral/gold,
 	)
-	material_heal = 25
-	amount_required_for_heal = 3
 
 /**
  * Silver Golem - Stunner
@@ -440,12 +469,14 @@
 	chance_name_neuter = 10
 	special_name_chance = 40
 
-	heal_material_typelist = list(
+	material_heal = 25
+	amount_required_for_heal = 3
+
+/datum/species/golem/silver/get_heal_material_types()
+	return list(
 		/obj/item/stack/ore/silver,
 		/obj/item/stack/sheet/mineral/silver,
 	)
-	material_heal = 25
-	amount_required_for_heal = 3
 
 /**
  * Plasteel Golem - Very slow, high damage
@@ -472,7 +503,8 @@
 		)
 	unarmed_type = /datum/unarmed_attack/golem/plasteel
 
-	heal_material_typelist = list(
+/datum/species/golem/plasteel/get_heal_material_types()
+	return list(
 		/obj/item/stack/ore/iron,
 		/obj/item/stack/ore/plasma,
 		/obj/item/stack/sheet/mineral/plasma,
@@ -513,12 +545,14 @@
 		TRAIT_ASHSTORM_IMMUNE,
 	)
 
-	heal_material_typelist = list(
+	material_heal = 25
+	amount_required_for_heal = 3
+
+/datum/species/golem/titanium/get_heal_material_types()
+	return list(
 		/obj/item/stack/ore/titanium,
 		/obj/item/stack/sheet/mineral/titanium,
 	)
-	material_heal = 25
-	amount_required_for_heal = 3
 
 /**
  * Plastitanium Golem - Better Titanium
@@ -549,7 +583,9 @@
 		TRAIT_LAVA_IMMUNE,
 	)
 
-	heal_material_typelist = list(
+
+/datum/species/golem/plastitanium/get_heal_material_types()
+	return list(
 		/obj/item/stack/ore/titanium,
 		/obj/item/stack/ore/plasma,
 		/obj/item/stack/sheet/mineral/titanium,
@@ -580,7 +616,6 @@
 	special_name_chance = 40
 	chance_name_female = 30
 
-	heal_material_typelist = list(/obj/item/stack/sheet/mineral/abductor)
 	material_heal = 50
 	amount_required_for_heal = 1
 	self_heal_delay = 1 SECONDS
@@ -606,8 +641,13 @@
 	H.add_language(LANGUAGE_HIVE_GOLEM)
 	H.add_language(LANGUAGE_GREY) // Still grey enouhg to speak in psi link
 
+/datum/species/golem/alloy/get_heal_material_types()
+	return list(
+		/obj/item/stack/sheet/mineral/abductor
+	)
+
 /**
- * Wood Golem - Dionas, but bad
+ * Wood Golem
  *
  * Regenerates health slowly when in light.
  * Quite frail.
@@ -649,7 +689,6 @@
 	chance_name_female = 70
 	special_name_chance = 100
 
-	heal_material_typelist = list(/obj/item/stack/sheet/wood)
 	amount_required_for_heal = 3
 
 /datum/species/golem/wood/handle_life(mob/living/carbon/human/H)
@@ -683,6 +722,11 @@
 		return TRUE
 	return ..()
 
+/datum/species/golem/wood/get_heal_material_types()
+	return list(
+		/obj/item/stack/sheet/wood,
+	)
+
 /**
  * Uranium Golem - Free Grief Permit
  *
@@ -703,10 +747,6 @@
 	chance_name_neuter = 10
 	special_name_chance = 60
 
-	heal_material_typelist = list(
-		/obj/item/stack/ore/uranium,
-		/obj/item/stack/sheet/mineral/uranium,
-	)
 	material_heal = 25
 	amount_required_for_heal = 3
 
@@ -718,6 +758,12 @@
 		if(prob(25)) // Reduce spam
 			to_chat(victim, span_danger("Вас окутывает мягкое зелёное свечение, исходящее от [user]."))
 	..()
+
+/datum/species/golem/uranium/get_heal_material_types()
+	return list(
+		/obj/item/stack/ore/uranium,
+		/obj/item/stack/sheet/mineral/uranium,
+	)
 
 /**
  * Plastic Golem - Ventcrawlers
@@ -746,10 +792,14 @@
 	skinned_type = /obj/item/stack/sheet/plastic
 	info_text = "Будучи <span class='danger'>пластиковым големом</span>, вы способны ползать по вентиляции, если вы раздеты."
 
-	heal_material_typelist = list(/obj/item/stack/sheet/plastic)
 	material_heal = 40
 	amount_required_for_heal = 4
 	self_heal_delay = 1 SECONDS
+
+/datum/species/golem/plastic/get_heal_material_types()
+	return list(
+		/obj/item/stack/sheet/plastic,
+	)
 
 /**
  * Sand Golem - Bulletproof
@@ -777,7 +827,6 @@
 		)
 	special_name_chance = 30
 
-	heal_material_typelist = list(/obj/item/stack/ore/glass)
 	material_heal = 25
 	self_heal_delay = 1 SECONDS
 
@@ -798,6 +847,12 @@
 			projectile_message = TRUE)
 			return FALSE
 	return TRUE
+
+/datum/species/golem/sand/get_heal_material_types()
+	return list(
+		/obj/item/stack/ore/glass,
+		/obj/item/stack/ore/glass/basalt,
+	)
 
 /datum/unarmed_attack/golem/sand
 	attack_sound = 'sound/effects/shovel_dig.ogg'
@@ -831,8 +886,6 @@
 	chance_name_neuter = 30
 	special_name_chance = 50
 
-	heal_material_typelist = list(/obj/item/stack/sheet/glass)
-
 /datum/species/golem/glass/handle_death(gibbed, mob/living/carbon/human/H)
 	playsound(H, SFX_SHATTER, 70, TRUE)
 	H.visible_message(span_danger("[H] разбил[genderize_ru(H.gender,"ся","ась","ось","ись")] в дребезги!"))
@@ -853,6 +906,12 @@
 
 			return FALSE
 	return TRUE
+
+/datum/species/golem/sand/get_heal_material_types()
+	return list(
+		/obj/item/stack/sheet/glass,
+		/obj/item/stack/sheet/plasmaglass,
+	)
 
 /datum/unarmed_attack/golem/glass
 	attack_sound = 'sound/effects/glassbr2.ogg'
@@ -882,10 +941,6 @@
 	var/last_teleport = 0
 	var/tele_range = 6
 
-	heal_material_typelist = list(
-		/obj/item/stack/ore/bluespace_crystal,
-		/obj/item/stack/sheet/bluespace_crystal,
-	)
 	material_heal = 35
 	amount_required_for_heal = 2
 	self_heal_delay = 1 SECONDS
@@ -952,6 +1007,12 @@
 	. = ..()
 	var/datum/action/innate/unstable_teleport/unstable_teleport = locate() in H.actions
 	unstable_teleport?.Remove(H)
+
+/datum/species/golem/bluespace/get_heal_material_types()
+	return list(
+		/obj/item/stack/ore/bluespace_crystal,
+		/obj/item/stack/sheet/bluespace_crystal,
+	)
 
 
 /datum/action/innate/unstable_teleport
@@ -1035,10 +1096,6 @@
 	var/banana_cooldown = 100
 	var/active = null
 
-	heal_material_typelist = list(
-		/obj/item/stack/ore/bananium,
-		/obj/item/stack/sheet/mineral/bananium,
-	)
 	material_heal = 80 // honk
 	amount_required_for_heal = 2
 	self_heal_delay = 1 SECONDS
@@ -1111,6 +1168,12 @@
 /datum/species/golem/bananium/handle_death(gibbed, mob/living/carbon/human/H)
 	playsound(get_turf(H), 'sound/misc/sadtrombone.ogg', 70, FALSE)
 
+/datum/species/golem/bananium/get_heal_material_types()
+	return list(
+		/obj/item/stack/ore/bananium,
+		/obj/item/stack/sheet/mineral/bananium,
+	)
+
 /datum/unarmed_attack/golem/bananium
 	attack_verb = list("хонкнул")
 	attack_sound = 'sound/items/airhorn2.ogg'
@@ -1135,10 +1198,6 @@
 	info_text = "Будучи <span class='danger'>транквилитовым големом</span>, вы можете создавать невидимые стены и регенерировать, выпивая бутылки с ничем."
 	unarmed_type = /datum/unarmed_attack/golem/tranquillite
 
-	heal_material_typelist = list(
-		/obj/item/stack/ore/tranquillite,
-		/obj/item/stack/sheet/mineral/tranquillite,
-	)
 	material_heal = 40
 	amount_required_for_heal = 1
 
@@ -1156,6 +1215,12 @@
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/aoe/conjure/build/mime_wall(null))
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/mime/speak(null))
 		H.mind.miming = TRUE
+
+/datum/species/golem/tranquillite/get_heal_material_types()
+	return list(
+		/obj/item/stack/ore/tranquillite,
+		/obj/item/stack/sheet/mineral/tranquillite,
+	)
 
 /datum/unarmed_attack/golem/tranquillite
 	attack_sound = null
@@ -1184,7 +1249,6 @@
 	chance_name_neuter = 10
 	special_name_chance = 40
 
-	heal_material_typelist = list(/obj/item/stack/sheet/brass)
 	material_heal = 40
 	amount_required_for_heal = 2
 	self_heal_delay = 1 SECONDS
@@ -1200,3 +1264,8 @@
 		H.drop_item_ground(W)
 	new /obj/item/clockwork/clockgolem_remains(get_turf(H))
 	H.dust() // One-try only
+
+/datum/species/golem/clockwork/get_heal_material_types()
+	return list(
+		/obj/item/stack/sheet/brass,
+	)

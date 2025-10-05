@@ -1,0 +1,196 @@
+/**
+ * # Stack item heal element
+ *
+ * This element allows the carbon mob to get healed, or
+ * heal themselves, using specific stack items (subtypes dont count).
+ * Healing is identical to gauze/ointment.
+ */
+/datum/element/material_heal
+	element_flags = ELEMENT_DETACH_ON_HOST_DESTROY|ELEMENT_BESPOKE
+	argument_hash_start_idx = 2
+
+	/// What materials do we heal from
+	var/list/material_list
+	/// How much of the material does it take to heal
+	var/material_amount
+	/// How much do we heal from said material
+	var/heal_amount
+	/// How long does it take to heal ourselves
+	var/heal_delay
+
+/datum/element/material_heal/Attach(mob/living/carbon/target, list/material_list, material_amount, heal_amount, heal_delay)
+	. = ..()
+
+	if(!istype(target))
+		return ELEMENT_INCOMPATIBLE
+
+	if(!list_check(material_list))
+		return ELEMENT_INCOMPATIBLE
+	if(!(material_amount && heal_amount && heal_delay))
+		return ELEMENT_INCOMPATIBLE
+
+	src.material_list = material_list
+	src.material_amount = material_amount
+	src.heal_amount = heal_amount
+	src.heal_delay = heal_delay
+
+	RegisterSignal(target, COMSIG_PARENT_ATTACKBY, PROC_REF(on_attackby))
+
+/// Proc used to check the list for any types other than obj/item/stack
+/datum/element/material_heal/proc/list_check(list/material_list)
+	if(!LAZYLEN(material_list))
+		return FALSE
+
+	. = TRUE
+	for(var/entry_path in material_list)
+		if(!ispath(entry_path, /obj/item/stack))
+			return FALSE
+
+/datum/element/material_heal/Detach(mob/living/carbon/target)
+	. = ..()
+
+	UnregisterSignal(target, COMSIG_PARENT_ATTACKBY)
+
+/// Main signal proc. Signal is called in atom/proc/attackby()
+/datum/element/material_heal/proc/on_attackby(mob/living/carbon/source, obj/item/stack/item, mob/living/user, params)
+	SIGNAL_HANDLER
+
+	var/obj/item/organ/external/bodypart = source.get_organ(check_zone(user.zone_selected))
+	if(!heal_checks(source, item, bodypart, user, params))
+		return
+
+	. = COMPONENT_CANCEL_ATTACK_CHAIN
+
+	user.changeNext_move(CLICK_CD_MELEE)
+
+	// This is separated into two (healing ourselves and not) because of proc/endlag in proc/do_after,
+	// which can't be used in procs with SHOULD_NOT_SLEEP(TRUE)
+	if(source != user)
+		stack_heal(source, user, bodypart, item)
+		source.UpdateDamageIcon()
+		return .
+
+	if(LAZYACCESS(user.do_afters, src)) // Check if we are trying to heal ourselves while already trying
+		return .
+
+	INVOKE_ASYNC(src, PROC_REF(self_stack_heal), item, bodypart, user, params)
+
+/// Proc used for checking healing requirements
+/datum/element/material_heal/proc/heal_checks(mob/living/carbon/source, obj/item/stack/item, obj/item/organ/external/bodypart, mob/living/user, params)
+	. = FALSE
+	if(user.a_intent != INTENT_HELP)
+		return .
+
+	if(!isstack(item)) // To avoid weird balloon alerts
+		return .
+
+	if(!is_type_in_list(item, material_list))
+		user.balloon_alert(user, "требуется другой материал!")
+		return .
+
+	if(!bodypart)
+		user.balloon_alert(user, "нет такой конечности!")
+		return .
+	if(bodypart.is_robotic())
+		user.balloon_alert(user, "конечность роботическая!")
+		return .
+	if(bodypart.open != ORGAN_CLOSED)
+		user.balloon_alert(user, "конечность вскрыта!")
+		return .
+
+	if(!item.get_amount() || !item.amount >= material_amount) // Stack amount is spent later
+		user.balloon_alert(user, "недостаточно материала!")
+		return .
+
+	return TRUE
+
+/**
+ * # The material_heal element heal proc
+ *
+ * Basically a copy of gauze/ointment mechanics, but heals both brute and burn damages.
+ */
+/datum/element/material_heal/proc/stack_heal(mob/living/carbon/target, mob/living/user, obj/item/organ/external/bodypart, obj/item/stack/item)
+	if(!item.use(material_amount)) // Rare to happen, but can happen. Example: Start healing ourselves, heal somebody else using all material.
+		return
+
+	user.balloon_alert(user, "вылечено!")
+	heal_message(target, user, bodypart, item)
+
+	var/bodypart_damage_was = bodypart.brute_dam + bodypart.burn_dam
+
+	bodypart.heal_damage(heal_amount, heal_amount, updating_health = FALSE)
+
+	var/should_update_health = FALSE
+	if(bodypart.brute_dam + bodypart.burn_dam != bodypart_damage_was)
+		should_update_health = TRUE
+
+	if(stack_children_heal(target, user, bodypart, item))
+		should_update_health = TRUE
+
+	if(should_update_health)
+		target.updatehealth("[item.name] heal")
+
+	target.UpdateDamageIcon()
+
+/**
+ * # Subproc of stack_heal proc
+ *
+ * Heals bodypart's children using remaining medication.
+ * Returns TRUE if any bodypart was successfully healed.
+ */
+/datum/element/material_heal/proc/stack_children_heal(mob/living/carbon/target, mob/living/user, obj/item/organ/external/bodypart, obj/item/item)
+	var/remheal = max(0, heal_amount * 2 - (bodypart.brute_dam + bodypart.burn_dam)) // Maxed with 0 since heal_damage let you pass in a negative value
+	var/nremheal = remheal
+
+	var/list/achildlist
+	if(LAZYLEN(bodypart.children))
+		achildlist = bodypart.children.Copy()
+	var/parenthealed = FALSE
+
+	while(remheal > 0) // Don't bother if there's not enough leftover heal
+		var/obj/item/organ/external/bodypart_child
+		if(LAZYLEN(achildlist))
+			bodypart_child = pick_n_take(achildlist) // Pick a random children and then remove it from the list
+		else if(bodypart.parent && !parenthealed) // If there's a parent and no healing attempt was made on it
+			bodypart_child = bodypart.parent
+			parenthealed = TRUE
+		else
+			break // If the organ have no child left and no parent / parent healed, break
+		if(bodypart_child.is_robotic() || bodypart_child.open) // Ignore robotic or open limb
+			continue
+		else if(!bodypart_child.brute_dam && !bodypart_child.burn_dam) // Ignore undamaged limb
+			continue
+		nremheal = max(0, remheal - (bodypart_child.brute_dam + bodypart_child.burn_dam)) // Deduct the healed damage from the remain
+		var/damage_was = bodypart_child.brute_dam + bodypart_child.burn_dam
+		bodypart_child.heal_damage(remheal, remheal, updating_health = FALSE)
+		if(bodypart.brute_dam + bodypart.burn_dam != damage_was)
+			. = TRUE
+		remheal = nremheal
+		heal_message(target, user, bodypart_child, item)
+
+/// Async proc used for delaying healing ourselves (because of endlag proc in do_after)
+/datum/element/material_heal/proc/self_stack_heal(obj/item/stack/item, obj/item/organ/external/bodypart, mob/living/user, params)
+	user.balloon_alert(user, "лечение...")
+	user.visible_message(
+		span_notice("[user] начина[pluralize_ru(user.gender, "ет", "ют")] лечить свои раны на [genderize_ru(user.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [item.declent_ru(ACCUSATIVE)]."),
+		ignored_mobs = user
+	)
+
+	if(!do_after(user, heal_delay, user, DA_IGNORE_USER_LOC_CHANGE, interaction_key = src, max_interact_count = 1))
+		return
+
+	stack_heal(user, user, bodypart, item)
+	user.UpdateDamageIcon()
+
+/**
+ * Shows healing message for golem repair
+ *
+ * Varies depending on if we are healing ourselves, or someone else
+ */
+/datum/element/material_heal/proc/heal_message(mob/living/carbon/target, mob/living/user, obj/item/organ/external/bodypart, obj/item/item)
+	if(user == target)
+		user.visible_message(span_green("[user] залечива[pluralize_ru(user.gender, "ет", "ют")] раны на [genderize_ru(target.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [item.declent_ru(ACCUSATIVE)]."), \
+							ignored_mobs = user)
+	else
+		user.visible_message(span_green("[user] залечива[pluralize_ru(user.gender, "ет", "ют")] раны [target] на [genderize_ru(target.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [item.declent_ru(ACCUSATIVE)]."), \
+							ignored_mobs = user)

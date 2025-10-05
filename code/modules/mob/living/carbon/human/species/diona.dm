@@ -156,10 +156,6 @@
 		H.adjustBruteLoss(2)
 	..()
 
-/datum/species/diona/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.diona_attackby(src, source, user, params)
-
 /datum/species/diona/pod //Same name and everything; we want the same limitations on them; we just want their regeneration to kick in at all times and them to have special factions
 	pod = TRUE
 	inherent_factions = list("plants", "vines")

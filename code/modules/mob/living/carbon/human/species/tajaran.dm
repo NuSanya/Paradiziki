@@ -117,7 +117,3 @@
 	remove_verb(H, /mob/living/carbon/human/proc/emote_purr)
 	remove_verb(H, /mob/living/carbon/human/proc/emote_purrl)
 	remove_verb(H, /mob/living/carbon/human/proc/emote_hiss_tajaran)
-
-/datum/species/tajaran/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.tajaran_attackby(src, source, user, params)

@@ -60,7 +60,3 @@
 	. = ..()
 	var/datum/atom_hud/abductor_hud = GLOB.huds[DATA_HUD_ABDUCTOR]
 	abductor_hud.hide_from(H)
-
-/datum/species/abductor/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.abductor_attackby(src, source, user, params)

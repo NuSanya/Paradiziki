@@ -149,10 +149,6 @@ GLOBAL_LIST_EMPTY(slime_actions)
 /datum/species/slime/get_vision_organ(mob/living/carbon/human/user)
 	return NO_VISION_ORGAN
 
-/datum/species/slime/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.slime_attackby(src, source, user, params)
-
 /datum/action/innate/slime_people_action
 	name = "Манипуляция над собой"
 	check_flags = AB_CHECK_CONSCIOUS

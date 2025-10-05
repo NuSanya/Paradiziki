@@ -156,6 +156,3 @@
 		return TRUE
 	return ..()
 
-/datum/species/skrell/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.skrell_attackby(src, source, user, params)

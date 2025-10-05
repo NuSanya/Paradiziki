@@ -213,7 +213,3 @@
 
 /datum/species/machine/get_emote_pitch(mob/living/carbon/human/H, tolerance)
 	return 1 + (0.01*rand(-tolerance,tolerance))
-
-/datum/species/machine/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.machine_attackby(src, source, user, params)

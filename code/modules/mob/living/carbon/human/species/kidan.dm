@@ -178,9 +178,6 @@
 	var/datum/action/innate/produce_pheromones/produce_pheromones = locate() in H.actions
 	produce_pheromones?.Remove(H)
 
-/datum/species/kidan/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.kidan_attackby(src, source, user, params)
 
 /// Pheromones spawnable by kida, only perceivable by other kida
 /obj/effect/kidan_pheromones

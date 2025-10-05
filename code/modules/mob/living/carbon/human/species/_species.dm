@@ -418,18 +418,6 @@
 	gain_muscles(target, STRENGTH_LEVEL_DEFAULT, STRENGTH_LEVEL_MAXDEFAULT, TRUE)
 	target.update_body(TRUE)
 
-	RegisterSignal(target, COMSIG_PARENT_ATTACKBY, PROC_REF(spec_attackby))
-
-/**
- * Item attackby override on the species holder.
- *
- * Returns an item proc based on existing species. Example: item.golem_attackby(...)
- * Make sure to add a new proc for a new species.
- */
-/datum/species/proc/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	SIGNAL_HANDLER
-	return
-
 
 /datum/species/proc/gain_muscles(mob/living/carbon/human/target, default, max_level, can_become_stronger = TRUE)
 	target.AddComponent(/datum/component/muscles, max_level, default, can_become_stronger)
@@ -459,8 +447,6 @@
 			human.faction -= i
 
 	qdel(human?.GetComponent(/datum/component/muscles))
-
-	UnregisterSignal(human, COMSIG_PARENT_ATTACKBY)
 
 
 /datum/species/proc/updatespeciescolor(mob/living/carbon/human/H) //Handles changing icobase for species that have multiple skin colors.
@@ -1197,8 +1183,10 @@ It'll return null if the organ doesn't correspond, so include null checks when u
 /datum/species/proc/spec_hitby(atom/movable/AM, mob/living/carbon/human/H)
 	return
 
+
 /datum/species/proc/spec_proceed_attack_results(obj/item/I, mob/living/carbon/human/defender, mob/living/attacker, obj/item/organ/external/affecting)
 	return ATTACK_CHAIN_PROCEED
+
 
 /proc/get_random_species(species_name = FALSE)	// Returns a random non black-listed or hazardous species, either as a string or datum
 	var/static/list/random_species = list()

@@ -272,7 +272,3 @@
 			H.reagents.remove_reagent(R.id, REAGENTS_METABOLISM)
 			return FALSE
 	return ..()
-
-/datum/species/plasmaman/spec_attackby(mob/living/carbon/human/source, obj/item/item, mob/living/user, params)
-	..()
-	return item.plasmaman_attackby(src, source, user, params)
