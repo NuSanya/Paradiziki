@@ -418,15 +418,6 @@
 	. = merge_without_del(material)
 	is_zero_amount(TRUE)
 
-/**
- * Updates the weight class based on current stack amount
- *
- * Adjusts the item's weight class proportionally to how full the stack is.
- * The weight class decreases as the stack amount decreases, with three tiers:
- * - Below 1/3 capacity: weight class reduced by 2 (minimum: WEIGHT_CLASS_TINY)
- * - Between 1/3 and 2/3 capacity: weight class reduced by 1 (minimum: WEIGHT_CLASS_TINY)
- * - Above 2/3 capacity: uses the full weight class
- */
 /obj/item/stack/proc/update_weight()
 	if(amount <= (max_amount * (1/3)))
 		w_class = clamp(full_w_class-2, WEIGHT_CLASS_TINY, full_w_class)
@@ -435,16 +426,6 @@
 	else
 		w_class = full_w_class
 
-/**
- * Copies forensic evidence from another stack
- *
- * Transfers all forensic evidence (blood DNA, fingerprints) from one stack
- * to another. Used when creating new stacks from existing ones to preserve
- * investigation evidence.
- *
- * Arguments:
- * * material - The source stack to copy evidence from
- */
 /obj/item/stack/proc/copy_evidences(obj/item/stack/material)
 	blood_DNA			= material.blood_DNA
 	fingerprints		= material.fingerprints

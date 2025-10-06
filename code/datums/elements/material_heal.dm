@@ -26,7 +26,7 @@
 
 	if(!list_check(material_list))
 		return ELEMENT_INCOMPATIBLE
-	if(!(material_amount && heal_amount && heal_delay))
+	if(!vars_check(material_amount, heal_amount, heal_delay))
 		return ELEMENT_INCOMPATIBLE
 
 	src.material_list = material_list
@@ -45,6 +45,13 @@
 	for(var/entry_path in material_list)
 		if(!ispath(entry_path, /obj/item/stack))
 			return FALSE
+
+/datum/element/material_heal/proc/vars_check(material_amount, heal_amount, heal_delay)
+	if(!isnum(material_amount) || !isnum(heal_amount) || !isnum(heal_delay))
+		return FALSE
+	if(material_amount <= 0 || heal_amount <= 0 || heal_delay < 0)
+		return FALSE
+	return TRUE
 
 /datum/element/material_heal/Detach(mob/living/carbon/target)
 	. = ..()
