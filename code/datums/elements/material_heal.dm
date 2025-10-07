@@ -36,7 +36,7 @@
 	src.heal_delay = heal_delay
 
 	RegisterSignal(target, COMSIG_PARENT_ATTACKBY, PROC_REF(on_attackby))
-	RegisterSignal(target, COMSIG_PARENT_EXAMINE, PROC_REF(on_examined))
+	RegisterSignal(target, COMSIG_PARENT_EXAMINE, PROC_REF(on_self_examine))
 
 /// Proc used to check the list for any types other than obj/item/stack
 /datum/element/material_heal/proc/list_check(list/material_list)
@@ -224,7 +224,7 @@
 							ignored_mobs = user)
 
 /// Signal proc. Shows on self examine that we can get healed by certain materials
-/datum/element/material_heal/proc/on_examined(mob/living/carbon/source, mob/user, list/examine_text)
+/datum/element/material_heal/proc/on_self_examine(mob/living/carbon/source, mob/user, list/examine_text)
 	SIGNAL_HANDLER
 
 	if(source != user)
@@ -232,7 +232,7 @@
 
 	var/materials_str
 	for(var/material_type in material_list)
-		var/obj/material = new material_type()
+		var/obj/material = new material_type
 		materials_str += material.declent_ru(ACCUSATIVE)
 		materials_str += ", "
 		qdel(material)
