@@ -1,8 +1,9 @@
 /**
  * # Stack item heal element
  *
- * This element allows the carbon mob to get healed, or
- * heal themselves, using specific stack items (subtypes dont count).
+ * This element allows the carbon mob to get healed, or heal themselves, using specific stack items.
+ * Doesn't handle subtypes of stack items, that don't have the same merge_type as passed type.
+ * Also shows that we can heal using some material on self examine.
  * Healing is identical to gauze/ointment.
  */
 /datum/element/material_heal
@@ -35,6 +36,7 @@
 	src.heal_delay = heal_delay
 
 	RegisterSignal(target, COMSIG_PARENT_ATTACKBY, PROC_REF(on_attackby))
+	RegisterSignal(target, COMSIG_PARENT_EXAMINE, PROC_REF(on_examined))
 
 /// Proc used to check the list for any types other than obj/item/stack
 /datum/element/material_heal/proc/list_check(list/material_list)
@@ -56,7 +58,7 @@
 /datum/element/material_heal/Detach(mob/living/carbon/target)
 	. = ..()
 
-	UnregisterSignal(target, COMSIG_PARENT_ATTACKBY)
+	UnregisterSignal(target, list(COMSIG_PARENT_ATTACKBY, COMSIG_PARENT_EXAMINE))
 
 /// Main signal proc. Signal is called in atom/proc/attackby()
 /datum/element/material_heal/proc/on_attackby(mob/living/carbon/source, obj/item/stack/item, mob/living/user, params)
@@ -88,11 +90,7 @@
 	if(user.a_intent != INTENT_HELP)
 		return .
 
-	if(!isstack(item)) // To avoid weird balloon alerts
-		return .
-
-	if(!is_type_in_list(item, material_list))
-		user.balloon_alert(user, "требуется другой материал!")
+	if(!check_for_valid_type(item))
 		return .
 
 	if(!bodypart)
@@ -105,12 +103,30 @@
 		user.balloon_alert(user, "конечность вскрыта!")
 		return .
 
-	if(!item.get_amount() || !item.amount >= material_amount) // Stack amount is spent later
+	if(!item.get_amount() || item.amount < material_amount) // Stack amount is spent later
 		user.balloon_alert(user, "недостаточно материала!")
 		return .
 
 	return TRUE
 
+/**
+ * # Proc used to check for valid type and merge_type variable
+ *
+ * Why? Because I want this element to check for strict types, BUT
+ * we have types like ../metal/fifty which is a separate type,
+ * which would fail a strict type check for ../metal.
+ * Checking for merge_type fixes that.
+ */
+/datum/element/material_heal/proc/check_for_valid_type(obj/item/stack/item)
+	. = FALSE
+	for(var/check_type in material_list)
+		if(!istype(item, check_type))
+			continue
+
+		if(item.merge_type != initial(check_type).merge_type) // We have found our type, but merge_types arent equal
+			return .
+
+		return TRUE
 /**
  * # The material_heal element heal proc
  *
@@ -124,14 +140,14 @@
 	heal_message(target, user, bodypart, item)
 
 	var/bodypart_damage_was = bodypart.brute_dam + bodypart.burn_dam
-
 	bodypart.heal_damage(heal_amount, heal_amount, updating_health = FALSE)
 
-	var/should_update_health = FALSE
-	if(bodypart.brute_dam + bodypart.burn_dam != bodypart_damage_was)
-		should_update_health = TRUE
+	var/actual_healing = bodypart_damage_was - (bodypart.brute_dam + bodypart.burn_dam)
+	var/remaining_heal = max(0, heal_amount * 2 - actual_healing)
 
-	if(stack_children_heal(target, user, bodypart, item))
+	var/should_update_health = actual_healing > 0
+
+	if(remaining_heal > 0 && stack_children_heal(target, user, bodypart, item, remaining_heal))
 		should_update_health = TRUE
 
 	if(should_update_health)
@@ -145,8 +161,8 @@
  * Heals bodypart's children using remaining medication.
  * Returns TRUE if any bodypart was successfully healed.
  */
-/datum/element/material_heal/proc/stack_children_heal(mob/living/carbon/target, mob/living/user, obj/item/organ/external/bodypart, obj/item/item)
-	var/remheal = max(0, heal_amount * 2 - (bodypart.brute_dam + bodypart.burn_dam)) // Maxed with 0 since heal_damage let you pass in a negative value
+/datum/element/material_heal/proc/stack_children_heal(mob/living/carbon/target, mob/living/user, obj/item/organ/external/bodypart, obj/item/item, remaining_heal)
+	var/remheal = remaining_heal
 	var/nremheal = remheal
 
 	var/list/achildlist
@@ -201,3 +217,22 @@
 	else
 		user.visible_message(span_green("[user] залечива[pluralize_ru(user.gender, "ет", "ют")] раны [target] на [genderize_ru(target.gender, "его", "её", "его", "их")] [bodypart.declent_ru(PREPOSITIONAL)], используя [item.declent_ru(ACCUSATIVE)]."), \
 							ignored_mobs = user)
+
+/// Signal proc. Shows on self examine that we can get healed by certain materials
+/datum/element/material_heal/proc/on_examined(mob/living/carbon/source, mob/user, list/examine_text)
+	SIGNAL_HANDLER
+
+	if(source != user)
+		return
+
+	var/materials_str
+	for(var/material_type in material_list)
+		var/obj/material = new material_type()
+		materials_str += material.declent_ru(ACCUSATIVE)
+		materials_str += ", "
+		qdel(material)
+
+	materials_str = copytext(materials_str, 1, -2) // Remove last ", "
+	materials_str = capitalize(materials_str) // Capitalize the first letter
+
+	examine_text += span_notice("Присмотревшись, вы понимаете, что раны можно залечить, приложив следующие материалы: [materials_str].")
