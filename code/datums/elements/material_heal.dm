@@ -123,7 +123,12 @@
 		if(!istype(item, check_type))
 			continue
 
-		if(item.merge_type != initial(check_type).merge_type) // We have found our type, but merge_types arent equal
+		// Dreamchecker doesn't like using initial(type).some_var (which worked). Whatever
+		var/obj/item/stack/found_type_item = new check_type()
+		var/is_valid = (item.merge_type == found_type_item.merge_type)
+		qdel(found_type_item)
+
+		if(!is_valid)
 			return .
 
 		return TRUE
