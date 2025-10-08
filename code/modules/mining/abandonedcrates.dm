@@ -3,7 +3,24 @@
 /obj/structure/closet/crate/secure/loot
 	name = "abandoned crate"
 	desc = "Что может быть внутри?"
-	ru_names = list(
+	var/code = null
+	var/lastattempt = null
+	var/attempts = 10
+	var/codelen = 4
+	integrity_failure = 0 //no breaking open the crate
+
+
+/obj/structure/closet/crate/secure/loot/can_close()
+	. = ..()
+	if(!.)
+		return
+
+	var/mob/living/mob = locate() in get_turf(src)
+	return !mob
+
+
+/obj/structure/closet/crate/secure/loot/get_ru_names()
+	return list(
 		NOMINATIVE = "заброшенный ящик",
 		GENITIVE = "заброшенного ящика",
 		DATIVE = "заброшенному ящику",
@@ -11,12 +28,6 @@
 		INSTRUMENTAL = "заброшенным ящиком",
 		PREPOSITIONAL = "заброшенном ящике"
 	)
-	icon_state = "securecrate"
-	var/code = null
-	var/lastattempt = null
-	var/attempts = 10
-	var/codelen = 4
-	integrity_failure = 0 //no breaking open the crate
 
 /obj/structure/closet/crate/secure/loot/Initialize(mapload)
 	. = ..()
@@ -164,8 +175,8 @@
 		if(85)
 			new /obj/item/defibrillator/compact(src)
 		if(86)
-			new /obj/item/gun/projectile/automatic/pistol/specter(src)
-			new /obj/item/ammo_box/magazine/specter(src)
+			new /obj/item/gun/energy/specter(src)
+			new /obj/item/stock_parts/cell/specter(src)
 		if(87)
 			new /obj/item/gun/projectile/automatic/pistol/enforcer(src)
 			new /obj/item/ammo_box/magazine/enforcer(src)

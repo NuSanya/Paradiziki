@@ -25,7 +25,6 @@
 		INSTRUMENTAL = "электродом",
 		PREPOSITIONAL = "электроде"
 	)
-	icon_state = "spark"
 	color = "#FFFF00"
 	shockbull = TRUE
 	nodamage = TRUE
@@ -38,10 +37,10 @@
 	//Damage will be handled on the MOB side, to prevent window shattering.
 	var/tasered_duration = 8 SECONDS
 
-/obj/projectile/energy/electrode/on_hit(var/atom/target, var/blocked = 0)
+/obj/projectile/energy/electrode/on_hit(atom/target, blocked = 0)
 	. = ..()
 	if(!ismob(target) || blocked >= 100) //Fully blocked by mob or collided with dense object - burst into sparks!
-		do_sparks(1, 1, src)
+		do_sparks(1, TRUE, src)
 		return
 	if(!iscarbon(target))
 		return
@@ -69,8 +68,8 @@
 	REMOVE_TRAIT(src, TRAIT_TASERED, TASER_TRAIT)
 
 /obj/projectile/energy/electrode/on_range() //to ensure the bolt sparks when it reaches the end of its range if it didn't hit a target yet
-	do_sparks(1, 1, src)
-	..()
+	do_sparks(1, TRUE, src)
+	return ..()
 
 /obj/projectile/energy/electrode/dominator
 	color = LIGHT_COLOR_LIGHT_CYAN
@@ -129,7 +128,6 @@
 	hitsound = 'sound/weapons/pierce.ogg'
 	damage_type = TOX
 	stamina = 40
-	nodamage = FALSE
 	weaken = 3 SECONDS
 	stutter = 2 SECONDS
 	shockbull = TRUE
@@ -219,7 +217,6 @@
 	)
 	icon_state = "plasma_light"
 	damage = 20
-	damage_type = BURN
 
 /obj/projectile/energy/charged_plasma
 	name = "charged plasma bolt"
@@ -233,7 +230,6 @@
 	)
 	icon_state = "plasma_heavy"
 	damage = 50
-	damage_type = BURN
 	armour_penetration = 10 // It can have a little armor pen, as a treat. Bigger than it looks, energy armor is often low.
 	shield_buster = TRUE
 	reflectability = REFLECTABILITY_NEVER //I will let eswords block it like a normal projectile, but it's not getting reflected, and eshields will take the hit hard.
