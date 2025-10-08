@@ -19,6 +19,9 @@
 	/// How long does it take to heal ourselves
 	var/heal_delay
 
+	/// Cached string for on_self_examine proc
+	var/cached_materials_str
+
 /datum/element/material_heal/Attach(mob/living/carbon/target, list/material_list, material_amount, heal_amount, heal_delay)
 	. = ..()
 
@@ -38,7 +41,7 @@
 	RegisterSignal(target, COMSIG_PARENT_ATTACKBY, PROC_REF(on_attackby))
 	RegisterSignal(target, COMSIG_PARENT_EXAMINE, PROC_REF(on_self_examine))
 
-/// Proc used to check the list for any types other than obj/item/stack
+/// Proc used to check the list for correct types
 /datum/element/material_heal/proc/list_check(list/material_list)
 	if(!LAZYLEN(material_list))
 		return FALSE
@@ -46,6 +49,15 @@
 	. = TRUE
 	for(var/entry_path in material_list)
 		if(!ispath(entry_path, /obj/item/stack))
+			return FALSE
+
+		// merge_type variable is often set to self type AFTER init
+		var/obj/item/stack/type_item = new entry_path
+		var/is_valid_merge_type = type_item.merge_type == entry_path
+		qdel(type_item)
+
+		if(!is_valid_merge_type)
+			stack_trace("Invalid stack type passed in material_list: [entry_path]. Stack type must be equal to its merge_type variable.")
 			return FALSE
 
 /datum/element/material_heal/proc/vars_check(material_amount, heal_amount, heal_delay)
@@ -64,11 +76,13 @@
 /datum/element/material_heal/proc/on_attackby(mob/living/carbon/source, obj/item/stack/item, mob/living/user, params)
 	SIGNAL_HANDLER
 
-	var/obj/item/organ/external/bodypart = source.get_organ(check_zone(user.zone_selected))
-	if(!heal_checks(source, item, bodypart, user, params))
+	if(!pre_heal_checks(source, item, user, params))
 		return
 
 	. = COMPONENT_CANCEL_ATTACK_CHAIN
+	var/obj/item/organ/external/bodypart = source.get_organ(check_zone(user.zone_selected))
+	if(!heal_checks(source, item, bodypart, user, params))
+		return .
 
 	user.changeNext_move(CLICK_CD_MELEE)
 
@@ -84,15 +98,30 @@
 
 	INVOKE_ASYNC(src, PROC_REF(self_stack_heal), item, bodypart, user, params)
 
-/// Proc used for checking healing requirements
-/datum/element/material_heal/proc/heal_checks(mob/living/carbon/source, obj/item/stack/item, obj/item/organ/external/bodypart, mob/living/user, params)
+/**
+ * # Proc to check heal requirements.
+ *
+ * Contains checks, that tell us, whether we
+ * should or shouldn't cancel the attack chain.
+ */
+/datum/element/material_heal/proc/pre_heal_checks(mob/living/carbon/source, obj/item/stack/item, mob/living/user, params)
 	. = FALSE
 	if(user.a_intent != INTENT_HELP)
 		return .
-
 	if(!check_for_valid_type(item))
 		return .
 
+	return TRUE
+
+
+/**
+ * # Proc to check heal requirements.
+ *
+ * Contains checks, that tell us, whether our
+ * new attack was successful or not.
+ */
+/datum/element/material_heal/proc/heal_checks(mob/living/carbon/source, obj/item/stack/item, obj/item/organ/external/bodypart, mob/living/user, params)
+	. = FALSE
 	if(!bodypart)
 		user.balloon_alert(user, "нет такой конечности!")
 		return .
@@ -110,28 +139,19 @@
 	return TRUE
 
 /**
- * # Proc used to check for valid type and merge_type variable
- *
+ * # Proc used to check if our item merge_type variable type exists in material_list
  * Why? Because I want this element to check for strict types, BUT
  * we have types like ../metal/fifty which is a separate type,
  * which would fail a strict type check for ../metal.
  * Checking for merge_type fixes that.
  */
 /datum/element/material_heal/proc/check_for_valid_type(obj/item/stack/item)
-	. = FALSE
-	for(var/check_type in material_list)
-		if(!istype(item, check_type))
-			continue
+	. = TRUE
+	if(!istype(item))
+		return FALSE
+	if(!(item.merge_type in material_list)) // Material list always exists when this proc is called
+		return FALSE
 
-		// Dreamchecker doesn't like using initial(type).some_var (which worked). Whatever
-		var/obj/item/stack/found_type_item = new check_type()
-		var/is_valid = (item.merge_type == found_type_item.merge_type)
-		qdel(found_type_item)
-
-		if(!is_valid)
-			return .
-
-		return TRUE
 /**
  * # The material_heal element heal proc
  *
@@ -230,14 +250,13 @@
 	if(source != user)
 		return
 
-	var/materials_str
-	for(var/material_type in material_list)
-		var/obj/material = new material_type
-		materials_str += material.declent_ru(ACCUSATIVE)
-		materials_str += ", "
-		qdel(material)
+	if(!cached_materials_str)
+		for(var/material_type in material_list)
+			var/obj/material = new material_type
+			cached_materials_str += material.declent_ru(ACCUSATIVE)
+			cached_materials_str += ", "
+			qdel(material)
+		cached_materials_str = copytext(cached_materials_str, 1, -2) // Remove last ", "
+		cached_materials_str = capitalize(cached_materials_str) // Capitalize the first letter
 
-	materials_str = copytext(materials_str, 1, -2) // Remove last ", "
-	materials_str = capitalize(materials_str) // Capitalize the first letter
-
-	examine_text += span_notice("Присмотревшись, вы понимаете, что раны можно залечить, приложив следующие материалы: [materials_str].")
+	examine_text += span_notice("Присмотревшись, вы понимаете, что раны можно залечить, приложив следующие материалы: [cached_materials_str].")
