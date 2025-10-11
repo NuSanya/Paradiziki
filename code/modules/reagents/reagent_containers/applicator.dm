@@ -100,7 +100,7 @@
 
 		if(ishuman(target))
 			var/mob/living/carbon/human/human_target = target
-			protection = human_target.get_permeability_protection_organ(human_target.get_organ(def_zone))
+			protection = 1 - human_target.get_permeability_protection_organ(human_target.get_organ(def_zone))
 		else
 			protection = target.get_permeability_protection()
 
