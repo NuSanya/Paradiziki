@@ -17,7 +17,7 @@ SUBSYSTEM_DEF(augury)
 	)
 
 /datum/controller/subsystem/augury/stat_entry(msg)
-	msg = "W:[watchers.len]|D:[length(doombringers)]"
+	msg = "W:[length(watchers)]|D:[length(doombringers)]"
 	return ..()
 
 /datum/controller/subsystem/augury/proc/register_doom(atom/A, severity)
@@ -43,7 +43,7 @@ SUBSYSTEM_DEF(augury)
 			biggest_doom = d
 			biggest_threat = threat
 
-	if(doombringers.len)
+	if(length(doombringers))
 		for(var/i in GLOB.player_list)
 			if(isobserver(i) && (!(observers_given_action[i])))
 				var/datum/action/innate/augury/A = new
