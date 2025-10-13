@@ -5,6 +5,8 @@
 #define INTEGRITY_INCREASE_VALUE 25
 /// How often based on item_value_consumed do we grow the pit
 #define GROWTH_VALUE 100
+/// How often based on item_value_consumed do we spawn a bingle
+#define BINGLE_SPAWN_VALUE  50
 /// At what item_value_consumed do bingles become evolved
 #define BINGLE_EVOLVE_VALUE 500
 /// How much do we gain from living beings
@@ -22,12 +24,9 @@ GLOBAL_LIST(bingle_mobs)
 	light_color = LIGHT_COLOR_BABY_BLUE
 	light_range = 5
 	anchored = TRUE
-	density = FALSE
 	layer = ABOVE_NORMAL_TURF_LAYER
 	/// Values of all consumed items combined
 	var/item_value_consumed = 0
-	/// How often we spawn bingles based on item_value_consumed
-	var/bingle_per_item_value = 50
 	/// Current pit size (1x1, 2x2, etc.)
 	var/current_pit_size = 1
 	/// List of all used pit overlays
@@ -135,14 +134,14 @@ GLOBAL_LIST(bingle_mobs)
 			thing.throw_at(edge, rand(1, 5), rand(1, 5))
 
 /obj/structure/bingle_hole/process(seconds_per_tick)
-	// Only spawn a new bingle for each bingle_per_item_value item value milestone, and only once per milestone
+	// Only spawn a new bingle for each BINGLE_SPAWN_VALUE item value milestone, and only once per milestone
 	// Calculate how many bingles should exist based on current item value
-	var/target_bingle_count = round(item_value_consumed / bingle_per_item_value)
-	var/current_bingle_count = round(last_bingle_spawn_value / bingle_per_item_value)
+	var/target_bingle_count = round(item_value_consumed / BINGLE_SPAWN_VALUE)
+	var/current_bingle_count = round(last_bingle_spawn_value / BINGLE_SPAWN_VALUE)
 
 	// If we need more bingles, spawn one
 	if(target_bingle_count > current_bingle_count)
-		last_bingle_spawn_value = target_bingle_count * bingle_per_item_value
+		last_bingle_spawn_value = target_bingle_count * BINGLE_SPAWN_VALUE
 		INVOKE_ASYNC(src, PROC_REF(spawn_bingle_from_ghost))
 
 	// Pit grows every GROWTH_VALUE item value - calculate target size
@@ -161,7 +160,7 @@ GLOBAL_LIST(bingle_mobs)
 		if(!bong || bong.evolved)
 			continue
 
-		SEND_SIGNAL(bong, BINGLE_EVOLVE)
+		SEND_SIGNAL(bong, COMSIG_BINGLE_EVOLVE)
 
 /obj/structure/bingle_hole/proc/swallow_mob(mob/living/victim)
 	if(!isliving(victim))
@@ -266,9 +265,7 @@ GLOBAL_LIST(bingle_mobs)
 /obj/effect/temp_visual/bingle_pit_swirl
 	name = "swirling void"
 	desc = "Реальность искажается вокруг ямы..."
-	icon = 'icons/effects/effects.dmi'
 	icon_state = "quantum_sparks"
-	layer = ABOVE_MOB_LAYER
 	duration = 1.5 SECONDS
 	alpha = 150
 
@@ -394,9 +391,7 @@ GLOBAL_LIST(bingle_mobs)
 	desc = "Что-то манит вас туда упасть."
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	layer = CLOSED_TURF_LAYER
-	plane = GAME_PLANE
 	anchored = TRUE
-	density = FALSE
 	mouse_opacity = MOUSE_OPACITY_OPAQUE
 	var/obj/structure/bingle_hole/parent_pit
 
@@ -460,6 +455,12 @@ GLOBAL_LIST(bingle_mobs)
 
 	return ..()
 
+/obj/structure/bingle_pit_overlay/examine(mob/user)
+	. = ..()
+	if(parent_pit && isbingle(user))
+		. += span_alert("В яме находится [parent_pit.item_value_consumed] предметов!")
+		. += span_notice("Существа могут туда упасть, когда в яме будет минимум [GROWTH_VALUE] предметов!")
+
 // Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()
 	var/image/poll_source = image('icons/mob/bingle/bingles.dmi', "bingle")
@@ -482,7 +483,7 @@ GLOBAL_LIST(bingle_mobs)
 	player_mind.special_role = SPECIAL_ROLE_BINGLE
 
 	if(item_value_consumed >= BINGLE_EVOLVE_VALUE)
-		SEND_SIGNAL(bingle, BINGLE_EVOLVE)
+		SEND_SIGNAL(bingle, COMSIG_BINGLE_EVOLVE)
 
 	message_admins("[ADMIN_LOOKUPFLW(bingle)] has been made into Bingle (pit spawn).")
 	log_game("[key_name(bingle)] was spawned as Bingle by the pit.")
@@ -500,12 +501,10 @@ GLOBAL_LIST(bingle_mobs)
 	area_flags = UNIQUE_AREA
 	has_gravity = TRUE
 	requires_power = FALSE
-	static_lighting = TRUE
-
-/obj/structure/bingle_pit_overlay/examine(mob/user)
-	. = ..()
-	if(parent_pit && isbingle(user))
-		. += span_alert("В яме находится [parent_pit.item_value_consumed] предметов!")
-		. += span_notice("Существа могут туда упасть, когда в яме будет минимум [GROWTH_VALUE] предметов!")
 
 #undef TRAIT_FALLING_INTO_BINGLE_HOLE
+#undef INTEGRITY_INCREASE_VALUE
+#undef GROWTH_VALUE
+#undef BINGLE_SPAWN_VALUE
+#undef BINGLE_EVOLVE_VALUE
+#undef LIVING_VALUE

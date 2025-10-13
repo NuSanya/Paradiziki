@@ -269,7 +269,4 @@
 	desc = "Оно синее... Это всё, о чём вы можете подумать. Это нельзя сломать."
 	icon = 'icons/turf/walls/bingle.dmi'
 	icon_state = "wall-0"
-	base_icon_state = "wall"
 	smooth = SMOOTH_BITMASK
-	canSmoothWith = SMOOTH_GROUP_WALLS
-	smoothing_groups = SMOOTH_GROUP_WALLS
