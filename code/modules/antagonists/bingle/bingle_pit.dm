@@ -1,12 +1,21 @@
 /// Trait used to ensure that things don't get animated as falling in multiple times
 #define TRAIT_FALLING_INTO_BINGLE_HOLE "falling_into_bingle_pit"
 
+/// By how much do we increase the health of the bingle pit on growth
+#define INTEGRITY_INCREASE_VALUE 25
+/// How often based on item_value_consumed do we grow the pit
+#define GROWTH_VALUE 100
+/// At what item_value_consumed do bingles become evolved
+#define BINGLE_EVOLVE_VALUE 500
+/// How much do we gain from living beings
+#define LIVING_VALUE 10
+
 GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_hole
 	name = "bingle pit"
 	desc = "Всепоглощающая бездна бесконечных ужасов... и бинглов."
-	armor = list(MELEE=20, BULLET=20, LASER=75, ENERGY=75, BOMB=90, BIO=100, RAD=100, FIRE=50, ACID=80)
+	armor = list(MELEE=20, BULLET=20, LASER=75, ENERGY=75, BOMB=75, BIO=100, RAD=100, FIRE=50, ACID=80)
 	max_integrity = 500
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	icon_state = "binglepit"
@@ -15,22 +24,27 @@ GLOBAL_LIST(bingle_mobs)
 	anchored = TRUE
 	density = FALSE
 	layer = ABOVE_NORMAL_TURF_LAYER
+	/// Values of all consumed items combined
 	var/item_value_consumed = 0
-	var/max_item_value = 300
-	var/bingles_ready = 0
+	/// How often we spawn bingles based on item_value_consumed
 	var/bingle_per_item_value = 50
-	var/ghost_edible = FALSE
-	var/current_pit_size = 1 // 1 = 1x1, 2 = 2x2, 3 = 3x3 can go higher
+	/// Current pit size (1x1, 2x2, etc.)
+	var/current_pit_size = 1
+	/// List of all used pit overlays
 	var/list/pit_overlays = list()
+	/// Used to compare current and last item values for bingle spawning in processing
 	var/last_bingle_spawn_value = 0
-	var/last_bingle_poll_value = 0
-	var/max_pit_size = 40 // Maximum size (40x40) for the pit
+	/// The max size of the pit
+	var/max_pit_size = 40
+	/// We store the component in order to increase it's range later
 	var/datum/component/aura_healing/aura_healing
+	/// Antag team datum used for evolving bingles
 	var/static/datum/team/bingles/bingle_team
 	/// Typecache of things that won't be swallowed by the pit.
 	var/static/list/swallow_blacklist
 	/// Cooldown for taking bomb damage - basically a cheat solution to handle it taking damage for each tile from one bomb.
 	COOLDOWN_DECLARE(bomb_cooldown)
+	/// Have we made an announcement about biohazard or not
 	var/announcement_made = FALSE
 
 /obj/structure/bingle_hole/Initialize(mapload)
@@ -68,10 +82,10 @@ GLOBAL_LIST(bingle_mobs)
 	return ..()
 
 /obj/structure/bingle_hole/examine(mob/user)
-	. = .. ()
+	. = ..()
 	if(isbingle(user))
 		. += span_alert("В яме находится [item_value_consumed] предметов!")
-		. += span_notice("Существа могут туда упасть, когда в яме будет минимум 100 предметов!")
+		. += span_notice("Существа могут туда упасть, когда в яме будет минимум [GROWTH_VALUE] предметов!")
 
 /obj/structure/bingle_hole/CanAStarPass(to_dir, datum/can_pass_info/pass_info)
 	if(!pass_info.is_living)
@@ -109,7 +123,6 @@ GLOBAL_LIST(bingle_mobs)
 		if(QDELETED(thing))
 			continue
 
-		// i am doing this in order to not lag the shit out of clients when too many objects stack in one turf
 		var/obj/structure/bingle_pit_overlay/pit_overlay = pick(pit_overlays)
 		var/turf/target_turf = get_turf(pit_overlay) ? get_turf(pit_overlay) : get_turf(src)
 		if(!target_turf)
@@ -122,26 +135,26 @@ GLOBAL_LIST(bingle_mobs)
 			thing.throw_at(edge, rand(1, 5), rand(1, 5))
 
 /obj/structure/bingle_hole/process(seconds_per_tick)
-	// Only spawn a new bingle for each 30 item value milestone, and only once per milestone
+	// Only spawn a new bingle for each bingle_per_item_value item value milestone, and only once per milestone
 	// Calculate how many bingles should exist based on current item value
-	var/target_bingle_count = round(item_value_consumed / 50)
-	var/current_bingle_count = round(last_bingle_spawn_value / 50)
+	var/target_bingle_count = round(item_value_consumed / bingle_per_item_value)
+	var/current_bingle_count = round(last_bingle_spawn_value / bingle_per_item_value)
 
 	// If we need more bingles, spawn one
 	if(target_bingle_count > current_bingle_count)
-		last_bingle_spawn_value = target_bingle_count * 50
+		last_bingle_spawn_value = target_bingle_count * bingle_per_item_value
 		INVOKE_ASYNC(src, PROC_REF(spawn_bingle_from_ghost))
 
-	// Pit grows every 100 item value - calculate target size
-	var/desired_pit_size = 1 + round(item_value_consumed / 100)
+	// Pit grows every GROWTH_VALUE item value - calculate target size
+	var/desired_pit_size = 1 + round(item_value_consumed / GROWTH_VALUE)
 	desired_pit_size = min(desired_pit_size, max_pit_size)
 
 	if(desired_pit_size > current_pit_size)
 		grow_pit(desired_pit_size)
 
-	// Evolve bingles and buff if item_value_consumed >= 500
+	// Evolve bingles and buff if item_value_consumed >= BINGLE_EVOLVE_VALUE
 	for(var/datum/mind/bingle_mind in bingle_team?.members)
-		if(item_value_consumed < 500)
+		if(item_value_consumed < BINGLE_EVOLVE_VALUE)
 			return
 
 		var/mob/living/simple_animal/hostile/bingle/bong = bingle_mind.current
@@ -163,7 +176,7 @@ GLOBAL_LIST(bingle_mobs)
 		if(victim.movement_type & (FLYING | FLOATING))
 			return FALSE
 
-	if(item_value_consumed < 100)
+	if(item_value_consumed < GROWTH_VALUE)
 		var/turf/target = get_edge_target_turf(src, pick(GLOB.alldirs))
 		victim.throw_at(target, rand(1, 5), rand(1, 5))
 		to_chat(victim, span_warning("Вы не пролезаете в яму!"))
@@ -178,7 +191,7 @@ GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_hole/proc/get_item_value(thing)
 	if(isliving(thing))
-		return 10
+		return LIVING_VALUE
 	else if(isstack(thing))
 		var/obj/item/stack/stack = thing
 		return stack.amount
@@ -369,14 +382,18 @@ GLOBAL_LIST(bingle_mobs)
 					announcement_made = TRUE
 	current_pit_size = new_size
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
-	max_integrity += 25
+	max_integrity += INTEGRITY_INCREASE_VALUE
 
+/obj/structure/bingle_hole/CanAllowThrough(atom/movable/mover, border_dir)
+	if(istype(mover, /obj/projectile))
+		return FALSE
+	return ..()
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
 	desc = "Что-то манит вас туда упасть."
 	icon = 'icons/mob/bingle/binglepit.dmi'
-	layer = TURF_LAYER + 0.5
+	layer = CLOSED_TURF_LAYER
 	plane = GAME_PLANE
 	anchored = TRUE
 	density = FALSE
@@ -464,15 +481,9 @@ GLOBAL_LIST(bingle_mobs)
 	player_mind.assigned_role = ROLE_BINGLE
 	player_mind.special_role = SPECIAL_ROLE_BINGLE
 
-	if(item_value_consumed >= 500)
-		bingle.icon_state = "bingle_armored"
-		bingle.maxHealth = 300
-		bingle.health = max(bingle.health, 300)
-		bingle.obj_damage = 100
-		bingle.melee_damage_lower = 15
-		bingle.melee_damage_upper = 20
-		bingle.armour_penetration = 20
-		bingle.evolved = TRUE
+	if(item_value_consumed >= BINGLE_EVOLVE_VALUE)
+		SEND_SIGNAL(bingle, BINGLE_EVOLVE)
+
 	message_admins("[ADMIN_LOOKUPFLW(bingle)] has been made into Bingle (pit spawn).")
 	log_game("[key_name(bingle)] was spawned as Bingle by the pit.")
 
@@ -495,6 +506,6 @@ GLOBAL_LIST(bingle_mobs)
 	. = ..()
 	if(parent_pit && isbingle(user))
 		. += span_alert("В яме находится [parent_pit.item_value_consumed] предметов!")
-		. += span_notice("Существа могут туда упасть, когда в яме будет минимум 100 предметов!")
+		. += span_notice("Существа могут туда упасть, когда в яме будет минимум [GROWTH_VALUE] предметов!")
 
 #undef TRAIT_FALLING_INTO_BINGLE_HOLE

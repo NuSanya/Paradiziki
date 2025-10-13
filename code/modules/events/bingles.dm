@@ -32,11 +32,7 @@
 /datum/event/spawn_bingle/proc/get_spawn_loc(mob/player)
 	RETURN_TYPE(/turf)
 	var/list/spawn_locs = list()
-	for(var/obj/effect/landmark/landmark in GLOB.landmarks_list)
-		if(isturf(landmark.loc) && landmark.name == "revenantspawn")
-			spawn_locs += landmark.loc
-	if(!spawn_locs)	// If we can't find any good spots, try the carp spawns
-		spawn_locs += GLOB.carplist
+	spawn_locs += GLOB.xeno_spawn
 	if(!spawn_locs) //If we can't find a good place, just spawn at the player's location
 		spawn_locs += get_turf(player)
 	if(!spawn_locs) //If we can't find THAT, then give up

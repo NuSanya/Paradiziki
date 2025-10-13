@@ -57,7 +57,6 @@
 
 /** Treat wait as a tick count, not DS, run every wait ticks. */
 /// (also forces it to run first in the tick (unless SS_BACKGROUND))
-
 /// (We don't want to be choked out by other subsystems queuing into us)
 /// (implies all runlevels because of how it works)
 /// This is designed for basically anything that works as a mini-mc (like SStimer)
@@ -72,7 +71,7 @@
 /// This flag overrides SS_KEEP_TIMING
 #define SS_POST_FIRE_TIMING (1<<6)
 
-/// This subsystem should not be queued if it has no work.
+/** This subsystem should not be queued if it has no work. */
 /// Populate the [hibernate_checks] list with the names of vars to check before a subsystem is queued.
 /// If the length() of each var is 0, it will not be queued.
 #define SS_HIBERNATE (1<<7)

@@ -1,7 +1,7 @@
 /mob/living/simple_animal/hostile/bingle
 	name = "bingle"
 	real_name = "bingle"
-	desc = "Забавный синенький чувачок."
+	desc = "Тёмно-фиолетовое существо, чем-то напоминающее гориллу."
 	speak_emote = list("визжит", "хнычет", "булькает", "тыдынькает")
 	icon = 'icons/mob/bingle/bingles.dmi'
 	icon_state = "bingle"
@@ -15,7 +15,7 @@
 	pressure_resistance = 100
 
 	obj_damage = 50
-	environment_smash = ENVIRONMENT_SMASH_RWALLS
+	environment_smash = ENVIRONMENT_SMASH_WALLS
 	melee_damage_lower = 5
 	melee_damage_upper = 5
 
@@ -28,7 +28,6 @@
 	var/evolved = FALSE
 	var/static/list/bingle_traits = list(
 		TRAIT_HEALS_FROM_BINGLE_HOLES,
-		TRAIT_BINGLE,
 	)
 
 	var/stamina_damage = 50
@@ -88,7 +87,7 @@
 /mob/living/simple_animal/hostile/bingle/lord
 	name = "bingle lord"
 	real_name = "bingle lord"
-	desc = "A rather large funny lil blue guy."
+	desc = "Тёмно-фиолетовое существо, чем-то напоминающее гориллу. Этот выглядит больше остальных..."
 	icon = 'icons/mob/bingle/binglelord.dmi'
 	icon_state = "binglelord"
 	icon_living = "binglelord"
@@ -97,6 +96,7 @@
 	maxHealth = 200
 	health = 200
 
+	environment_smash = ENVIRONMENT_SMASH_RWALLS
 	melee_damage_lower = 10
 	melee_damage_upper = 15
 	var/pit_spawner = /obj/effect/proc_holder/spell/bingle/spawn_hole

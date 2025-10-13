@@ -57,14 +57,14 @@
 //The gamemode specific ones are just so the gamemodes can query whether a player is old enough
 //(in game days played) to play that role
 GLOBAL_LIST_INIT(special_roles, list(
-	ROLE_ABDUCTOR = /datum/game_mode/abduction,	 // Abductor
+	ROLE_ABDUCTOR = /datum/game_mode/abduction,	// Abductor
 	ROLE_BLOB = /datum/game_mode/blob, // Blob
 	ROLE_CHANGELING = /datum/game_mode/changeling, // Changeling
-	ROLE_BORER,	 // Cortical borer
+	ROLE_BORER,	// Cortical borer
 	ROLE_CULTIST = /datum/game_mode/cult, // Cultist
 	ROLE_CLOCKER = /datum/game_mode/clockwork, // Clockwork Cultist
-	ROLE_DEMON,	 // Demons (Slaughter/Laughter/Shadow)
-	ROLE_DEVIL,	 // Devil
+	ROLE_DEMON,	// Demons (Slaughter/Laughter/Shadow)
+	ROLE_DEVIL,	// Devil
 	ROLE_GSPIDER, // Giant spider
 	ROLE_GUARDIAN, // Guardian
 	ROLE_ELITE, // Lavaland Elite
@@ -79,7 +79,7 @@ GLOBAL_LIST_INIT(special_roles, list(
 	ROLE_SENTIENT, // Sentient animal
 	ROLE_SHADOWLING = /datum/game_mode/shadowling, // Shadowling
 	ROLE_SPACE_DRAGON, // Space dragon
-	ROLE_NINJA,	 // Space ninja
+	ROLE_NINJA,	// Space ninja
 	ROLE_TERROR_SPIDER, // Terror Spider
 	ROLE_THIEF = /datum/game_mode/thief, // Thief
 	ROLE_THUNDERDOME, // Thunderdome
@@ -88,7 +88,7 @@ GLOBAL_LIST_INIT(special_roles, list(
 	ROLE_VAMPIRE = /datum/game_mode/vampire, // Vampire
 	ROLE_RAIDER = /datum/game_mode/heist, // Vox raider
 	ROLE_WIZARD = /datum/game_mode/wizard, // Wizard
-	ROLE_ALIEN,	 // Xenomorph
+	ROLE_ALIEN,	// Xenomorph
 	ROLE_BINGLE, // Bingle
 ))
 
