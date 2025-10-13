@@ -6,7 +6,7 @@
 /// How often based on item_value_consumed do we grow the pit
 #define GROWTH_VALUE 100
 /// How often based on item_value_consumed do we spawn a bingle
-#define BINGLE_SPAWN_VALUE  50
+#define BINGLE_SPAWN_VALUE 50
 /// At what item_value_consumed do bingles become evolved
 #define BINGLE_EVOLVE_VALUE 500
 /// How much do we gain from living beings
