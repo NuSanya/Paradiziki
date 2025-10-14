@@ -4,8 +4,9 @@
  * but do want to be loaded under certain circumstances. Use this for stuff like the nukie base or wizden, aka stuff that only matters when their antag is rolled.
  */
 /datum/lazy_template
-	/// If this is true each load will increment an index keyed to the type and it will load [map_name]_[index]
+	/// List all all used reservations for this template
 	var/list/datum/turf_reservation/reservations = list()
+	/// If this is true each load will increment an index keyed to the type and it will load [map_name]_[index]
 	var/uses_multiple_allocations = FALSE
 	/// Key to identify this template - used in caching
 	var/key

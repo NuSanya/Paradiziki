@@ -45,6 +45,8 @@ GLOBAL_LIST(bingle_mobs)
 	COOLDOWN_DECLARE(bomb_cooldown)
 	/// Have we made an announcement about biohazard or not
 	var/announcement_made = FALSE
+	/// Have we evolved our current bingles or not
+	var/bingles_evolved
 
 /obj/structure/bingle_hole/Initialize(mapload)
 	..()
@@ -151,13 +153,16 @@ GLOBAL_LIST(bingle_mobs)
 	if(desired_pit_size > current_pit_size)
 		grow_pit(desired_pit_size)
 
-	// Evolve bingles and buff if item_value_consumed >= BINGLE_EVOLVE_VALUE
-	for(var/datum/mind/bingle_mind as anything in bingle_team?.members)
-		if(item_value_consumed < BINGLE_EVOLVE_VALUE)
-			return
+	if(bingles_evolved)
+		return
 
+	if(item_value_consumed < BINGLE_EVOLVE_VALUE)
+		return
+
+	bingles_evolved = TRUE
+	for(var/datum/mind/bingle_mind as anything in bingle_team?.members)
 		var/mob/living/simple_animal/hostile/bingle/bong = bingle_mind.current
-		if(!bong || bong.evolved)
+		if(bong?.evolved)
 			continue
 
 		SEND_SIGNAL(bong, COMSIG_BINGLE_EVOLVE)

@@ -25,18 +25,25 @@
 	attack_sound = 'sound/effects/blobattack.ogg'
 	butcher_results = null
 
+	/// Flag to check if we are already evolved or not
 	var/evolved = FALSE
+	/// Static list of all traits used by bingles
 	var/static/list/bingle_traits = list(
 		TRAIT_HEALS_FROM_BINGLE_HOLES,
 	)
 
+	/// Additional stamina damage on attack
 	var/stamina_damage = 50
 
-	// everything death related
+	/// The minimum amount of reagents used on death
 	var/reagents_amount_min = 3
+	/// The maximum amount of reagents used on death
 	var/reagents_amount_max = 5
+	/// The minimum units amount of a reagent used on death
 	var/reagent_min = 20
+	/// The maximum units amount of a reagent used on death
 	var/reagent_max = 30
+	/// The range of the smoke on death
 	var/smoke_range = 2
 
 /mob/living/simple_animal/hostile/bingle/ComponentInitialize()
@@ -127,7 +134,10 @@
 	. = ..()
 	update_icon()
 
+///
 /mob/living/simple_animal/hostile/bingle/proc/evolve()
+	SIGNAL_HANDLER
+
 	icon_state = "bingle_armored"
 	maxHealth = 200
 	health = 200
@@ -138,6 +148,8 @@
 	evolved = TRUE
 
 /mob/living/simple_animal/hostile/bingle/lord/evolve()
+	SIGNAL_HANDLER
+
 	maxHealth = 300
 	health = 300
 	obj_damage = 100
@@ -146,27 +158,9 @@
 	armour_penetration = 20
 	evolved = TRUE
 
-/mob/living/simple_animal/hostile/bingle/update_icon(updates)
-	. = ..()
-	if(evolved)
-		if(a_intent == INTENT_HARM)
-			icon_state = "binglearmored_combat"
-		else
-			icon_state = "binglearmored"
-		return
-	else if(a_intent == INTENT_HARM)
-		icon_state = "bingle_combat"
-	else
-		icon_state = "bingle"
-
-/mob/living/simple_animal/hostile/bingle/lord/update_icon(updates)
-	. = ..()
-	if(a_intent == INTENT_HARM)
-		icon_state = "binglelord_combat"
-	else
-		icon_state = "binglelord"
-
 /mob/living/simple_animal/hostile/bingle/proc/on_death()
+	SIGNAL_HANDLER
+
 	var/list/possible_chems = list(
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,
@@ -226,6 +220,8 @@
 	gib()
 
 /mob/living/simple_animal/hostile/bingle/lord/on_death()
+	SIGNAL_HANDLER
+
 	var/list/possible_chems = list(
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,

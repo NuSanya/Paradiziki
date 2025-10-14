@@ -1847,12 +1847,12 @@ GLOBAL_LIST_EMPTY(admin_objective_list)
 /datum/objective/bingle_lord
 	needs_target = FALSE
 	antag_menu_name = "Создать яму"
-	explanation_text = "Найдите на станции укромное место, где вы сможете быстро напитывать вашу яму."
+	explanation_text = "Найдите на станции укромное место, где вы сможете быстро напитать вашу яму."
 
 /datum/objective/bingle
 	needs_target = FALSE
 	antag_menu_name = "Защищайте и наращивайте вашу яму."
-	explanation_text = "Тащите в яму всё, что попадётся под руки. Яма должна вырасти до размера 40 на 40."
+	explanation_text = "Тащите в яму всё, что попадётся под ноги. Яма должна вырасти до размера 40 на 40."
 	var/obj/structure/bingle_hole/pit_check
 
 /datum/objective/bingle/check_completion()
