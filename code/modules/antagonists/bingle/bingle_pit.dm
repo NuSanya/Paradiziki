@@ -75,7 +75,7 @@ GLOBAL_LIST(bingle_mobs)
 	SSbingle_pit.remove_bingle_hole(src)
 	spit_em_out()
 	// Gib all bingles in the world on pit destruction
-	for(var/mob/living/simple_animal/hostile/bingle/bingle in GLOB.bingle_mobs)
+	for(var/mob/living/simple_animal/hostile/bingle/bingle as anything in GLOB.bingle_mobs)
 		bingle?.gib()
 	QDEL_LIST(pit_overlays)
 	return ..()
@@ -152,7 +152,7 @@ GLOBAL_LIST(bingle_mobs)
 		grow_pit(desired_pit_size)
 
 	// Evolve bingles and buff if item_value_consumed >= BINGLE_EVOLVE_VALUE
-	for(var/datum/mind/bingle_mind in bingle_team?.members)
+	for(var/datum/mind/bingle_mind as anything in bingle_team?.members)
 		if(item_value_consumed < BINGLE_EVOLVE_VALUE)
 			return
 
@@ -374,8 +374,11 @@ GLOBAL_LIST(bingle_mobs)
 					T.dismantle_wall(TRUE)
 					item_value_consumed++
 				if(!announcement_made)
-					GLOB.minor_announcement.announce("Обнаружено массовое нашествие Бинглов на [station_name()]!. Весь экипаж станции должен в срочном порядке защищить станцию от уничтожения.",
-									ANNOUNCE_BIOHAZARD_RU)
+					GLOB.major_announcement.announce(
+						message = "Обнаружено массовое нашествие Бинглов на [station_name()]. Действие космического закона и стандартных рабочих процедур приостановлено. Всему экипажу надлежит защитить станцию от неминуемого уничтожения.",
+						new_title = ANNOUNCE_BIOHAZARD_RU,
+						new_sound = 'sound/effects/siren-spooky.ogg'
+					)
 					announcement_made = TRUE
 	current_pit_size = new_size
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
@@ -385,6 +388,17 @@ GLOBAL_LIST(bingle_mobs)
 	if(istype(mover, /obj/projectile))
 		return FALSE
 	return ..()
+
+/obj/structure/bingle_hole/get_ru_names()
+	return list(
+		NOMINATIVE = "яма бинглов",
+		GENITIVE = "ямы бинглов",
+		DATIVE = "яме бинглов",
+		ACCUSATIVE = "яму бинглов",
+		INSTRUMENTAL = "ямой бинглов",
+		PREPOSITIONAL = "яме бинглов"
+	)
+
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
@@ -495,6 +509,16 @@ GLOBAL_LIST(bingle_mobs)
 			eligible_turfs += floor
 	if(length(eligible_turfs))
 		return pick(eligible_turfs)
+
+/obj/structure/bingle_pit_overlay/get_ru_names()
+	return list(
+		NOMINATIVE = "яма бинглов",
+		GENITIVE = "ямы бинглов",
+		DATIVE = "яме бинглов",
+		ACCUSATIVE = "яму бинглов",
+		INSTRUMENTAL = "ямой бинглов",
+		PREPOSITIONAL = "яме бинглов"
+	)
 
 /area/misc/bingle_pit
 	name = "Bingle Pit"

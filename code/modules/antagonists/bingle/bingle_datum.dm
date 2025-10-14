@@ -18,7 +18,7 @@ if too much trash on ground bingles roll
 
 /datum/antagonist/bingle/greet()
 	var/list/messages = list()
-	messages.Add(span_danger("<center>Вы - Бингл!</center>"))
+	messages.Add(span_danger("<center>Вы — Бингл!</center>"))
 	messages.Add("<center>Работайте сообща, помогайте своим братьям, разбирайте станцию, тащите экипаж в яму, сделайте из этой станции одну большую дыру!</center>")
 	SEND_SOUND(owner.current, sound('sound/ambience/antag/bingle.ogg'))
 	return messages

@@ -247,3 +247,23 @@
 	smoke.start()
 
 	gib()
+
+/mob/living/simple_animal/hostile/bingle/get_ru_names()
+	return list(
+		NOMINATIVE = "бингл",
+		GENITIVE = "бингла",
+		DATIVE = "бинглу",
+		ACCUSATIVE = "бингла",
+		INSTRUMENTAL = "бинглом",
+		PREPOSITIONAL = "бингле"
+	)
+
+/mob/living/simple_animal/hostile/bingle/lord/get_ru_names()
+	return list(
+		NOMINATIVE = "лорд бинглов",
+		GENITIVE = "лорда бинглов",
+		DATIVE = "лорду бинглов",
+		ACCUSATIVE = "лорда бинглов",
+		INSTRUMENTAL = "лордом бинглов",
+		PREPOSITIONAL = "лорде бинглов"
+	)
