@@ -83,8 +83,8 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_hole/examine(mob/user)
 	. = ..()
 	if(isbingle(user))
-		. += span_alert("В яме находится [item_value_consumed] предметов!")
-		. += span_notice("Существа могут туда упасть, когда в яме будет минимум [GROWTH_VALUE] предметов!")
+		. += span_alert("В яме находится [item_value_consumed] предмет[declension_ru(item_value_consumed, "", "а", "ов")]!")
+		. += span_notice("Существа могут упасть в яму только если в ней будет минимум [GROWTH_VALUE] предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
 
 /obj/structure/bingle_hole/CanAStarPass(to_dir, datum/can_pass_info/pass_info)
 	if(!pass_info.is_living)
@@ -388,7 +388,7 @@ GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
-	desc = "Что-то манит вас туда упасть."
+	desc = "Что-то словно манит вас прыгнуть туда..."
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	layer = CLOSED_TURF_LAYER
 	anchored = TRUE
@@ -458,8 +458,8 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_pit_overlay/examine(mob/user)
 	. = ..()
 	if(parent_pit && isbingle(user))
-		. += span_alert("В яме находится [parent_pit.item_value_consumed] предметов!")
-		. += span_notice("Существа могут туда упасть, когда в яме будет минимум [GROWTH_VALUE] предметов!")
+		. += span_alert("В яме находится [parent_pit.item_value_consumed] предмет[declension_ru(parent_pit.item_value_consumed, "", "а", "ов")]!")
+		. += span_notice("Существа могут упасть в яму только если в ней будет минимум [GROWTH_VALUE] предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
 
 // Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()

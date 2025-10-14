@@ -28,7 +28,7 @@ SUBSYSTEM_DEF(bingle_pit)
 	//cache for sanic speed (lists are references anyways)
 	var/list/current_run = currentrun
 
-	while(current_run.len)
+	while(length(current_run))
 		var/obj/structure/bingle_hole/hole = current_run[current_run.len]
 		current_run.len--
 		hole.process(wait * 0.1)
