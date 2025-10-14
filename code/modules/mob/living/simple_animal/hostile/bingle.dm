@@ -148,18 +148,20 @@
 	evolved = TRUE
 
 /mob/living/simple_animal/hostile/bingle/lord/evolve()
-	SIGNAL_HANDLER
-
+	..()
+	icon_state = "binglelord"
 	maxHealth = 300
 	health = 300
 	obj_damage = 100
 	melee_damage_lower = 15
 	melee_damage_upper = 20
 	armour_penetration = 20
-	evolved = TRUE
 
 /mob/living/simple_animal/hostile/bingle/proc/on_death()
 	SIGNAL_HANDLER
+
+	if(type != /mob/living/simple_animal/hostile/bingle)
+		return
 
 	var/list/possible_chems = list(
 		/datum/reagent/plasma,
@@ -220,8 +222,7 @@
 	gib()
 
 /mob/living/simple_animal/hostile/bingle/lord/on_death()
-	SIGNAL_HANDLER
-
+	..()
 	var/list/possible_chems = list(
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,
