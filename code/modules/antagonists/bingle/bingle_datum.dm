@@ -31,8 +31,6 @@ if too much trash on ground bingles roll
 		var/datum/objective/bingle/bingle_obj = add_objective(/datum/objective/bingle)
 		bingle_obj.pit_check = bingle_team.pit_check
 
-	return TRUE
-
 /datum/antagonist/bingle/get_team()
 	return bingle_team
 
@@ -59,16 +57,19 @@ if too much trash on ground bingles roll
 	T.range = 1
 	return T
 
-/obj/effect/proc_holder/spell/bingle/spawn_hole/can_cast(mob/living/user = usr, charge_check = TRUE, show_message = FALSE)
-	if(!isbingle(user))
-		return FALSE
+/obj/effect/proc_holder/spell/bingle/spawn_hole/can_cast(mob/user = usr, charge_check = TRUE, show_message = FALSE)
 	. = ..()
 
-/obj/effect/proc_holder/spell/bingle/spawn_hole/cast(list/targets, mob/user = usr)
+	if(!isbingle(user))
+		return FALSE
+
 	var/turf/selected_turf = get_turf(user)
 	if(!check_hole_spawn(selected_turf))
+		user.balloon_alert(user, "нет места!")
 		to_chat(user, span_warning("Недостаточно места для ямы! Требуется минимум 3 на 3 метра свободного пространства."))
 		return FALSE
+
+/obj/effect/proc_holder/spell/bingle/spawn_hole/cast(list/targets, mob/user = usr)
 	spawn_hole(selected_turf, user)
 
 /obj/effect/proc_holder/spell/bingle/spawn_hole/proc/check_hole_spawn(turf/selected_turf)
@@ -81,9 +82,12 @@ if too much trash on ground bingles roll
 	var/datum/antagonist/bingle/bingle_datum = user.mind?.has_antag_datum(/datum/antagonist/bingle)
 	if(!bingle_datum)
 		return
+
 	if(!selected_turf)
+		user.balloon_alert(user, "нету пола!")
 		to_chat(user, span_notice("Под вами нету пола!"))
 		return
+
 	var/obj/structure/bingle_hole/hole = new(selected_turf)
 
 	// Complete the bingle lord objective
