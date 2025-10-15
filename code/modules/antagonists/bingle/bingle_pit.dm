@@ -12,6 +12,11 @@
 /// How much do we gain from living beings
 #define LIVING_VALUE 10
 
+/// How much the pit should heal from LIVING_VALUE multiplied by this
+#define LIVING_HEAL_MULTIPLIER 2.5
+/// Maximum of what we can get healed by items
+#define ITEM_HEAL_MAXIMUM 25
+
 GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_hole
@@ -65,7 +70,6 @@ GLOBAL_LIST(bingle_mobs)
 		COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON = PROC_REF(on_entered),
 	)
 	AddElement(/datum/element/connect_loc, loc_connections)
-	AddComponent(/datum/component/obj_regenerate)
 	return INITIALIZE_HINT_LATELOAD
 
 /obj/structure/bingle_hole/LateInitialize()
@@ -187,6 +191,7 @@ GLOBAL_LIST(bingle_mobs)
 		return FALSE
 	victim.add_traits(list(TRAIT_FALLING_INTO_BINGLE_HOLE, TRAIT_NO_TRANSFORM), UNIQUE_TRAIT_SOURCE(src))
 	item_value_consumed += get_item_value(victim)
+	repair_damage(LIVING_HEAL_MULTIPLIER * LIVING_VALUE)
 	// Only animate if we're actually swallowing
 	animate_falling_into_pit(victim)
 	// Delay the actual movement to let animation play
@@ -207,6 +212,7 @@ GLOBAL_LIST(bingle_mobs)
 		return FALSE
 	ADD_TRAIT(thing, TRAIT_FALLING_INTO_BINGLE_HOLE, UNIQUE_TRAIT_SOURCE(src))
 	item_value_consumed += get_item_value(thing)
+	repair_damage(clamp(get_item_value(thing), 0, ITEM_HEAL_MAXIMUM))
 	for(var/atom/movable/content as anything in thing.get_all_contents() - thing)
 		if(QDELETED(content) || HAS_TRAIT(content, TRAIT_FALLING_INTO_BINGLE_HOLE) || isbrain(content))
 			continue
@@ -214,6 +220,7 @@ GLOBAL_LIST(bingle_mobs)
 			content.forceMove(content.drop_location())
 		else if(isobj(content))
 			item_value_consumed += get_item_value(content)
+			repair_damage(clamp(get_item_value(thing), 0, ITEM_HEAL_MAXIMUM))
 	// Only animate if we're actually swallowing
 	animate_falling_into_pit(thing)
 	// Delay the actual movement to let animation play
@@ -432,9 +439,11 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_pit_overlay/ex_act(severity, target)
 	return parent_pit.ex_act(severity, target)
 
-/obj/structure/bingle_pit_overlay/attackby(obj/item/W, mob/user)
+/obj/structure/bingle_pit_overlay/attackby(obj/item/W, mob/user, params)
 	if(parent_pit)
-		return parent_pit.attackby(W, user)
+		user.do_attack_animation(src) // hacky but well
+		parent_pit.attackby(W, user)
+		return
 
 	return ..()
 
@@ -530,3 +539,5 @@ GLOBAL_LIST(bingle_mobs)
 #undef BINGLE_SPAWN_VALUE
 #undef BINGLE_EVOLVE_VALUE
 #undef LIVING_VALUE
+#undef LIVING_HEAL_MULTIPLIER
+#undef ITEM_HEAL_MAXIMUM

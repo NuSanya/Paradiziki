@@ -63,13 +63,13 @@ if too much trash on ground bingles roll
 	if(!isbingle(user))
 		return FALSE
 
-	var/turf/selected_turf = get_turf(user)
-	if(!check_hole_spawn(selected_turf))
+	if(!check_hole_spawn(get_turf(user)))
 		user.balloon_alert(user, "нет места!")
 		to_chat(user, span_warning("Недостаточно места для ямы! Требуется минимум 3 на 3 метра свободного пространства."))
 		return FALSE
 
 /obj/effect/proc_holder/spell/bingle/spawn_hole/cast(list/targets, mob/user = usr)
+	var/turf/selected_turf = get_turf(user)
 	spawn_hole(selected_turf, user)
 
 /obj/effect/proc_holder/spell/bingle/spawn_hole/proc/check_hole_spawn(turf/selected_turf)
