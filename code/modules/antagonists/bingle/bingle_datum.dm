@@ -6,6 +6,7 @@ if too much trash on ground bingles roll
 	roundend_category = "bingles"
 	job_rank = ROLE_BINGLE
 	antag_hud_name = "hudbingle"
+	show_in_orbit = FALSE
 	var/static/datum/team/bingles/bingle_team
 
 /datum/antagonist/bingle/on_gain()

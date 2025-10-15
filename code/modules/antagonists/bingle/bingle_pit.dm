@@ -24,7 +24,7 @@ GLOBAL_LIST(bingle_mobs)
 	light_color = LIGHT_COLOR_BABY_BLUE
 	light_range = 5
 	anchored = TRUE
-	layer = ABOVE_NORMAL_TURF_LAYER
+	layer = PROJECTILE_HIT_THRESHHOLD_LAYER
 	/// Values of all consumed items combined
 	var/item_value_consumed = 0
 	/// Current pit size (1x1, 2x2, etc.)
@@ -323,8 +323,6 @@ GLOBAL_LIST(bingle_mobs)
 		aura_healing.range = 3
 		return
 
-	src.icon_state = "" // Make the pit itself invisible
-
 	// Calculate coordinates properly for both even and odd sizes
 	var/start_coord, end_coord
 	if(new_size % 2 == 1) // Odd sizes (1, 3, 5, etc.)
@@ -363,7 +361,7 @@ GLOBAL_LIST(bingle_mobs)
 				icon_state_to_use = "edge_east"         // right edge
 			// Center fill
 			else
-				icon_state_to_use = "filler"
+				icon_state_to_use = "filler[rand(1, 4)]"
 
 			var/obj/structure/bingle_pit_overlay/overlay = new(T, src)
 			overlay.icon_state = icon_state_to_use
@@ -389,11 +387,6 @@ GLOBAL_LIST(bingle_mobs)
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
 	max_integrity += INTEGRITY_INCREASE_VALUE
 
-/obj/structure/bingle_hole/CanAllowThrough(atom/movable/mover, border_dir)
-	if(istype(mover, /obj/projectile))
-		return FALSE
-	return ..()
-
 /obj/structure/bingle_hole/get_ru_names()
 	return list(
 		NOMINATIVE = "яма бинглов",
@@ -409,7 +402,7 @@ GLOBAL_LIST(bingle_mobs)
 	name = "bingle pit"
 	desc = "Что-то словно манит вас прыгнуть туда..."
 	icon = 'icons/mob/bingle/binglepit.dmi'
-	layer = CLOSED_TURF_LAYER
+	layer = BELOW_OBJ_LAYER
 	anchored = TRUE
 	mouse_opacity = MOUSE_OPACITY_OPAQUE
 	var/obj/structure/bingle_hole/parent_pit

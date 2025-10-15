@@ -134,10 +134,11 @@
 	. = ..()
 	update_icon()
 
-///
-/mob/living/simple_animal/hostile/bingle/proc/evolve()
+/mob/living/simple_animal/hostile/bingle/proc/on_evolve()
 	SIGNAL_HANDLER
+	evolve()
 
+/mob/living/simple_animal/hostile/bingle/proc/evolve()
 	icon_state = "bingle_armored"
 	maxHealth = 200
 	health = 200
@@ -148,8 +149,7 @@
 	evolved = TRUE
 
 /mob/living/simple_animal/hostile/bingle/lord/evolve()
-	..()
-	icon_state = "binglelord"
+	icon_state = "binglelord_armored"
 	maxHealth = 300
 	health = 300
 	obj_damage = 100
@@ -159,10 +159,10 @@
 
 /mob/living/simple_animal/hostile/bingle/proc/on_death()
 	SIGNAL_HANDLER
+	smoke_on_death()
+	gib()
 
-	if(type != /mob/living/simple_animal/hostile/bingle)
-		return
-
+/mob/living/simple_animal/hostile/bingle/proc/smoke_on_death()
 	var/list/possible_chems = list(
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,
@@ -219,10 +219,7 @@
 	smoke.set_up(range = smoke_range, location = loc, carry = reagents_list, silent = TRUE)
 	smoke.start()
 
-	gib()
-
-/mob/living/simple_animal/hostile/bingle/lord/on_death()
-	..()
+/mob/living/simple_animal/hostile/bingle/lord/smoke_on_death()
 	var/list/possible_chems = list(
 		/datum/reagent/plasma,
 		/datum/reagent/space_drugs,
@@ -242,8 +239,6 @@
 	var/datum/effect_system/fluid_spread/smoke/chem/smoke = new
 	smoke.set_up(range = smoke_range, location = loc, carry = reagents_list, silent = TRUE)
 	smoke.start()
-
-	gib()
 
 /mob/living/simple_animal/hostile/bingle/get_ru_names()
 	return list(
