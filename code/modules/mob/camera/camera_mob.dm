@@ -12,10 +12,12 @@
 	move_on_shuttle = FALSE
 
 /mob/camera/Initialize(mapload)
+	. = ..()
 	ADD_TRAIT(src, TRAIT_GODMODE, UNIQUE_TRAIT_SOURCE(src))
 
 /mob/camera/Destroy()
 	REMOVE_TRAIT(src, TRAIT_GODMODE, UNIQUE_TRAIT_SOURCE(src))
+	return ..()
 
 /mob/camera/experience_pressure_difference(flow_x, flow_y)
 	return // Immune to gas flow.
