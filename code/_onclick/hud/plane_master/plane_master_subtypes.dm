@@ -246,12 +246,12 @@
 
 /atom/movable/screen/plane_master/camera_static/show_to(mob/mymob)
 	// If we aren't an AI, we have no need for this plane master (most of the time, ai eyes are weird and annoying)
-	if(force_hidden && isAI(mymob))
+	if(force_hidden && is_ai(mymob))
 		unhide_plane(mymob)
 	. = ..()
 	if(!.)
 		return
-	if(isAI(mymob))
+	if(is_ai(mymob))
 		return
 	return FALSE
 

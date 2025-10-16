@@ -168,7 +168,7 @@ GLOBAL_LIST_INIT(ungibbable_items_types, get_ungibbable_items_types())
 	if(!istype(card))
 		return FALSE
 	for(var/mob/living/silicon/ai/ai in card)
-		if(isAI(ai) && ai.stat != DEAD) //See if any AI's are alive inside that card.
+		if(is_ai(ai) && ai.stat != DEAD) //See if any AI's are alive inside that card.
 			return TRUE
 	return FALSE
 

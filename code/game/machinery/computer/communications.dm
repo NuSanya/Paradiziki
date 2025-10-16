@@ -148,7 +148,7 @@ GLOBAL_VAR_INIT(captain_auth_access, ACCESS_CAPTAIN)
 
 		if("newalertlevel")
 			var/code = text2num(params["level"])
-			if(isAI(ui.user) || isrobot(ui.user))
+			if(is_ai(ui.user) || isrobot(ui.user))
 				to_chat(ui.user, span_warning("Брандмауэры не позволяют вам изменить уровень угрозы."))
 				return
 			else if(ADMIN_CHECK(ui.user))
@@ -199,7 +199,7 @@ GLOBAL_VAR_INIT(captain_auth_access, ACCESS_CAPTAIN)
 			setMenuState(ui.user, COMM_SCREEN_MAIN)
 
 		if("cancelshuttle")
-			if(isAI(ui.user) || isrobot(ui.user))
+			if(is_ai(ui.user) || isrobot(ui.user))
 				to_chat(ui.user, span_warning("Брандмауэры не позволяют вам отозвать шаттл."))
 				return
 			var/response = tgui_alert(ui.user, "Вы уверены, что хотите отозвать шаттл?", "Подтверждение", list("Да", "Нет"))
@@ -477,7 +477,7 @@ GLOBAL_VAR_INIT(captain_auth_access, ACCESS_CAPTAIN)
 
 /obj/machinery/computer/communications/ui_data(mob/user)
 	var/list/data = list()
-	data["is_ai"]         = isAI(user) || isrobot(user)
+	data["is_ai"]         = is_ai(user) || isrobot(user)
 	data["noauthbutton"]  = !ishuman(user)
 	data["menu_state"]    = data["is_ai"] ? ai_menu_state : menu_state
 	data["emagged"]       = emagged
@@ -568,19 +568,19 @@ GLOBAL_VAR_INIT(captain_auth_access, ACCESS_CAPTAIN)
 	return data
 
 /obj/machinery/computer/communications/proc/setCurrentMessage(mob/user, value)
-	if(isAI(user) || isrobot(user))
+	if(is_ai(user) || isrobot(user))
 		aicurrmsg = value
 	else
 		currmsg = value
 
 /obj/machinery/computer/communications/proc/getCurrentMessage(mob/user)
-	if(isAI(user) || isrobot(user))
+	if(is_ai(user) || isrobot(user))
 		return aicurrmsg
 	else
 		return currmsg
 
 /obj/machinery/computer/communications/proc/setMenuState(mob/user, value)
-	if(isAI(user) || isrobot(user))
+	if(is_ai(user) || isrobot(user))
 		ai_menu_state=value
 	else
 		menu_state=value

@@ -188,7 +188,7 @@ GLOBAL_VAR_INIT(nologevent, 0)
 
 
 	var/jumptoeye = ""
-	if(isAI(M))
+	if(is_ai(M))
 		var/mob/living/silicon/ai/A = M
 		if(A.client && A.eyeobj) // No point following clientless AI eyes
 			jumptoeye = " <b>(<a href='byond://?_src_=holder;jumpto=[A.eyeobj.UID()]'>Eye</a>)</b>"
@@ -230,7 +230,7 @@ GLOBAL_VAR_INIT(nologevent, 0)
 				body += "<a href='byond://?_src_=holder;makegorilla=[M.UID()]'>Gorillize</a> | "
 
 			//AI / Cyborg
-			if(isAI(M))
+			if(is_ai(M))
 				body += "<b>Is an AI</b> "
 			else if(ishuman(M))
 				body += {"<a href='byond://?_src_=holder;makeai=[M.UID()]'>AI</a> |
@@ -899,7 +899,7 @@ GLOBAL_VAR_INIT(nologevent, 0)
 		if(istype(S, /mob/living/silicon/decoy) && !S.client)
 			continue
 		ai_number++
-		if(isAI(S))
+		if(is_ai(S))
 			messages += "<b>AI [key_name(S, TRUE)]'s laws:</b>"
 		else if(isrobot(S))
 			var/mob/living/silicon/robot/R = S

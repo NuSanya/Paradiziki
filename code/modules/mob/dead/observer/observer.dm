@@ -234,7 +234,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		warningmsg = "Вы совершили самоубийство в раунде слишком рано."
 	else if(stat != DEAD)
 		warningmsg = "Вы живы."
-		if(isAI(src))
+		if(is_ai(src))
 			warningmsg = "Вы живой ИИ! Вам, вероятно, следует использовать OOC -> Wipe Core."
 	else if(GLOB.non_respawnable_keys[ckey])
 		warningmsg = "Вы потеряли право на возрождение."
@@ -606,7 +606,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 /proc/ghost_follow_link(atom/target, atom/ghost)
 	if((!target) || (!ghost)) return
-	if(isAI(target)) // AI core/eye follow links
+	if(is_ai(target)) // AI core/eye follow links
 		var/mob/living/silicon/ai/A = target
 		. = "<a href='byond://?src=[ghost.UID()];follow=[A.UID()]'>ядро</a>"
 		if(A.client && A.eyeobj) // No point following clientless AI eyes

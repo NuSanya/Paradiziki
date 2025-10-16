@@ -375,7 +375,7 @@
 		. = islist(message_larva) ? pick(message_larva) : message_larva
 	else if(issilicon(user) && message_robot)
 		. = islist(message_robot) ? pick(message_robot) : message_robot
-	else if(isAI(user) && message_AI)
+	else if(is_ai(user) && message_AI)
 		. = islist(message_AI) ? pick(message_AI) : message_AI
 	else if(is_monkeybasic(user) && message_monkey)
 		. = islist(message_monkey) ? pick(message_monkey) : message_monkey

@@ -252,7 +252,7 @@
  * Gives a traitor their uplink, and uplink code.
  */
 /datum/antagonist/traitor/proc/give_uplink()
-	if(isAI(owner.current))
+	if(is_ai(owner.current))
 		return FALSE
 
 	var/mob/living/carbon/human/traitor_mob = owner.current

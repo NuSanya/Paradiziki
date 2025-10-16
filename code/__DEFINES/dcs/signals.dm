@@ -1556,3 +1556,10 @@
 #define SIGNAL_DIABLERIE_LEVEL_GAIN "diablerie_level_gain"
 /// From /datum/diablerie_level/proc/remove()
 #define SIGNAL_DIABLERIE_LEVEL_REMOVE "diablerie_level_remove"
+
+/// Called on cameras after activation: (mob/user, display_message)
+#define COMSIG_CAMERA_ON "camera_on"
+/// Called on cameras after deactivation: (mob/user, display_message, emped)
+#define COMSIG_CAMERA_OFF "camera_off"
+/// Called on cameras when moved, such as ones inside helmets: (turf/prev_turf)
+#define COMSIG_CAMERA_MOVED "camera_moved"

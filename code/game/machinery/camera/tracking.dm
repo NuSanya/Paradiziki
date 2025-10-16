@@ -42,7 +42,7 @@
 		return 0
 
 	var/obj/machinery/camera/C = track.cameras[camera]
-	src.eyeobj.setLoc(C)
+	src.eyeobj.set_loc(C)
 
 	return
 
@@ -85,7 +85,7 @@
 		return
 
 	var/L = stored_locations[loc]
-	src.eyeobj.setLoc(L)
+	src.eyeobj.set_loc(L)
 
 /mob/living/silicon/ai/proc/ai_remove_location(loc in sorted_stored_locations())
 	set category = STATPANEL_AICOMMANDS
@@ -158,18 +158,18 @@
 	ai_actual_track(target)
 
 /mob/living/silicon/ai/proc/ai_cancel_tracking(forced = 0)
-	if(!cameraFollow)
+	if(!camera_follow)
 		return
 
 	to_chat(src, "Follow camera mode [forced ? "terminated" : "ended"].")
-	cameraFollow = null
+	camera_follow = null
 
 /mob/living/silicon/ai/proc/ai_actual_track(mob/living/target)
 	if(!istype(target))
 		return
 	var/mob/living/silicon/ai/U = usr
 
-	U.cameraFollow = target
+	U.camera_follow = target
 	U.tracking = 1
 
 	to_chat(U, span_notice("Attempting to track [target.get_visible_name(add_id_name = FALSE)]..."))
@@ -179,15 +179,15 @@
 
 	if(!target || !target.can_track(usr))
 		to_chat(U, span_warning("Target is not near any active cameras."))
-		U.cameraFollow = null
+		U.camera_follow = null
 		return
 
 	to_chat(U, span_notice("Now tracking [target.get_visible_name(add_id_name = FALSE)] on camera."))
 
 	var/cameraticks = 0
 	spawn(0)
-		while(U.cameraFollow == target)
-			if(U.cameraFollow == null)
+		while(U.camera_follow == target)
+			if(U.camera_follow == null)
 				return
 
 			if(!target.can_track(usr))
@@ -196,7 +196,7 @@
 					to_chat(U, span_warning("Target is not near any active cameras. Attempting to reacquire..."))
 				cameraticks++
 				if(cameraticks > 9)
-					U.cameraFollow = null
+					U.camera_follow = null
 					to_chat(U, span_warning("Unable to reacquire, cancelling track..."))
 					U.tracking = 0
 					return
@@ -209,11 +209,11 @@
 				U.tracking = 0
 
 			if(U.eyeobj)
-				U.eyeobj.setLoc(get_turf(target))
+				U.eyeobj.set_loc(get_turf(target))
 
 			else
 				view_core()
-				U.cameraFollow = null
+				U.camera_follow = null
 				return
 
 			sleep(10)
@@ -223,9 +223,9 @@
 		return 0
 	if(isrobot(M))
 		var/mob/living/silicon/robot/R = M
-		if(!(R.camera && R.camera.can_use()) && !GLOB.cameranet.checkCameraVis(M))
+		if(!(R.camera && R.camera.can_use()) && !GLOB.cameranet.check_camera_vis(M))
 			return 0
-	else if(!GLOB.cameranet.checkCameraVis(M))
+	else if(!GLOB.cameranet.check_camera_vis(M))
 		return 0
 	return 1
 
@@ -234,7 +234,7 @@
 		return
 	if(!src.can_use())
 		return
-	user.eyeobj.setLoc(get_turf(src))
+	user.eyeobj.set_loc(get_turf(src))
 
 
 /mob/living/silicon/ai/attack_ai(mob/user)

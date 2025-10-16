@@ -96,7 +96,7 @@
 	if(!anchored)
 		to_chat(user,span_warning("This device must be anchored by a wrench!"))
 		return
-	if(!Adjacent(user) && !isAI(user))
+	if(!Adjacent(user) && !is_ai(user))
 		return
 	user.set_machine(src)
 	var/list/dat = list()

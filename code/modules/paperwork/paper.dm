@@ -162,7 +162,7 @@
 
 /obj/item/paper/attack_ai(mob/living/silicon/ai/user)
 	var/dist
-	if(isAI(user) && user.current) //is AI
+	if(is_ai(user) && user.current) //is AI
 		dist = get_dist(src, user.current)
 	else //cyborg or AI not seeing through a camera
 		dist = get_dist(src, user)

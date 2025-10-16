@@ -27,7 +27,7 @@
 
 	else if(iscarbon(speaker)) // Nonhuman carbon mob
 		jobname = "Без ID"
-	else if(isAI(speaker))
+	else if(is_ai(speaker))
 		jobname = JOB_TITLE_AI
 	else if(iscogscarab(speaker))
 		jobname = UNKNOWN_STATUS_RUS

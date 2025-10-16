@@ -23,7 +23,7 @@
 	if(climbable)
 		verbs += /obj/structure/proc/climb_on
 	if(SSticker)
-		GLOB.cameranet.updateVisibility(src)
+		GLOB.cameranet.update_visibility(src)
 
 /obj/structure/Initialize(mapload)
 	if(!armor)
@@ -34,7 +34,7 @@
 
 /obj/structure/Destroy(force)
 	if(SSticker)
-		GLOB.cameranet.updateVisibility(src)
+		GLOB.cameranet.update_visibility(src)
 	if(smooth)
 		var/turf/T = get_turf(src)
 		spawn(0)

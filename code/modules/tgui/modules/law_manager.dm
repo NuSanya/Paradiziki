@@ -155,7 +155,7 @@
 		if("notify_laws")
 			to_chat(owner, span_danger("УВЕДОМЛЕНИЕ О ЗАКОНЕ"))
 			owner.laws.show_laws(owner)
-			if(isAI(owner))
+			if(is_ai(owner))
 				var/mob/living/silicon/ai/AI = owner
 				for(var/mob/living/silicon/robot/R in AI.connected_robots)
 					to_chat(R, span_danger("УВЕДОМЛЕНИЕ О ЗАКОНЕ"))
@@ -194,7 +194,7 @@
 	package_laws(data, "inherent_laws", owner.laws.inherent_laws)
 	package_laws(data, "supplied_laws", owner.laws.supplied_laws)
 
-	data["isAI"] = isAI(owner)
+	data["isAI"] = is_ai(owner)
 	data["isMalf"] = is_malf(user)
 	data["isSlaved"] = owner.is_slaved()
 	data["isAdmin"] = is_admin(user)
@@ -232,7 +232,7 @@
 /datum/ui_module/law_manager/proc/is_malf(mob/user)
 	if(is_admin(user) && !owner.is_slaved())
 		return TRUE
-	if(isAI(owner))
+	if(is_ai(owner))
 		var/mob/living/silicon/ai/malf = owner
 		return malf.malf_picker
 	else

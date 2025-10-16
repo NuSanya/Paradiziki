@@ -91,7 +91,7 @@
 
 
 /obj/machinery/turretid/proc/isLocked(mob/user)
-	if(isrobot(user) && !iscogscarab(user) || isAI(user))
+	if(isrobot(user) && !iscogscarab(user) || is_ai(user))
 		if(ailock)
 			to_chat(user, span_notice("There seems to be a firewall preventing you from accessing this device."))
 			return TRUE

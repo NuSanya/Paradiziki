@@ -557,7 +557,7 @@
 											var/mob/living/silicon/robot/U = usr
 											rank = "[U.modtype?.name] [U.braintype]"
 											law_level = LAW_LEVEL_BASE
-										else if(isAI(usr))
+										else if(is_ai(usr))
 											rank = JOB_TITLE_AI
 											law_level = LAW_LEVEL_BASE
 										set_criminal_status(usr, R, setcriminal, t1, rank, law_level = law_level)

@@ -61,9 +61,9 @@
 
 	var/list/tempnetwork = difflist(src.network, GLOB.restricted_camera_networks)
 	if(length(tempnetwork))
-		GLOB.cameranet.addCamera(src)
+		GLOB.cameranet.add_camera(src)
 	else
-		GLOB.cameranet.removeCamera(src)
+		GLOB.cameranet.remove_camera(src)
 	if(isturf(loc))
 		LAZYADD(myArea.cameras, UID())
 	if(is_station_level(z) && prob(3) && !start_active)
@@ -74,7 +74,7 @@
 	SStgui.close_uis(wires)
 	QDEL_NULL(assembly)
 	QDEL_NULL(wires)
-	GLOB.cameranet.removeCamera(src) //Will handle removal from the camera network and the chunks, so we don't need to worry about that
+	GLOB.cameranet.remove_camera(src) //Will handle removal from the camera network and the chunks, so we don't need to worry about that
 	GLOB.cameranet.cameras -= src
 	if(isarea(myArea))
 		LAZYREMOVE(myArea.cameras, UID())
@@ -92,7 +92,7 @@
 			set_light_on(FALSE)
 			update_icon(UPDATE_ICON_STATE)
 
-			GLOB.cameranet.removeCamera(src)
+			GLOB.cameranet.remove_camera(src)
 
 			addtimer(CALLBACK(src, PROC_REF(triggerCameraAlarm)), 10 SECONDS, TIMER_UNIQUE|TIMER_DELETE_ME)
 			addtimer(CALLBACK(src, PROC_REF(restore_from_emp)), 90 SECONDS, TIMER_UNIQUE|TIMER_OVERRIDE|TIMER_DELETE_ME)
@@ -103,7 +103,7 @@
 	update_icon(UPDATE_ICON_STATE)
 
 	if(can_use())
-		GLOB.cameranet.addCamera(src)
+		GLOB.cameranet.add_camera(src)
 
 	cancelCameraAlarm()
 
@@ -114,7 +114,7 @@
 
 /obj/machinery/camera/proc/setViewRange(num = 7)
 	view_range = num
-	GLOB.cameranet.updateVisibility(src, opacity_check = FALSE)
+	GLOB.cameranet.update_visibility(src, opacity_check = FALSE)
 
 /obj/machinery/camera/singularity_pull(S, current_size)
 	if(status && current_size >= STAGE_FIVE) // If the singulo is strong enough to pull anchored objects and the camera is still active, turn off the camera as it gets ripped off the wall.
@@ -246,7 +246,7 @@
 	..()
 	target.update_icon(UPDATE_ICON_STATE)
 	//Update what it can see.
-	GLOB.cameranet.updateVisibility(target, opacity_check = FALSE)
+	GLOB.cameranet.update_visibility(target, opacity_check = FALSE)
 
 
 /obj/item/assembly/prox_sensor/camera_upgrade(obj/machinery/camera/target, power_use_update = TRUE)
@@ -299,7 +299,7 @@
 /obj/machinery/camera/proc/toggle_cam(mob/user, displaymessage = TRUE)
 	status = !status
 	if(can_use())
-		GLOB.cameranet.addCamera(src)
+		GLOB.cameranet.add_camera(src)
 		if(isturf(loc))
 			myArea = get_area(src)
 			LAZYADD(myArea.cameras, UID())
@@ -307,12 +307,12 @@
 			myArea = null
 	else
 		set_light_on(FALSE)
-		GLOB.cameranet.removeCamera(src)
+		GLOB.cameranet.remove_camera(src)
 		if(isarea(myArea))
 			LAZYREMOVE(myArea.cameras, UID())
 	// We are not guarenteed that the camera will be on a turf. account for that
 	var/turf/our_turf = get_turf(src)
-	GLOB.cameranet.updateChunk(our_turf.x, our_turf.y, our_turf.z)
+	GLOB.cameranet.update_visibility(our_turf)
 	var/change_msg = "deactivates"
 	if(status)
 		change_msg = "reactivates"
@@ -454,7 +454,7 @@
 		user.overlay_fullscreen("remote_view", /atom/movable/screen/fullscreen/impaired, 2)
 
 /obj/machinery/camera/update_remote_sight(mob/living/user)
-	if(isXRay() && isAI(user))
+	if(isXRay() && is_ai(user))
 		user.add_sight(SEE_TURFS|SEE_MOBS|SEE_OBJS)
 		user.nightvision = max(user.nightvision, 8)
 		user.lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE
@@ -477,7 +477,7 @@
 
 /obj/machinery/camera/portable/process() //Updates whenever the camera is moved.
 	if(GLOB.cameranet && get_turf(src) != prev_turf)
-		GLOB.cameranet.updatePortableCamera(src)
+		GLOB.cameranet.update_portable_camera(src)
 		prev_turf = get_turf(src)
 
 /obj/machinery/camera/portable/triggerCameraAlarm() // AI camera doesnt trigger alarm

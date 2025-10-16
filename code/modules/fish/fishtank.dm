@@ -640,7 +640,7 @@
 
 
 /obj/machinery/fishtank/attack_hand(mob/user)
-	if(isAI(user))
+	if(is_ai(user))
 		return
 	add_fingerprint(user)
 	user.changeNext_move(CLICK_CD_MELEE)

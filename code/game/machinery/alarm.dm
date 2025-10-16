@@ -675,7 +675,7 @@
 	return data
 
 /obj/machinery/alarm/proc/has_rcon_access(mob/user)
-	return user && (isAI(user) || allowed(user) || emagged || rcon_setting == RCON_YES)
+	return user && (is_ai(user) || allowed(user) || emagged || rcon_setting == RCON_YES)
 
 // Intentional nulls here
 /obj/machinery/alarm/ui_data(mob/user)
@@ -802,7 +802,7 @@
 		return TRUE
 	if(user.can_admin_interact())
 		return TRUE
-	else if(isAI(user) || (isrobot(user) || emagged || user.has_unlimited_silicon_privilege) && !iscogscarab(user))
+	else if(is_ai(user) || (isrobot(user) || emagged || user.has_unlimited_silicon_privilege) && !iscogscarab(user))
 		return TRUE
 	else
 		return !locked
@@ -811,7 +811,7 @@
 	if(buildstage != AIR_ALARM_READY)
 		return UI_CLOSE
 
-	if(aidisabled && (isAI(user) || isrobot(user)))
+	if(aidisabled && (is_ai(user) || isrobot(user)))
 		to_chat(user, span_warning("AI control for \the [src] interface has been disabled."))
 		return UI_CLOSE
 
@@ -943,7 +943,7 @@
 
 /obj/machinery/alarm/ui_state(mob/user)
 	if(issilicon(user))
-		if(isAI(user))
+		if(is_ai(user))
 			var/mob/living/silicon/ai/AI = user
 			if(!AI.lacks_power() || AI.apc_override)
 				return GLOB.always_state

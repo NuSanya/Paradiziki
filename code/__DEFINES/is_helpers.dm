@@ -244,7 +244,7 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 
 
 #define issilicon(A) (istype((A), /mob/living/silicon))
-#define isAI(A) (istype((A), /mob/living/silicon/ai))
+#define is_ai(A) (istype((A), /mob/living/silicon/ai))
 #define isrobot(A) (istype((A), /mob/living/silicon/robot))
 #define ispAI(A) (istype((A), /mob/living/silicon/pai))
 #define isdrone(A) (istype((A), /mob/living/silicon/robot/drone))
@@ -258,7 +258,7 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 #define ispathsilicon(A) (ispath(A, /mob/living/silicon))
 #define ispathanimal(A) (ispath(A, /mob/living/simple_animal))
 
-#define isAIEye(A) (istype((A), /mob/camera/aiEye))
+#define is_ai_eye(A) (istype((A), /mob/camera/eye))
 #define isovermind(A) (istype((A), /mob/camera/blob))
 
 #define isminion(A) (istype((A), /mob/living/simple_animal/hostile/blob_minion))

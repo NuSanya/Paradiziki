@@ -694,7 +694,7 @@ Pass the desired type path itself, declaring a temporary var beforehand is not r
 
 
 /mob/living/simple_animal/bot/proc/call_bot(requester, turf/waypoint, message = TRUE)
-	if(isAI(requester) && calling_ai && calling_ai != src) //Prevents an override if another AI is controlling this bot.
+	if(is_ai(requester) && calling_ai && calling_ai != src) //Prevents an override if another AI is controlling this bot.
 		return FALSE
 
 	bot_reset() //Reset a bot before setting it to call mode.

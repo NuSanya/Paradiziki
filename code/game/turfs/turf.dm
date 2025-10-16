@@ -8,6 +8,8 @@
 	/// Turf bitflags, see code/__DEFINES/flags.dm
 	var/turf_flags = NONE
 
+	var/image/obscured	//camerachunks
+
 	var/intact = TRUE
 	var/turf/baseturf = /turf/baseturf_bottom
 	/// negative for faster, positive for slower
@@ -116,6 +118,7 @@
 	levelupdate()
 	if(smooth)
 		QUEUE_SMOOTH(src)
+	visibility_changed()
 
 	for(var/atom/movable/content as anything in src)
 		Entered(content)
@@ -157,6 +160,7 @@
 		for(var/A in B.contents)
 			qdel(A)
 		return
+	visibility_changed()
 	// Adds the adjacent turfs to the current atmos processing
 	for(var/turf/simulated/T in atmos_adjacent_turfs)
 		SSair.add_to_active(T)
@@ -168,6 +172,9 @@
 	if(length(vis_contents))
 		vis_contents.Cut()
 
+/turf/proc/visibility_changed()
+	if(SSticker)
+		GLOB.cameranet.update_visibility(src)
 
 /// WARNING WARNING
 /// Turfs DO NOT lose their signals when they get replaced, REMEMBER THIS
@@ -331,6 +338,7 @@
 	var/old_always_lit = always_lit
 	var/old_lighting_object = lighting_object
 	var/old_blueprint_data = blueprint_data
+	var/old_obscured = obscured
 	var/old_directional_opacity = directional_opacity
 	var/old_dynamic_lumcount = dynamic_lumcount
 	var/old_lighting_corner_NE = lighting_corner_NE
@@ -417,7 +425,7 @@
 			S.update_starlight()
 
 	if(old_opacity != opacity && SSticker)
-		GLOB.cameranet.bareMajorChunkChange(src)
+		GLOB.cameranet.major_chunk_change(src)
 
 	// We will only run this logic if the tile is not on the prime z layer, since we use area overlays to cover that
 	if(SSmapping.z_level_to_plane_offset[z])
@@ -425,6 +433,8 @@
 		if(our_area.lighting_effects)
 			W.add_overlay(our_area.lighting_effects[SSmapping.z_level_to_plane_offset[z] + 1])
 	SSdemo.mark_turf(W)
+
+	obscured = old_obscured
 
 	return W
 

@@ -34,7 +34,7 @@
 	if(camera || !has_camera)
 		return
 	camera = new(src, list("ERT"), wearer.name)
-	GLOB.cameranet.removeCamera(camera)
+	GLOB.cameranet.remove_camera(camera)
 	to_chat(wearer, span_notice("User scanned as [camera.c_tag]. Camera activated."))
 
 /obj/item/clothing/head/helmet/space/hardsuit/ert/examine(mob/user)
@@ -380,7 +380,7 @@
 	if(camera || !has_camera)
 		return
 	camera = new(src, list("ERT"), wearer.name)
-	GLOB.cameranet.removeCamera(camera)
+	GLOB.cameranet.remove_camera(camera)
 	to_chat(wearer, span_notice("User scanned as [camera.c_tag]. Camera activated."))
 
 /obj/item/clothing/head/helmet/space/ert_eva_amber/examine(mob/user)

@@ -35,7 +35,7 @@
 
 	COOLDOWN_DECLARE(grab_resist_delay)
 
-	var/atom/movable/cameraFollow = null
+	var/atom/movable/camera_follow = null
 
 	/// The "Are we on fire?" var
 	var/on_fire = 0

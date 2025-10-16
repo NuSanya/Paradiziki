@@ -210,7 +210,7 @@ GLOBAL_VAR(scoreboard) // Variable to save the scoreboard string once it's been 
 		laws_change_info = list()
 
 	var/timestamp = station_time_timestamp()
-	var/silicon_type = isAI(silicon) ? "AI" : "robot"
+	var/silicon_type = is_ai(silicon) ? "AI" : "robot"
 	var/silicon_name = "[html_decode(silicon.name)][silicon.ckey ? " ([silicon.ckey])" : " (nockey)"]"
 	var/laws_changer = changer ? " Changer: [html_decode(changer.real_name)] ([changer.ckey])." : ""
 
@@ -233,7 +233,7 @@ GLOBAL_VAR(scoreboard) // Variable to save the scoreboard string once it's been 
 /datum/scoreboard/proc/check_station_player(mob/mob)
 	if(!is_station_level(mob.z) || mob.stat < DEAD)
 		return
-	if(isAI(mob))
+	if(is_ai(mob))
 		dead_ai = TRUE
 		score_dead_crew++
 	else if(ishuman(mob))

@@ -10,7 +10,7 @@
 
 /datum/action/innate/ai/Grant(mob/living/L)
 	. = ..()
-	if(!isAI(owner))
+	if(!is_ai(owner))
 		WARNING("AI action [name] attempted to grant itself to non-AI mob [L.real_name] ([L.key])!")
 		qdel(src)
 	else
@@ -147,7 +147,7 @@
 /datum/module_picker/Topic(href, href_list)
 	..()
 
-	if(!isAI(usr))
+	if(!is_ai(usr))
 		return
 	var/mob/living/silicon/ai/A = usr
 
@@ -626,8 +626,8 @@
 		var/turf/T = turfs[n]
 		if(!isfloorturf(T))
 			success = FALSE
-		var/datum/camerachunk/C = GLOB.cameranet.getCameraChunk(T.x, T.y, T.z)
-		if(!C.visibleTurfs[T])
+		var/datum/camerachunk/C = GLOB.cameranet.get_camera_chunk(T.x, T.y, T.z)
+		if(!C.visible_turfs[T])
 			alert_msg = "You don't have camera vision of this location!"
 			success = FALSE
 		for(var/atom/movable/AM in T.contents)

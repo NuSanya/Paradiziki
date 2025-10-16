@@ -60,7 +60,7 @@
 	if(isobserver(user))
 		return UI_INTERACTIVE
 
-	if(isAI(user) && !user.stat)
+	if(is_ai(user) && !user.stat)
 		var/mob/living/silicon/ai/AI = user
 		if(AI.can_see(source_turf))
 			return UI_INTERACTIVE

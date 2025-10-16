@@ -57,7 +57,7 @@
 
 
 /mob/living/carbon/brain/say_understands(mob/other, datum/language/speaking = null)	//Goddamn is this hackish, but this say code is so odd
-	if(isAI(other) || istype(other, /mob/living/silicon/decoy) || ispAI(other) || isrobot(other))
+	if(is_ai(other) || istype(other, /mob/living/silicon/decoy) || ispAI(other) || isrobot(other))
 		return istype(container, /obj/item/mmi)
 	if(ishuman(other) || isslime(other))
 		return TRUE

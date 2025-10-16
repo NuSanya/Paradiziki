@@ -61,7 +61,7 @@ GLOBAL_LIST(ui_logins)
 		if(pai.syndipai)
 			data["isAI"] = TRUE
 	else
-		data["isAI"] = isAI(user)
+		data["isAI"] = is_ai(user)
 	data["isRobot"] = isrobot(user)
 	data["isAdmin"] = user.can_admin_interact()
 
@@ -140,7 +140,7 @@ GLOBAL_LIST(ui_logins)
 		else
 			to_chat(usr, span_warning("Отказано в доступе."))
 			return
-	else if(login_type == LOGIN_TYPE_AI && (isAI(usr) || ispAI(usr)))
+	else if(login_type == LOGIN_TYPE_AI && (is_ai(usr) || ispAI(usr)))
 		state.name = usr.name
 		state.rank = JOB_TITLE_AI
 	else if(iscogscarab(usr))

@@ -1,29 +1,23 @@
-#define CAN_HEAR_MASTERS (1<<0)
-#define CAN_HEAR_ACTIVE_HOLOCALLS (1<<1)
-#define CAN_HEAR_RECORD_MODE (1<<2)
-#define CAN_HEAR_ALL_FLAGS (CAN_HEAR_MASTERS|CAN_HEAR_ACTIVE_HOLOCALLS|CAN_HEAR_RECORD_MODE)
-
-/mob/camera/aiEye/remote/holo/setLoc(turf/destination, force_update = FALSE)
-	. = ..()
-	var/obj/machinery/hologram/holopad/H = origin
-	H?.move_hologram(eye_user, loc)
-	ai_detector_visible = FALSE // Holocalls dont trigger the Ai Detector
-
-//this datum manages it's own references
-
 /datum/holocall
-	var/mob/living/user	//the one that called
-	var/obj/machinery/hologram/holopad/calling_holopad	//the one that sent the call
-	var/obj/machinery/hologram/holopad/connected_holopad	//the one that answered the call (may be null)
-	var/list/dialed_holopads	//all things called, will be cleared out to just connected_holopad once answered
+	/// The calling user
+	var/mob/living/user
+	/// The calling holopad
+	var/obj/machinery/hologram/holopad/calling_holopad
+	/// The receiving holopad (may be null)
+	var/obj/machinery/hologram/holopad/connected_holopad
+	/// All holopads currently being dialed. Once answered, this will be cleared with `[connected_holopad]`.
+	var/list/dialed_holopads
 
-	var/mob/camera/aiEye/remote/holo/eye	//user's eye, once connected
-	var/obj/effect/overlay/holo_pad_hologram/hologram	//user's hologram, once connected
-	var/datum/action/innate/end_holocall/hangup	//hangup action
-
+	/// Camera eye, once connected
+	var/mob/camera/eye/eye
+	/// The user's hologram, once connected
+	var/obj/effect/overlay/holo_pad_hologram/hologram
+	/// The hangup action handler, for handling the hangup button displayed in the top left corner of the screen
+	var/datum/action/innate/end_holocall/hangup
+	/// The `world.time` at the time the holocall is created
 	var/call_start_time
 
-//creates a holocall made by `requester` from `calling_pad` to `callees`
+/// Creates a holocall made by `caller` from `calling_pad` to `callees`
 /datum/holocall/New(mob/living/requester, obj/machinery/hologram/holopad/calling_pad, list/callees)
 	call_start_time = world.time
 	user = requester
@@ -43,7 +37,7 @@
 		qdel(src)
 		return
 
-//cleans up ALL references :)
+/// Cleans up ALL references
 /datum/holocall/Destroy()
 	QDEL_NULL(hangup)
 
@@ -53,7 +47,7 @@
 		user.remote_control = null
 
 	if(!QDELETED(eye))
-		eye.RemoveImages()
+		eye.remove_images()
 		QDEL_NULL(eye)
 
 	if(connected_holopad && !QDELETED(hologram))
@@ -82,7 +76,7 @@
 	return ..()
 
 
-//Gracefully disconnects a holopad `H` from a call. Pads not in the call are ignored. Notifies participants of the disconnection
+/// Gracefully disconnects a holopad `H` from a call. Pads not in the call are ignored. Notifies participants of the disconnection
 /datum/holocall/proc/Disconnect(obj/machinery/hologram/holopad/H)
 	if(H == connected_holopad)
 		var/area/A = get_area(connected_holopad)
@@ -96,7 +90,7 @@
 
 	ConnectionFailure(H, TRUE)
 
-//Forcefully disconnects a holopad `disconnected_holopad` from a call. Pads not in the call are ignored.
+/// Forcefully disconnects a holopad `disconnected_holopad` from a call. Pads not in the call are ignored.
 /datum/holocall/proc/ConnectionFailure(obj/machinery/hologram/holopad/disconnected_holopad, graceful = FALSE)
 	if(disconnected_holopad == connected_holopad || disconnected_holopad == calling_holopad)
 		if(!graceful && disconnected_holopad != calling_holopad)
@@ -112,7 +106,7 @@
 			calling_holopad.atom_say("Вызов отклонён.")
 		qdel(src)
 
-//Answers a call made to a holopad `answering_holopad` which cannot be the calling holopad. Pads not in the call are ignored
+/// Answers a call made to a holopad `answering_holopad` which cannot be the calling holopad. Pads not in the call are ignored
 /datum/holocall/proc/Answer(obj/machinery/hologram/holopad/answering_holopad)
 	if(answering_holopad == calling_holopad)
 		return
@@ -138,25 +132,17 @@
 		return
 
 	hologram = answering_holopad.activate_holo(user)
+	eye = answering_holopad.eye
 	hologram.HC = src
 
 	user.unset_machine(answering_holopad)
-	//eyeobj code is horrid, this is the best copypasta I could make
-	eye = new()
-	eye.origin = answering_holopad
-	eye.eye_initialized = TRUE
-	eye.eye_user = user
-	eye.name = "Camera Eye ([user.name])"
-	user.remote_control = eye
-	user.reset_perspective(eye)
-	eye.setLoc(get_turf(answering_holopad))
 
 	hangup = new(eye,src)
 	hangup.Grant(user)
 	playsound(answering_holopad, 'sound/machines/ping.ogg', 100)
 	answering_holopad.atom_say("Соединение установлено.")
 
-//Checks the validity of a holocall and qdels itself if it's not. Returns TRUE if valid, FALSE otherwise
+/// Checks the validity of a holocall and qdels itself if it's not. Returns TRUE if valid, FALSE otherwise
 /datum/holocall/proc/Check()
 	for(var/obj/machinery/hologram/holopad/dialed_holopad as anything in dialed_holopads)
 		if((dialed_holopad.stat & NOPOWER) || !dialed_holopad.anchored)
@@ -177,6 +163,7 @@
 	else if(!.)
 		qdel(src)
 
+/// The hangup action handler, for handling the hangup button displayed in the top left corner of the screen
 /datum/action/innate/end_holocall
 	name = "Закончить звонок"
 	button_icon_state = "camera_off"
@@ -188,8 +175,3 @@
 
 /datum/action/innate/end_holocall/Activate()
 	hcall.Disconnect(hcall.calling_holopad)
-
-#undef CAN_HEAR_MASTERS
-#undef CAN_HEAR_ACTIVE_HOLOCALLS
-#undef CAN_HEAR_RECORD_MODE
-#undef CAN_HEAR_ALL_FLAGS

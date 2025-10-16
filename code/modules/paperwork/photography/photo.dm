@@ -42,7 +42,7 @@
 	return ..()
 
 /obj/item/photo/click_alt(mob/user)
-	if(user.incapacitated() || !isAI(usr) && HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
+	if(user.incapacitated() || !is_ai(usr) && HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
 		return NONE
 
 	var/n_name = tgui_input_text(user, "What would you like to label the photo?", "Photo Labelling", name)

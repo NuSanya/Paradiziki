@@ -1134,7 +1134,7 @@
 	return data
 
 /obj/machinery/power/apc/ui_status(mob/user, datum/ui_state/state)
-	if(aidisabled && (isAI(user) || isrobot(user)))
+	if(aidisabled && (is_ai(user) || isrobot(user)))
 		to_chat(user, span_warning("AI control for \the [src] interface has been disabled."))
 		return UI_CLOSE
 	. = ..()
@@ -1185,7 +1185,7 @@
 		if(aidisabled)
 			return FALSE
 		if(malfhack && istype(malfai))					// Malfhacked APC can be used...
-			if(isAI(user))
+			if(is_ai(user))
 				var/mob/living/silicon/ai/AI = user		// Only by its hacker...
 				if(malfai != AI && malfai != AI.parent)
 					return FALSE
@@ -1210,7 +1210,7 @@
 /obj/machinery/power/apc/proc/is_authenticated(mob/user)
 	if(user.can_admin_interact())
 		return TRUE
-	if(isAI(user) || (isrobot(user) || user.has_unlimited_silicon_privilege) && !iscogscarab(user))
+	if(is_ai(user) || (isrobot(user) || user.has_unlimited_silicon_privilege) && !iscogscarab(user))
 		return TRUE
 	else
 		return !locked
@@ -1218,7 +1218,7 @@
 /obj/machinery/power/apc/proc/is_locked(mob/user)
 	if(user.can_admin_interact())
 		return FALSE
-	if(isAI(user) || (isrobot(user) || user.has_unlimited_silicon_privilege) && !iscogscarab(user))
+	if(is_ai(user) || (isrobot(user) || user.has_unlimited_silicon_privilege) && !iscogscarab(user))
 		return FALSE
 	else
 		return locked

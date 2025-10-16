@@ -1561,7 +1561,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 
 	if(.)
 		if(camera && oldLoc != src.loc)
-			GLOB.cameranet.updatePortableCamera(src.camera)
+			GLOB.cameranet.update_portable_camera(src.camera)
 
 	if(module)
 		if(module.type == /obj/item/robot_module/janitor)

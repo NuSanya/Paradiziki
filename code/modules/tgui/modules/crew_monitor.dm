@@ -30,7 +30,7 @@
 	switch(action)
 		if("track")
 			var/mob/living/carbon/human/human = locate(params["track"]) in GLOB.human_list
-			if(isAI(usr))
+			if(is_ai(usr))
 				var/mob/living/silicon/ai/AI = usr
 				if(hassensorlevel(human, SUIT_SENSOR_TRACKING))
 					AI.ai_actual_track(human)
@@ -106,7 +106,7 @@
 	data["offsetX"] = offset_x
 	data["offsetY"] = offset_y
 
-	data["isAI"] = isAI(user)
+	data["isAI"] = is_ai(user)
 	data["isObserver"] = isobserver(user)
 	data["crewmembers"] = GLOB.crew_repository.health_data(T)
 	data["critThreshold"] = HEALTH_THRESHOLD_CRIT

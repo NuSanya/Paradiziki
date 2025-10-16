@@ -16,7 +16,7 @@
 		return FALSE
 
 	var/datum/mind/check = new_owner || owner
-	if(!isAI(check.current))
+	if(!is_ai(check.current))
 		log_admin("Failed to make malf AI antagonist, owner is not an AI!")
 		return FALSE
 
@@ -98,7 +98,7 @@
 		var/datum/mind/our_mind = source
 		return our_mind.has_antag_datum(/datum/antagonist/malf_ai)
 
-	if(!isAI(source))
+	if(!is_ai(source))
 		return FALSE
 
 	var/mob/living/silicon/ai/mind_holder = source

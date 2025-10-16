@@ -454,7 +454,7 @@
 
 // Used in shuttle movement and AI eye stuff.
 // Primarily used to notify objects being moved by a shuttle/bluespace fuckup.
-/atom/movable/proc/setLoc(turf/destination, force_update = FALSE)
+/atom/movable/proc/set_loc(turf/destination, force_update = FALSE)
 	loc = destination
 
 

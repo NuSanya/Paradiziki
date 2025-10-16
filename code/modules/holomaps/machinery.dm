@@ -112,7 +112,7 @@
 	var/datum/hud/human/user_hud = user.hud_used
 	holomap_datum.base_map.loc = user_hud.holomap  // Put the image on the holomap hud
 	holomap_datum.base_map.alpha = 0 // Set to transparent so we can fade in
-	if(isAI(user))
+	if(is_ai(user))
 		var/mob/living/silicon/ai/our_ai = user
 		moving_mob = our_ai.eyeobj
 		RegisterSignal(moving_mob, COMSIG_AI_EYE_MOVED, PROC_REF(check_position))

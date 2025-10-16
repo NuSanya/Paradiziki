@@ -64,6 +64,7 @@ GLOBAL_LIST_EMPTY(holopads)
 	var/dialling_input = FALSE //The user is currently selecting where to send their call
 	///bitfield. used to turn on and off hearing sensitivity depending on if we can act on Hear() at all - meant for lowering the number of unessesary hearable atoms
 	var/can_hear_flags = NONE
+	var/mob/camera/eye/hologram/eye
 
 
 /obj/machinery/hologram/holopad/Initialize(mapload)
@@ -174,7 +175,7 @@ GLOBAL_LIST_EMPTY(holopads)
 	interact(user)
 
 /obj/machinery/hologram/holopad/click_alt(mob/living/carbon/human/user)
-	if(isAI(user))
+	if(is_ai(user))
 		hangup_all_calls()
 		return CLICK_ACTION_SUCCESS
 
@@ -268,7 +269,7 @@ GLOBAL_LIST_EMPTY(holopads)
 	popup.open()
 
 /obj/machinery/hologram/holopad/Topic(href, href_list)
-	if(..() || isAI(usr))
+	if(..() || is_ai(usr))
 		return
 	add_fingerprint(usr)
 	if(stat & NOPOWER)
@@ -343,7 +344,7 @@ GLOBAL_LIST_EMPTY(holopads)
 	I don't need to check for client since they're clicking on an object.
 	This may change in the future but for now will suffice.*/
 	if(user.eyeobj.loc != loc)//Set client eye on the object if it's not already.
-		user.eyeobj.setLoc(get_turf(src))
+		user.eyeobj.set_loc(get_turf(src))
 	else if(!LAZYLEN(masters) || !masters[user])//If there is no hologram, possibly make one.
 		activate_holo(user, 1)
 	else//If there is a hologram, remove it.
@@ -382,7 +383,7 @@ GLOBAL_LIST_EMPTY(holopads)
 
 //Try to transfer hologram to another pad that can project on T
 /obj/machinery/hologram/holopad/proc/transfer_to_nearby_pad(turf/T, mob/holo_owner)
-	if(!isAI(holo_owner))
+	if(!is_ai(holo_owner))
 		return
 	for(var/pad in GLOB.holopads)
 		var/obj/machinery/hologram/holopad/another = pad
@@ -407,8 +408,8 @@ GLOBAL_LIST_EMPTY(holopads)
 
 //Can we display holos there
 //Area check instead of line of sight check because this is a called a lot if AI wants to move around.
-/obj/machinery/hologram/holopad/proc/validate_location(turf/T,check_los = FALSE)
-	if(T.z == z && get_dist(T, src) <= holo_range && T.loc == get_area(src))
+/obj/machinery/hologram/holopad/proc/validate_location(turf/T)
+	if(T.z == z && (get_dist(T, src) <= holo_range) && T.loc == get_area(src))
 		return TRUE
 	return FALSE
 
@@ -442,7 +443,7 @@ GLOBAL_LIST_EMPTY(holopads)
 			return
 
 		var/obj/effect/overlay/holo_pad_hologram/hologram = new(loc)//Spawn a blank effect at the location.
-		if(isAI(user))
+		if(is_ai(user))
 			hologram.icon = AI.holo_icon
 		else	//make it like real life
 			hologram.icon = getHologramIcon(get_id_photo(user))
@@ -458,6 +459,7 @@ GLOBAL_LIST_EMPTY(holopads)
 		hologram.set_light(2)	//hologram lighting
 		move_hologram()
 
+		eye = new /mob/camera/eye/hologram(src, user.name, src, user)
 		set_holo(user, hologram)
 
 		if(!LAZYACCESS(masters, user))//If there is not already a hologram.
@@ -498,6 +500,8 @@ For the other part of the code, check silicon say.dm. Particularly robot talk.*/
 
 
 /obj/machinery/hologram/holopad/proc/set_holo(mob/living/user, obj/effect/overlay/holo_pad_hologram/h)
+	eye = user.remote_control
+	eye.holopad = src
 	LAZYSET(masters, user, h)
 	LAZYSET(holorays, user, new /obj/effect/overlay/holoray(loc))
 	var/mob/living/silicon/ai/AI = user
@@ -509,10 +513,13 @@ For the other part of the code, check silicon say.dm. Particularly robot talk.*/
 
 /obj/machinery/hologram/holopad/proc/clear_holo(mob/living/user)
 	qdel(LAZYACCESS(masters, user)) // Get rid of user's hologram
+	if(!QDELETED(eye))
+		QDEL_NULL(eye)
 	unset_holo(user)
 	return TRUE
 
 /obj/machinery/hologram/holopad/proc/unset_holo(mob/living/user)
+	eye = null
 	var/mob/living/silicon/ai/AI = user
 	if(istype(AI) && AI.current == src)
 		AI.current = null

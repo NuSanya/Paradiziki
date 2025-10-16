@@ -182,7 +182,7 @@
 			if(!placeholder)
 				break
 
-		if(placeholder && ((isAI(user) && GLOB.cameranet.checkTurfVis(placeholder)) || can_capture_turf(placeholder, user)))
+		if(placeholder && ((is_ai(user) && GLOB.cameranet.check_turf_vis(placeholder)) || can_capture_turf(placeholder, user)))
 			turfs += placeholder
 			mobs += get_mobs(placeholder)
 			log += add_log(placeholder)
@@ -310,7 +310,7 @@
 			if(!placeholder)
 				break
 
-		if(placeholder && ((isAI(user) && GLOB.cameranet.checkTurfVis(placeholder)) || can_capture_turf(placeholder, user)))
+		if(placeholder && ((is_ai(user) && GLOB.cameranet.check_turf_vis(placeholder)) || can_capture_turf(placeholder, user)))
 			turfs += placeholder
 			mobs += get_mobs(placeholder)
 			log += add_log(placeholder)

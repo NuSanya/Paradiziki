@@ -229,7 +229,7 @@
 	ui_interact(user)
 
 /obj/machinery/computer/security/attack_ai(mob/user)
-	if(isAI(user))
+	if(is_ai(user))
 		to_chat(user, span_notice("You realise its kind of stupid to access a camera console when you have the entire camera network at your metaphorical fingertips"))
 		return
 
@@ -331,7 +331,7 @@
 
 /obj/machinery/computer/security/telescreen/entertainment/ui_state(mob/user)
 	if(issilicon(user))
-		if(isAI(user))
+		if(is_ai(user))
 			var/mob/living/silicon/ai/AI = user
 			if(!AI.lacks_power() || AI.apc_override)
 				return GLOB.always_state

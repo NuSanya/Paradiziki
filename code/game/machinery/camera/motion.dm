@@ -21,7 +21,7 @@
 /obj/machinery/camera/proc/newTarget(mob/target)
 	if(target.lastarea != myArea)
 		return FALSE
-	if(isAI(target))
+	if(is_ai(target))
 		return FALSE
 	if(!can_see(target, view_range))
 		return FALSE

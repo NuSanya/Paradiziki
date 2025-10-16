@@ -336,7 +336,7 @@
 		return attack_hand(user)
 
 /obj/machinery/power/supermatter_shard/attack_hand(mob/user as mob)
-	if(isAI(user))
+	if(is_ai(user))
 		return
 	if(isnucleation(user))
 		nuclear_touch(user)

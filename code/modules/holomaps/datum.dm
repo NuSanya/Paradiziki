@@ -28,7 +28,7 @@
 	if(!base_map || reinit_base_map)
 		base_map = image(SSholomaps.extra_holomaps["[HOLOMAP_EXTRA_STATIONMAP]_[map_z]"])
 
-	if(isAI(user) || isAIEye(user))
+	if(is_ai(user) || is_ai_eye(user))
 		var/turf/eye_turf = get_turf(user?.client?.eye)
 		if(eye_turf)
 			location_turf = eye_turf

@@ -350,7 +350,7 @@
 				antag.add_antag_datum(divil_datum)
 
 			if(ROLE_MALF_AI)
-				if(isAI(antag.current))
+				if(is_ai(antag.current))
 					antag.add_antag_datum(/datum/antagonist/malf_ai)
 				else
 					log_and_message_admins("[antag] was not assigned for AI role. Report this to coders.")

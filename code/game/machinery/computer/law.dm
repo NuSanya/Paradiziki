@@ -99,7 +99,7 @@
 	if(!installed_module)
 		to_chat(user, span_warning("No module inserted!"))
 		return
-	if(!isAI(current))
+	if(!is_ai(current))
 		to_chat(user, span_warning("[current] is not an AI."))
 
 	if(!istype(installed_module, /obj/item/ai_module/syndicate)) //not hack module

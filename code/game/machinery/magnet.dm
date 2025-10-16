@@ -175,7 +175,7 @@
 					step_towards(object, center)
 
 			for(var/mob/living/silicon/silicon in orange(magnetic_field, center))
-				if(isAI(silicon))
+				if(is_ai(silicon))
 					continue
 				step_towards(silicon, center)
 

@@ -17,7 +17,7 @@
 	return TRUE
 
 /datum/keybinding/silicon/ai/can_use(client/user)
-	return isAI(user.mob)
+	return is_ai(user.mob)
 
 
 /datum/keybinding/silicon/ai/set_cameras_by_index

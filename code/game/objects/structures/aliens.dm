@@ -320,7 +320,7 @@
 
 /obj/structure/alien/resin/door/proc/update_freelook_sight()
 	if(GLOB.cameranet)
-		GLOB.cameranet.updateVisibility(src, opacity_check = FALSE)
+		GLOB.cameranet.update_visibility(src, opacity_check = FALSE)
 
 
 #undef RESIN_DOOR_CLOSED

@@ -557,7 +557,7 @@ GLOBAL_LIST_INIT(default_pirate_channels, list(
 		jobname = "Без ID"
 
 	// --- AI ---
-	else if(isAI(M))
+	else if(is_ai(M))
 		jobname = JOB_TITLE_AI
 
 	// --- Cyborg ---

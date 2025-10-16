@@ -247,7 +247,7 @@
 			if(!object.anchored && (object.flags & CONDUCT))
 				step_towards(object, src)
 		for(var/mob/living/silicon/robot in orange(2,src))
-			if(isAI(robot))
+			if(is_ai(robot))
 				continue
 			step_towards(robot, src)
 		for(var/mob/living/carbon/human/machine/IPC in orange(2,src))

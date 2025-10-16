@@ -42,12 +42,12 @@
 		var/message = "[key_name(src)] might be running a modified client! (failed can_see on AI click of [A]([COORD(pixel_turf)]))"
 		add_attack_logs(src, src, message, ATKLOG_ALL)
 		log_admin(message)
-		SSdiscord.send2discord_simple_noadmins("**\[Warning]** [key_name(src)] might be running a modified client! (failed checkTurfVis on AI click of [A]([COORD(pixel_turf)]))")
+		SSdiscord.send2discord_simple_noadmins("**\[Warning]** [key_name(src)] might be running a modified client! (failed check_turf_vis on AI click of [A]([COORD(pixel_turf)]))")
 
 
 	var/turf_visible
 	if(pixel_turf)
-		turf_visible = GLOB.cameranet.checkTurfVis(pixel_turf)
+		turf_visible = GLOB.cameranet.check_turf_vis(pixel_turf)
 		if(!turf_visible)
 			if(istype(loc, /obj/item/aicard) && (pixel_turf in view(client.view, loc)))
 				turf_visible = TRUE
@@ -56,7 +56,7 @@
 				var/message = "[key_name(src)] might be running a modified client! (failed can_see on AI click of [A]([COORD(pixel_turf)]))"
 				add_attack_logs(src, src, message, ATKLOG_ALL)
 				log_admin(message)
-				SSdiscord.send2discord_simple_noadmins("**\[Warning]** [key_name(src)] might be running a modified client! (failed checkTurfVis on AI click of [A]([COORD(pixel_turf)]))")
+				SSdiscord.send2discord_simple_noadmins("**\[Warning]** [key_name(src)] might be running a modified client! (failed check_turf_vis on AI click of [A]([COORD(pixel_turf)]))")
 				return
 
 	var/list/modifiers = params2list(params)
@@ -203,7 +203,7 @@
 	return
 
 /mob/living/silicon/ai/TurfAdjacent(turf/T)
-	return (GLOB.cameranet && GLOB.cameranet.checkTurfVis(T) && (get_dist(eyeobj, T) <= 7)) //not further than view distance
+	return (GLOB.cameranet && GLOB.cameranet.check_turf_vis(T) && (get_dist(eyeobj, T) <= 7)) //not further than view distance
 
 
 // APC

@@ -143,7 +143,7 @@
 				quest.idrank = H.get_assignment()
 			else if(issilicon(user))
 				quest.idname = user.real_name
-				quest.idrank = isAI(user) ? "ИИ" : "Робот"
+				quest.idrank = is_ai(user) ? "ИИ" : "Робот"
 			quest.order_date = GLOB.current_date_string
 			quest.order_time = station_time_timestamp()
 			print_order(quest)
@@ -203,7 +203,7 @@
 		idrank = H.get_assignment()
 	else if(issilicon(user))
 		idname = user.real_name
-		idrank = isAI(user) ? "ИИ" : "Робот"
+		idrank = is_ai(user) ? "ИИ" : "Робот"
 
 	for(var/path in subtypesof(/datum/supply_packs/misc/htdisk))
 		var/datum/supply_packs/misc/htdisk/htcrate = SSshuttle.supply_packs["[path]"]

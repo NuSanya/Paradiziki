@@ -827,7 +827,7 @@
 	go_out()
 	var/mob/living/silicon/ai/AI
 	for(var/mob/M in src) //Let's just be ultra sure
-		if(isAI(M))
+		if(is_ai(M))
 			occupant = null
 			AI = M //AIs are loaded into the mech computer itself. When the mech dies, so does the AI. They can be recovered with an AI card from the wreck.
 		else
@@ -1133,7 +1133,7 @@
 /////////////////////////////////////
 
 /obj/mecha/attack_ai(mob/living/silicon/ai/user)
-	if(!isAI(user))
+	if(!is_ai(user))
 		return
 	//Allows the Malf to scan a mech's status and loadout, helping it to decide if it is a worthy chariot.
 	if(user.can_dominate_mechs)
@@ -1171,7 +1171,7 @@
 				to_chat(user, span_warning("[name] must have maintenance protocols active in order to allow a transfer."))
 				return
 			AI = occupant
-			if(!AI || !isAI(occupant)) //Mech does not have an AI for a pilot
+			if(!AI || !is_ai(occupant)) //Mech does not have an AI for a pilot
 				to_chat(user, span_warning("No AI detected in the [name] onboard computer."))
 				return
 			if(AI.mind.special_role) //Malf AIs cannot leave mechs. Except through death.
@@ -1226,9 +1226,10 @@
 	if(!hasInternalDamage())
 		SEND_SOUND(occupant, sound(nominalsound, volume = 50))
 	AI.eyeobj?.forceMove(src)
-	AI.eyeobj?.RegisterSignal(src, COMSIG_MOVABLE_MOVED, TYPE_PROC_REF(/mob/camera/aiEye, update_visibility))
+	AI.eyeobj?.RegisterSignal(src, COMSIG_MOVABLE_MOVED, TYPE_PROC_REF(/mob/camera/eye, update_visibility))
 	AI.controlled_mech = src
 	AI.remote_control = src
+	AI.reset_perspective(src)
 	AI.can_shunt = FALSE //ONE AI ENTERS. NO AI LEAVES.
 	to_chat(AI, "[AI.can_dominate_mechs ? span_boldnotice("Takeover of [name] complete! You are now permanently loaded onto the onboard computer. Do not attempt to leave the station sector!") \
 	: span_notice("You have been uploaded to a mech's onboard computer.")]")
@@ -1511,7 +1512,7 @@
 		RemoveActions(brain)
 		mob_container = brain.container
 
-	else if(isAI(occupant))
+	else if(is_ai(occupant))
 		var/mob/living/silicon/ai/AI = occupant
 		//stop listening to this signal, as the static update is now handled by the eyeobj's setLoc
 		AI.eyeobj?.UnregisterSignal(src, COMSIG_MOVABLE_MOVED)
@@ -1533,7 +1534,11 @@
 
 			to_chat(AI, span_notice("Returning to core..."))
 			AI.controlled_mech = null
-			AI.remote_control = null
+			if(istype(AI.eyeobj))
+				AI.remote_control = AI.eyeobj
+				AI.reset_perspective(AI.eyeobj)
+			else
+				AI.eyeobj = new /mob/camera/eye/ai(loc, AI.name, AI, AI)
 			RemoveActions(occupant, 1)
 			mob_container = AI
 			newloc = get_turf(AI.linked_core)
@@ -1785,7 +1790,7 @@
 /obj/mecha/obj_destruction()
 	if(wreckage)
 		var/mob/living/silicon/ai/AI
-		if(isAI(occupant))
+		if(is_ai(occupant))
 			AI = occupant
 			occupant = null
 		var/obj/structure/mecha_wreckage/WR = new wreckage(loc, AI)

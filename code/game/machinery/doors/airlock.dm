@@ -702,7 +702,7 @@ GLOBAL_LIST_EMPTY(airlock_emissive_underlays)
 	return data
 
 /obj/machinery/door/airlock/ui_status(mob/user, datum/ui_state/state)
-	if((aiControlDisabled == AICONTROLDISABLED_ON) && (isAI(user) || isrobot(user)))
+	if((aiControlDisabled == AICONTROLDISABLED_ON) && (is_ai(user) || isrobot(user)))
 		to_chat(user, span_warning("AI control for \the [src] interface has been disabled."))
 		if(!canAIControl() && canAIHack())
 			hack(user)
