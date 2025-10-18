@@ -1,3 +1,6 @@
+/// How long does it take to apply a patch through thick material
+#define PATCH_APPLY_DELAY (2.5 SECONDS)
+
 /obj/item/reagent_containers/food/pill/patch
 	name = "chemical patch"
 	desc = "Химический пластырь, предназначенный для медленного ввода веществ в кровоток пациента через контакт с кожей."
@@ -11,6 +14,7 @@
 	transfer_efficiency = 0.5 //patches aren't as effective at getting chemicals into the bloodstream.
 	temperature_min = 270
 	temperature_max = 350
+	bitesize = 0
 	var/needs_to_apply_reagents = TRUE
 	var/application_zone = null
 
@@ -26,20 +30,31 @@
 
 /obj/item/reagent_containers/food/pill/patch/attack(mob/living/carbon/target, mob/living/user, params, def_zone, skip_attack_anim = FALSE)
 	. = ATTACK_CHAIN_PROCEED
-	if(!iscarbon(target))
+	if(!attack_checks(target, user))
 		return .
-	if(!user.can_unEquip(src))
+
+	if(!target.eat(src, user))
 		return .
-	if(!target.can_inject(user, FALSE))
-		return .
-	bitesize = 0
-	if(!target.eat(src, user) || !user.can_unEquip(src))
-		return .
+
 	user.drop_transfer_item_to_loc(src, target)
 	application_zone = def_zone
 	LAZYADD(target.processing_patches, src)
 	return ATTACK_CHAIN_BLOCKED_ALL
 
+/obj/item/reagent_containers/food/pill/patch/proc/attack_checks(mob/living/carbon/target, mob/living/user)
+	if(!istype(target))
+		return FALSE
+	if(!user.can_unEquip(src))
+		return FALSE
+
+	. = TRUE
+	if(target.can_inject(user, FALSE))
+		return .
+
+	user.balloon_alert(user, "наложение...")
+	if(!do_after(user, PATCH_APPLY_DELAY, target, DA_IGNORE_LYING|DA_IGNORE_SPACE_DRIFT))
+		user.balloon_alert(user, "отменено")
+		return FALSE
 
 /obj/item/reagent_containers/food/pill/patch/afterattack(obj/target, mob/user, proximity, params)
 	return // thanks inheritance again
@@ -155,3 +170,5 @@
 		INSTRUMENTAL = "пластырем (Шутостерон)",
 		PREPOSITIONAL = "пластыре (Шутостерон)"
 	)
+
+#undef PATCH_APPLY_DELAY
