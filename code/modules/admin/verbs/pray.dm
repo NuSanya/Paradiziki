@@ -31,7 +31,7 @@
 
 	add_game_logs("Prayed to the gods: [msg]", usr)
 	GLOB.requests.pray(client, msg, job == JOB_TITLE_CHAPLAIN)
-	msg = "<span class='notice'>[bicon(cross)]<b><span style='color: [font_color];'>[prayer_type][deity ? " (to [deity])" : ""][mind?.isholy ? " (blessings: [mind.num_blessed])" : ""]:</span> [key_name(src, 1)] ([ADMIN_QUE(src,"?")]) ([ADMIN_PP(src,"PP")]) ([ADMIN_VV(src,"VV")]) ([ADMIN_TP(src,"TP")]) ([ADMIN_SM(src,"SM")]) ([admin_jump_link(src)]) ([ADMIN_SC(src,"SC")]) (<a href='byond://?_src_=holder;Bless=[UID()]'>BLESS</a>) (<a href='byond://?_src_=holder;Smite=[UID()]'>SMITE</a>):</b> [msg]</span>"
+	msg = "<span class='notice'>[icon2base64html(cross)]<b><span style='color: [font_color];'>[prayer_type][deity ? " (to [deity])" : ""][mind?.isholy ? " (blessings: [mind.num_blessed])" : ""]:</span> [key_name(src, 1)] ([ADMIN_QUE(src,"?")]) ([ADMIN_PP(src,"PP")]) ([ADMIN_VV(src,"VV")]) ([ADMIN_TP(src,"TP")]) ([ADMIN_SM(src,"SM")]) ([admin_jump_link(src)]) ([ADMIN_SC(src,"SC")]) (<a href='byond://?_src_=holder;Bless=[UID()]'>BLESS</a>) (<a href='byond://?_src_=holder;Smite=[UID()]'>SMITE</a>):</b> [msg]</span>"
 
 	for(var/client/X in GLOB.admins)
 		if(check_rights(R_EVENT,0,X.mob))

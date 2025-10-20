@@ -163,7 +163,7 @@
 
 /// Additional info when examine accessory on the suit
 /obj/item/clothing/accessory/proc/attached_examine(mob/user, obj/item/clothing/under/uniform)
-	return span_notice("К [genderize_ru(uniform.gender, "нему", "ней", "нему", "ним")] прикрепл[genderize_ru(gender, "ён", "ена", "ено", "ены")] [bicon(src)] [declent_ru(NOMINATIVE)].")
+	return span_notice("К [genderize_ru(uniform.gender, "нему", "ней", "нему", "ним")] прикрепл[genderize_ru(gender, "ён", "ена", "ено", "ены")] [icon2base64html(src)] [declent_ru(NOMINATIVE)].")
 
 
 /obj/item/clothing/accessory/blue
@@ -984,7 +984,7 @@
 /obj/item/clothing/accessory/petcollar/examine(mob/user)
 	. = ..()
 	if(access_id)
-		. += span_notice("There is [bicon(access_id)] \a [access_id] clipped onto it.")
+		. += span_notice("There is [icon2html(access_id, user)] \a [access_id] clipped onto it.")
 
 
 /obj/item/clothing/accessory/petcollar/equipped(mob/living/simple_animal/user, slot, initial = FALSE)

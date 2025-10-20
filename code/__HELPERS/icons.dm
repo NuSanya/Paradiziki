@@ -169,7 +169,7 @@ mob
 
 		Output_Icon()
 			set name = "2. Output Icon"
-			to_chat(src, "Icon is: [bicon(getFlatIcon(src))]")
+			to_chat(src, "Icon is: [icon2base64html(getFlatIcon(src))]")
 
 		Label_Icon()
 			set name = "3. Label Icon"
@@ -976,7 +976,7 @@ GLOBAL_LIST_EMPTY(icon_dimensions)
 	sleep(duration)
 	cut_overlay(overlay_image)
 
-GLOBAL_LIST_EMPTY(bicon_cache)
+GLOBAL_LIST_EMPTY(icon_cache)
 
 /// Generates a filename for a given asset.
 /// Like generate_asset_name(), except returns the rsc reference and the rsc file hash as well as the asset name (sans extension)
@@ -1009,45 +1009,61 @@ GLOBAL_LIST_EMPTY(bicon_cache)
 			CRASH("get_dummy_savefile failed to create a dummy savefile: '[error]'")
 		return get_dummy_savefile(from_failure = TRUE)
 
-/**
- * Converts an icon to base64. Operates by putting the icon in the iconCache savefile,
- * exporting it as text, and then parsing the base64 from that.
- * (This relies on byond automatically storing icons in savefiles as base64)
- */
-/proc/icon2base64(icon/icon)
-	if(!isicon(icon))
+//Converts an icon to base64. Operates by putting the icon in the icon_states_cache savefile,
+// exporting it as text, and then parsing the base64 from that.
+// (This relies on byond automatically storing icons in savefiles as base64)
+/proc/icon2base64(icon/icon, iconKey = "misc")
+	if (!isicon(icon))
 		return FALSE
 	var/savefile/dummySave = get_dummy_savefile()
 	WRITE_FILE(dummySave["dummy"], icon)
 	var/iconData = dummySave.ExportText("dummy")
 	var/list/partial = splittext(iconData, "{")
-	return replacetext(copytext_char(partial[2], 3, -5), "\n", "") //if cleanup fails we want to still return the correct base64
+	return replacetext(copytext(partial[2], 3, -5), "\n", "")
 
-/proc/bicon(obj, use_class = 1)
-	var/class = use_class ? "class='icon misc'" : null
-	if(!obj)
+/proc/icon2base64html(thing)
+	if(!thing)
 		return
+	var/static/list/icon_cache = list()
+	if(isicon(thing))
+		var/icon/I = thing
+		var/icon_base64 = icon2base64(I)
 
-	if(isicon(obj))
-		if(!GLOB.bicon_cache["\ref[obj]"]) // Doesn't exist yet, make it.
-			GLOB.bicon_cache["\ref[obj]"] = icon2base64(obj)
+		if(I.Height() > world.icon_size || I.Width() > world.icon_size)
+			var/icon_md5 = md5(icon_base64)
+			icon_base64 = icon_cache[icon_md5]
+			if(!icon_base64) // Doesn't exist yet, make it.
+				icon_cache[icon_md5] = icon_base64 = icon2base64(I)
 
-		return "<img [class] src='data:image/png;base64,[GLOB.bicon_cache["\ref[obj]"]]'>"
+
+		return "<img class='icon icon-misc' src='data:image/png;base64,[icon_base64]'>"
 
 	// Either an atom or somebody fucked up and is gonna get a runtime, which I'm fine with.
-	var/atom/A = obj
+	var/atom/A = thing
 	var/key = "[istype(A.icon, /icon) ? "\ref[A.icon]" : A.icon]:[A.icon_state]"
-	if(!GLOB.bicon_cache[key]) // Doesn't exist, make it.
+
+
+	if (!icon_cache[key]) // Doesn't exist, make it.
 		var/icon/I = icon(A.icon, A.icon_state, SOUTH, 1)
-		if(ishuman(obj)) // Shitty workaround for a BYOND issue.
+		if (ishuman(thing)) // Shitty workaround for a BYOND issue.
 			var/icon/temp = I
 			I = icon()
 			I.Insert(temp, dir = SOUTH)
-		GLOB.bicon_cache[key] = icon2base64(I, key)
-	if(use_class)
-		class = "class='icon [A.icon_state]'"
 
-	return "<img [class] src='data:image/png;base64,[GLOB.bicon_cache[key]]'>"
+		icon_cache[key] = icon2base64(I, key)
+
+	return "<img class='icon icon-[A.icon_state]' src='data:image/png;base64,[icon_cache[key]]'>"
+
+//Costlier version of icon2html() that uses getFlatIcon() to account for overlays, underlays, etc. Use with extreme moderation, ESPECIALLY on mobs.
+/proc/costly_icon2html(thing, target)
+	if(!thing)
+		return
+
+	if(isicon(thing))
+		return icon2html(thing, target)
+
+	var/icon/I = getFlatIcon(thing)
+	return icon2html(I, target)
 
 /// Checks if the given iconstate exists in the given file, caching the result. Setting scream to TRUE will print a stack trace ONCE.
 /proc/icon_exists(file, state, scream = FALSE)

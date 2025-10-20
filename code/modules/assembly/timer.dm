@@ -54,7 +54,7 @@
 	pulse(FALSE, user)
 	update_icon()
 	if(loc)
-		loc.visible_message("[bicon(src)] *beep* *beep* *beep*", "*beep* *beep* *beep*")
+		loc.audible_message("[icon2html(src, hearers(src))] *beep* *beep* *beep*", "*beep* *beep* *beep*")
 		playsound(src, 'sound/machines/triple_beep.ogg', 40, extrarange = SHORT_RANGE_SOUND_EXTRARANGE)
 
 
