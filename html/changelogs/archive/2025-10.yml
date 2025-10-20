@@ -1,0 +1,188 @@
+'2025-10-01':
+  littleboobs:
+  - server: New alphabetical sorting script and improved trait_validity.py (#7834)
+  - server/refactor: Some new checks in check_grep (#7835)
+'2025-10-02':
+  Ksaikok:
+  - refactor/bugfix: Рефактор оверлеев крови + фикс мантисов (#7831)
+  - bugfix: Симплмобы с игроком и без игрока атакуют одинаково (#7826)
+  PlayerUnknown14:
+  - spellcheck: фиксы локализации снабжения (#7828)
+  - bugfix: доп. проверка на расстояние для круг. меню тулбокса (#7827)
+  ROdenFL:
+  - bugfix: MC maptext position (#7830)
+  - bugfix: правильное отслеживание сияния глаз (#7837)
+  littleboobs:
+  - server: dmdoc (#7836)
+  - server: Update info and licenses (#7838)
+  - server: Some fixes (#7839)
+  - refactor: Refactor landmarks [MDB IGNORE] (#7811)
+  shah:
+  - tweak: изменил статичный лист на SFX + возможность ставить список путей звуков
+      вместо одной пути на единичный звук (#7829)
+'2025-10-04':
+  ROdenFL:
+  - bugfix: pain preftoggle fixes (#7847)
+  - bugfix: убирает оверлей халка (#7840)
+  dageavtobusnick:
+  - bugfix: Фиксы радио (#7846)
+'2025-10-05':
+  NightDawnFox:
+  - tweak: пачка изменений для робоквестов (#7849)
+  ROdenFL:
+  - add: четыре новых эмодзи (#7750)
+  SansWD:
+  - bugfix: Теперь электрический стул не могут включать люди без рук и призраки (#7848)
+  dageavtobusnick:
+  - admin: TGUI Permissions Edit (#7850)
+  - bugfix: Исправление ошибок новой пермишен панели (#7851)
+  - bugfix: Исправление ошибок с правами на профайлер (#7852)
+  littleboobs:
+  - refactor: Micro cleaning sound code (#7841)
+  - refactor: Moving and sorting .txt name files (#7842)
+  - server/refactor: CI defines formatting check (#7853)
+'2025-10-08':
+  dageavtobusnick:
+  - server: Фикс невозможности выставить требование по валидации SQL (#7862)
+  littleboobs:
+  - server/refactor: Game Tests (Unit Tests) (#7858)
+  - server: New auto comment blocks extension (#7857)
+  - server: Localization guide (#7854)
+'2025-10-09':
+  Den109G:
+  - bugfix: Destroy tesla's chains after qdel (#7872)
+  Ksaikok:
+  - bugfix: Убирает дюп стаков ресурсов (#7868)
+  - local/bugfix: Перевод мешков для трупов + фикс видимого всем балуна (#7870)
+  littleboobs:
+  - bugfix: Landmarks fixes (#7866)
+  - server: Optimization and clean up of some checks + duplicate spans check (#7871)
+  - bugfix: Check material recycle costs (#7873)
+'2025-10-10':
+  VladimirKonstantinov:
+  - bugfix: Исправление пустых крейтов если у них не указаны рунеймсы (#7880)
+  - bugfix: Исправление бага с портативным смесом (#7879)
+  - bugfix: Исправление черных тайлов пола при постройке на лаве и тайлах ковров (#7878)
+'2025-10-11':
+  Etrnlmelancholy:
+  - add: куча новых имен и фамилий парт 2 (#7773)
+  - balance: Телеган телепортирует только по маячкам на том же z уровне, что и сам
+      телеган (#7746)
+  - balance/map: увеличенное количество РЦД для инженеров (#7752)
+  Karas1k_1:
+  - tweak: Гравитация делает Knockdown вместо урона стамине (#7844)
+  - add: Добавить в вендор билетиков в дормах спрей для автозагара (#7887)
+  Ksaikok:
+  - image: Инхэнд спрайты мед. отдела [IDB IGNORE] (#7883)
+  - bugfix: Фикс пары частых рантаймов  (#7864)
+  - bugfix: Исправлено отображение имени морфа на скринтипе при мимикрии (#7874)
+  - balance/bugfix: Артифишеры культа не могут стакать пилоны, конструктам возвращено
+      старое хп (#7867)
+  - add: Новые донатные нашивки и наклейки на карты (#7859)
+  - add: Вампиры-каннибалы (#7814)
+  - bugfix: Вампиров без крови можно сосать (#7890)
+  L343-CJ:
+  - add: Сердце ратвара, ратвар мехи и пушки (#6799)
+  Maksim Bessonov:
+  - balance/bugfix: Таскание греев зависит от уровня силы, фикс таскания в космосе
+      (#7861)
+  NightDawnFox:
+  - balance: нерф крав маг (#7882)
+  NuSanya:
+  - balance: изменения мендера и патчей, добавление лечения големам (#7667)
+  - balance: мендеры (#7888)
+  - bugfix: неверные вычисления в мендере (#7889)
+  PlayerUnknown14:
+  - balance: нёрф поясов (#7740)
+  ROdenFL:
+  - add: space oriented storage[IDB IGNORE] (#7797)
+  VladimirKonstantinov:
+  - balance: Увеличение награды за выполнение доп целек (#7881)
+  dageavtobusnick:
+  - balance: Станы культа теперь не воздействуют на людей с мщ(заряды при этом не
+      тратятся) (#7885)
+  littleboobs:
+  - refactor: Beacons are no longer radios + init sanity unit test (#7875)
+  - unknown: Extra check (#7869)
+  - add: Новые имена и фамилии для мужчин и женщин (#7863)
+  - refactor: Subsystem init (#7876)
+  rafnik03:
+  - add: Добавление формы ТСФ (#7886)
+  svotnik:
+  - add/image: немного приколов для СБ. (#7856)
+'2025-10-12':
+  Etrnlmelancholy:
+  - bugfix: Вендор с патронами можно собирать и разбирать (#7897)
+  Maksim Bessonov:
+  - bugfix: Починка рантайма пулла греев (#7895)
+  dageavtobusnick:
+  - refactor: .len to length + A && A.B to A?.B + list clear optimisation (#7898)
+  - bugfix: express fix (#7899)
+  littleboobs:
+  - server: Checking CI for html tag case (#7896)
+  - server: PR template improve (#7892)
+  - server/bugfix: Reworking the alphabetical order script and fix trait validaty
+      (#7891)
+'2025-10-13':
+  Bess:
+  - tweak: Переключения дефиба в перчатках инугами (#7865)
+  dageavtobusnick:
+  - bugfix: Фикс некоторых массовых рантаймов (#7902)
+  littleboobs:
+  - server/refactor: New check_dash_usage and local guide update [MDB IGNORE] (#7900)
+  spaghetti:
+  - bugfix: фикс логики дефлекшена/рефлекшена у БИ (#7901)
+'2025-10-14':
+  SansWD:
+  - bugfix: Спрайт шлема шахтерского плазмамена максимально усиленного шкурами, не
+      пропадает при включение фонарика (#7907)
+  dageavtobusnick:
+  - bugfix: Исправление проблемы с пропадающим дефайном мультиинстанса (#7910)
+  - admin: Панель создания бикеров (#7912)
+  - admin: ТГУИ спавн панель (#7911)
+  littleboobs:
+  - refactor: No qdeling callback (#7904)
+  - refactor: Optivorbis lossless compression for the sound folder (#7905)
+  - refactor: Oxipng lossless PNG compression (#7906)
+  - server/refactor: 3 new CI checks (#7903)
+  - server: Add compressing PRs to .git-blame-ignore-revs (#7908)
+'2025-10-16':
+  dageavtobusnick:
+  - bugfix: Исправление рантайма electrocute_act( (#7917)
+  - bugfix: Фикс рантайма to_chat (#7918)
+  - add: tgui iframe storage port (#7909)
+  - bugfix: Фикс неверной строки для хранилища (#7919)
+  - bugfix: Possible cors fix (#7922)
+  - bugfix: possible temp fix (#7924)
+  - bugfix: Final chat fix (#7925)
+  - bugfix: Final fix (#7926)
+  github-actions[bot]:
+  - server: Automatic NanoMap Update (#7913)
+  littleboobs:
+  - refactor: dmdoc for localization, split-file localization, macros for popular
+      cases (#7915)
+  - server/bugfix: Check bitwise operator order (#7914)
+'2025-10-17':
+  Ksaikok:
+  - bugfix: electrocute_act message (#7920)
+'2025-10-19':
+  Ksaikok:
+  - refactor: Proximity monitor + connect range (#7921)
+  SansWD:
+  - bugfix: Теперь смена текста описания персонажа в раунде работает корректно и лимит
+      как в лобби 4096 символа (#7938)
+  Vadim7222:
+  - balance: Разносторонний бафф ратваритов (#7927)
+  dageavtobusnick:
+  - server: tgui rebuild fix (#7932)
+  - server: tgui rebuild fix 2 (#7933)
+  - unknown: tgui merge driver fix (#7934)
+  - server: driver bugfix (#7935)
+  - server: Возврат старого имени для уменьшения числа ошибок при деполое (#7936)
+  - bugfix: Разработчики теперь видны в adminwho (#7937)
+  - refactor: Оптимизация консоли камер и is проверок уровней (#7939)
+'2025-10-20':
+  Testmerge Worker:
+  - add: Интегральные схемы, пара новых худов (#6810) [testmerge][ace4a91]
+  chomasuke:
+  - bugfix: фикс кулдаунов кнопок   (#7944)
