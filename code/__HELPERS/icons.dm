@@ -1234,7 +1234,7 @@ GLOBAL_LIST_EMPTY(bicon_cache)
 
 //Costlier version of icon2html() that uses getFlatIcon() to account for overlays, underlays, etc. Use with extreme moderation, ESPECIALLY on mobs.
 /proc/costly_icon2html(thing, target, sourceonly = FALSE)
-	if (!thing)
+	if(!thing)
 		return
 
 	if(isicon(thing))
