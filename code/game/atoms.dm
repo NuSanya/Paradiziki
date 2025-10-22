@@ -485,7 +485,7 @@
 			f_name += span_danger("в кровавых следах.")
 		else
 			f_name += "в масляных следах."
-	. = list("[icon2base64html(src)] Это [declent_ru(NOMINATIVE)][f_name] [suffix]")
+	. = list("[icon2html(src, ui_sstore1)] Это [declent_ru(NOMINATIVE)][f_name] [suffix]")
 	if(desc)
 		. += desc
 

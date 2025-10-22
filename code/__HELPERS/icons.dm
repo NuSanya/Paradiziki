@@ -976,7 +976,7 @@ GLOBAL_LIST_EMPTY(icon_dimensions)
 	sleep(duration)
 	cut_overlay(overlay_image)
 
-GLOBAL_LIST_EMPTY(icon_cache)
+GLOBAL_LIST_EMPTY(bicon_cache)
 
 /// Generates a filename for a given asset.
 /// Like generate_asset_name(), except returns the rsc reference and the rsc file hash as well as the asset name (sans extension)
@@ -1013,7 +1013,7 @@ GLOBAL_LIST_EMPTY(icon_cache)
 // exporting it as text, and then parsing the base64 from that.
 // (This relies on byond automatically storing icons in savefiles as base64)
 /proc/icon2base64(icon/icon, iconKey = "misc")
-	if (!isicon(icon))
+	if(!isicon(icon))
 		return FALSE
 	var/savefile/dummySave = get_dummy_savefile()
 	WRITE_FILE(dummySave["dummy"], icon)
@@ -1021,49 +1021,31 @@ GLOBAL_LIST_EMPTY(icon_cache)
 	var/list/partial = splittext(iconData, "{")
 	return replacetext(copytext(partial[2], 3, -5), "\n", "")
 
-/proc/icon2base64html(thing)
-	if(!thing)
+/proc/icon2base64html(obj, use_class = TRUE)
+	var/class = use_class ? "class='icon misc'" : null
+	if(!obj)
 		return
-	var/static/list/icon_cache = list()
-	if(isicon(thing))
-		var/icon/I = thing
-		var/icon_base64 = icon2base64(I)
 
-		if(I.Height() > world.icon_size || I.Width() > world.icon_size)
-			var/icon_md5 = md5(icon_base64)
-			icon_base64 = icon_cache[icon_md5]
-			if(!icon_base64) // Doesn't exist yet, make it.
-				icon_cache[icon_md5] = icon_base64 = icon2base64(I)
-
-
-		return "<img class='icon icon-misc' src='data:image/png;base64,[icon_base64]'>"
+	if(isicon(obj))
+		if(!GLOB.bicon_cache["\ref[obj]"]) // Doesn't exist yet, make it.
+			GLOB.bicon_cache["\ref[obj]"] = icon2base64(obj)
+		return "<img [class] src='data:image/png;base64,[GLOB.bicon_cache["\ref[obj]"]]'>"
 
 	// Either an atom or somebody fucked up and is gonna get a runtime, which I'm fine with.
-	var/atom/A = thing
+	var/atom/A = obj
 	var/key = "[istype(A.icon, /icon) ? "\ref[A.icon]" : A.icon]:[A.icon_state]"
-
-
-	if (!icon_cache[key]) // Doesn't exist, make it.
+	if(!GLOB.bicon_cache[key]) // Doesn't exist, make it.
 		var/icon/I = icon(A.icon, A.icon_state, SOUTH, 1)
-		if (ishuman(thing)) // Shitty workaround for a BYOND issue.
+		if(ishuman(obj)) // Shitty workaround for a BYOND issue.
 			var/icon/temp = I
 			I = icon()
 			I.Insert(temp, dir = SOUTH)
+		GLOB.bicon_cache[key] = icon2base64(I, key)
 
-		icon_cache[key] = icon2base64(I, key)
+	if(use_class)
+		class = "class='icon [A.icon_state]'"
 
-	return "<img class='icon icon-[A.icon_state]' src='data:image/png;base64,[icon_cache[key]]'>"
-
-//Costlier version of icon2html() that uses getFlatIcon() to account for overlays, underlays, etc. Use with extreme moderation, ESPECIALLY on mobs.
-/proc/costly_icon2html(thing, target)
-	if(!thing)
-		return
-
-	if(isicon(thing))
-		return icon2html(thing, target)
-
-	var/icon/I = getFlatIcon(thing)
-	return icon2html(I, target)
+	return "<img [class] src='data:image/png;base64,[GLOB.bicon_cache[key]]'>"
 
 /// Checks if the given iconstate exists in the given file, caching the result. Setting scream to TRUE will print a stack trace ONCE.
 /proc/icon_exists(file, state, scream = FALSE)
@@ -1149,102 +1131,6 @@ GLOBAL_LIST_EMPTY(icon_cache)
 		return icon_path
 
 	return FALSE
-
-/**
- * generate an asset for the given icon or the icon of the given appearance for [thing], and send it to any clients in target.
- * Arguments:
- * * thing - either a /icon object, or an object that has an appearance (atom, image, mutable_appearance).
- * * target - either a reference to or a list of references to /client's or mobs with clients
- * * icon_state - string to force a particular icon_state for the icon to be used
- * * dir - dir number to force a particular direction for the icon to be used
- * * frame - what frame of the icon_state's animation for the icon being used
- * * moving - whether or not to use a moving state for the given icon
- * * sourceonly - if TRUE, only generate the asset and send back the asset url, instead of tags that display the icon to players
- * * extra_classes - string of extra css classes to use when returning the icon string
- *
- * You may also call is icon2html
- */
-/proc/icon2asset(atom/thing, client/target, icon_state, dir = SOUTH, frame = 1, moving = FALSE, sourceonly = FALSE, extra_classes = null)
-	if(!thing)
-		return
-
-	var/key
-	var/icon/icon2collapse = thing
-	if(!target)
-		return
-	if(target == world)
-		target = GLOB.clients
-	var/list/targets
-	if(!islist(target))
-		targets = list(target)
-	else
-		targets = target
-	if(!length(targets))
-		return
-
-	// Check if the given object is associated with a dmi file in the icons folder. if it is then we dont need to do a lot of work
-	// For asset generation to get around byond limitations
-	var/icon_path = get_icon_dmi_path(thing)
-
-	if(!isicon(icon2collapse))
-		if(isfile(thing)) //special snowflake
-			var/name = SANITIZE_FILENAME("[GENERATE_ASSET_NAME(thing)].png")
-			if(!SSassets.cache[name])
-				SSassets.transport.register_asset(name, thing)
-			for(var/thing2 in targets)
-				SSassets.transport.send_assets(thing2, name)
-			if(sourceonly)
-				return SSassets.transport.get_asset_url(name)
-			return "<img class='icon icon-misc' src='[SSassets.transport.get_asset_url(name)]'>"
-
-		// Its either an atom, image, or mutable_appearance, we want its icon var
-		icon2collapse = thing.icon
-		if(isnull(icon_state))
-			icon_state = thing.icon_state
-			// Despite casting to atom, this code path supports mutable appearances, so let's be nice to them
-			if(isnull(icon_state) || (isatom(thing)))
-				icon_state = initial(thing.icon_state)
-				if(isnull(dir))
-					dir = initial(thing.dir)
-
-		if(isnull(dir))
-			dir = thing.dir
-
-		if(ishuman(thing)) // Shitty workaround for a BYOND issue.
-			var/icon/temp = icon2collapse
-			icon2collapse = icon()
-			icon2collapse.Insert(temp, dir = SOUTH)
-			dir = SOUTH
-
-	else
-		if(isnull(dir))
-			dir = SOUTH
-		if(isnull(icon_state))
-			icon_state = ""
-
-	icon2collapse = icon(icon2collapse, icon_state, dir, frame, moving)
-
-	var/list/name_and_ref = generate_and_hash_rsc_file(icon2collapse, icon_path) // Pretend that tuples exist
-
-	var/rsc_ref = name_and_ref[1] // Weird object thats not even readable to the debugger, represents a reference to the icons rsc entry
-	var/file_hash = name_and_ref[2]
-	key = "[name_and_ref[3]].png"
-	if(!SSassets.cache[key])
-		SSassets.transport.register_asset(key, rsc_ref, file_hash, icon_path)
-	for(var/client_target in targets)
-		SSassets.transport.send_assets(client_target, key)
-	return key
-
-/// Costlier version of icon2asset() that uses getFlatIcon() to account for overlays, underlays, etc. Use with extreme moderation, ESPECIALLY on mobs.
-/proc/costly_icon2asset(thing, target, sourceonly = FALSE)
-	if(!thing)
-		return
-
-	if(isicon(thing))
-		return icon2asset(thing, target)
-
-	var/icon/I = getFlatIcon(thing)
-	return icon2asset(I, target)
 
 /// Generate a filename for this asset
 /// The same asset will always lead to the same asset name
@@ -1345,6 +1231,17 @@ GLOBAL_LIST_EMPTY(icon_cache)
 	if(sourceonly)
 		return SSassets.transport.get_asset_url(key)
 	return "<img class='[extra_classes] icon icon-[icon_state]' src='[SSassets.transport.get_asset_url(key)]'>"
+
+//Costlier version of icon2html() that uses getFlatIcon() to account for overlays, underlays, etc. Use with extreme moderation, ESPECIALLY on mobs.
+/proc/costly_icon2html(thing, target, sourceonly = FALSE)
+	if (!thing)
+		return
+
+	if(isicon(thing))
+		return icon2html(thing, target)
+
+	var/icon/flat_icon = getFlatIcon(thing)
+	return icon2html(flat_icon, target, sourceonly = sourceonly)
 
 #define CACHED_WIDTH_INDEX "width"
 #define CACHED_HEIGHT_INDEX "height"

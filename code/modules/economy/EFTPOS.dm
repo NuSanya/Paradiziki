@@ -322,7 +322,7 @@
 		if(transSuccess == TRUE)
 			transaction_paid = 1
 			during_paid = FALSE
-			visible_message("[icon2html(src, viewers(src))] The [src] chimes.")
+			visible_message("[icon2html(src, viewers(loc))] The [src] chimes.")
 			playsound(src, 'sound/machines/chime.ogg', 50, FALSE)
 	else
 		to_chat(user, "[icon2html(src, usr)][span_warning(" Server Error #523 Accounts Database Is Unreachable. Please retry and if the issue persists contact Nanotrasen IT support.")]")

@@ -28,12 +28,7 @@
 		skipeyes |= wear_mask.flags_inv & HIDEGLASSES
 		skipears |= wear_mask.flags_inv & HIDEHEADSETS
 
-	var/msg = "Это "
-
-	if(!(skipjumpsuit && skipface) && icon) //big suits/masks/helmets make it hard to tell their gender
-		// SANYAABOBA221 REVERT IF BAD
-		msg += "[icon2html(src, user)] " //fucking BYOND: this should stop dreamseeker crashing if we -somehow- examine somebody before their icon is generated
-	msg += "<em>[name]</em>"
+	var/msg = "Это <em>[name]</em>"
 
 	var/displayed_species = get_visible_species()
 	var/examine_color = dna.species.flesh_color

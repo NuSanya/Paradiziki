@@ -1287,7 +1287,7 @@ BODY SCANNERS
 	var/message = list()
 	if(!silent && isliving(user))
 		user.visible_message(span_notice("[user] uses the analyzer on [icon2html(icon, viewers(icon))] [target]."), span_notice("You use the analyzer on [icon2html(icon, user)] [target]"))
-	message += span_boldnotice("Results of analysis of [icon2base64html(icon)] [target].")
+	message += span_boldnotice("Results of analysis of [icon2html(icon, user)] [target].")
 
 	if(!print)
 		return TRUE

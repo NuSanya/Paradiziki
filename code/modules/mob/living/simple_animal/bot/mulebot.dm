@@ -494,7 +494,7 @@
 
 /mob/living/simple_animal/bot/mulebot/proc/load_mob(mob/living/M)
 	can_buckle = TRUE
-	if(buckle_mob(M))
+	if(buckle_mob(M, check_loc = FALSE))
 		passenger = M
 		load = M
 		can_buckle = FALSE
