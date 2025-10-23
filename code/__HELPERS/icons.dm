@@ -1009,10 +1009,12 @@ GLOBAL_LIST_EMPTY(bicon_cache)
 			CRASH("get_dummy_savefile failed to create a dummy savefile: '[error]'")
 		return get_dummy_savefile(from_failure = TRUE)
 
-//Converts an icon to base64. Operates by putting the icon in the icon_states_cache savefile,
-// exporting it as text, and then parsing the base64 from that.
-// (This relies on byond automatically storing icons in savefiles as base64)
-/proc/icon2base64(icon/icon, iconKey = "misc")
+/**
+ * Converts an icon to base64. Operates by putting the icon in the iconCache savefile,
+ * exporting it as text, and then parsing the base64 from that.
+ * (This relies on byond automatically storing icons in savefiles as base64)
+ */
+/proc/icon2base64(icon/icon)
 	if(!isicon(icon))
 		return FALSE
 	var/savefile/dummySave = get_dummy_savefile()
@@ -1040,7 +1042,7 @@ GLOBAL_LIST_EMPTY(bicon_cache)
 			var/icon/temp = I
 			I = icon()
 			I.Insert(temp, dir = SOUTH)
-		GLOB.bicon_cache[key] = icon2base64(I, key)
+		GLOB.bicon_cache[key] = icon2base64(I)
 
 	if(use_class)
 		class = "class='icon [A.icon_state]'"
