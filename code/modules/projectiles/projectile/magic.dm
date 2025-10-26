@@ -59,7 +59,7 @@
 		else
 			C.death()
 
-		visible_message(span_danger("[capitalize(C.declent_ru(NOMINATIVE))] падает замертво, когда [genderize_ru(C.gender,"его","её","его","их")] поражает заряд смерти!"))
+		visible_message(span_danger("[capitalize(C.declent_ru(NOMINATIVE))] падает замертво, когда [GEND_HIS_HER(C)] поражает заряд смерти!"))
 
 /obj/projectile/magic/fireball/Range()
 	var/turf/T1 = get_step(src,turn(dir, -45))
@@ -375,7 +375,7 @@
 				if(briefing_msg)
 					new_mob.mind.store_memory(briefing_msg)
 		else
-			new_mob.key = M.key
+			new_mob.possess_by_player(M.ckey)
 
 		if(is_new_mind)
 			to_chat(new_mob, span_danger("Вы потеряли свою личность и память! Отыгрывайте новое существо!"))
@@ -481,7 +481,7 @@
 		L.moving_diagonally = NONE //If this was part of diagonal move slipping will stop it.
 		if(!L.IsWeakened())
 			to_chat(target, span_warning("В вас попадает волшебный банан."))
-			L.Weaken(slip_disable_time)
+			L.Knockdown(slip_disable_time)
 	. = ..()
 
 /obj/projectile/magic/arcane_barrage
