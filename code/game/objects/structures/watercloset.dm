@@ -167,7 +167,7 @@
 	if(user.a_intent == INTENT_HARM)
 		return ..()
 
-	if(istype(item, /obj/item/reagent_containers))
+	if(is_reagentcontainer(item))
 		add_fingerprint(user)
 		if(!open)
 			balloon_alert(user, "нужно открыть")

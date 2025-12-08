@@ -29,7 +29,7 @@
 
 /obj/item/reagent_containers/spray/afterattack(atom/A, mob/user, proximity, params)
 	if(isstorage(A) || istype(A, /obj/structure/table) || istype(A, /obj/structure/rack) || istype(A, /obj/structure/closet) \
-	|| istype(A, /obj/item/reagent_containers) || istype(A, /obj/structure/sink) || istype(A, /obj/structure/janitorialcart) || istype(A, /obj/machinery/hydroponics))
+	|| is_reagentcontainer(A) || istype(A, /obj/structure/sink) || istype(A, /obj/structure/janitorialcart) || is_hydroponics(A))
 		return
 
 	if(istype(A, /obj/effect/proc_holder/spell))

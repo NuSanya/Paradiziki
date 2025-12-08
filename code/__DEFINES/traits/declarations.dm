@@ -104,6 +104,7 @@
 /// "Magic" trait that blocks the mob from moving or interacting with anything. Used for transient stuff like mob transformations or incorporality in special cases.
 /// Will block movement, `Life()` (!!!), and other stuff based on the mob.
 #define TRAIT_NO_TRANSFORM "block_transformations"
+
 /// This mob heals from ash tendril
 #define TRAIT_HEALS_FROM_ASH_TENDRIL "heals_from_ash_tendril"
 /// This mob heals from carp rifts.
@@ -114,6 +115,9 @@
 #define TRAIT_HEALS_FROM_CULT_PYLONS "heals_from_cult_pylons"
 /// This mob heals from holy pylons.
 #define TRAIT_HEALS_FROM_HOLY_PYLONS "heals_from_holy_pylons"
+/// This mob heals from swarmer cores.
+#define TRAIT_HEALS_FROM_SWARMER_CORES "heals_from_swarmer_cores"
+
 #define TRAIT_LASEREYES "laser_eyes"	//traits that should be properly converted to genetic mutations one day
 /// Forces the user to stay unconscious.
 #define TRAIT_KNOCKEDOUT "knockedout"
@@ -380,3 +384,9 @@
 
 /// If any of the owner's robotic parts are being repaired right now
 #define TRAIT_REPAIRING_LIMB "repairing_limb"
+
+/// Block any stamina regeneration for mob
+#define TRAIT_BLOCK_STAMINA_REGEN "block_stamina_regen"
+
+/// Block reagent metabolization for mob
+#define TRAIT_BLOCK_METABOLIZE "block_metabolize"

@@ -596,7 +596,7 @@
 
 
 /obj/item/twohanded/spear/attackby(obj/item/I, mob/living/user, params)
-	if(istype(I, /obj/item/organ/external/head))	//Putting heads on spears
+	if(ishead(I))	//Putting heads on spears
 		add_fingerprint(user)
 		if(loc == user && !user.can_unEquip(src))
 			return ATTACK_CHAIN_PROCEED

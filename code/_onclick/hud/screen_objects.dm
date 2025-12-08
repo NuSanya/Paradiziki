@@ -115,6 +115,11 @@
 	else
 		usr.a_intent_change("right")
 
+/// Separate act_intent for swarmers
+/atom/movable/screen/act_intent/swarmer
+	icon = 'code/modules/antagonists/swarmers/swarmer_hud.dmi'
+	screen_loc = ui_zonesel
+
 /atom/movable/screen/act_intent/alien
 	icon = 'icons/mob/screen_alien.dmi'
 

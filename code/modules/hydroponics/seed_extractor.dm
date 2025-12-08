@@ -22,7 +22,7 @@
 			qdel(O)
 			return 1
 
-	else if(istype(O, /obj/item/grown))
+	else if(isgrown(O))
 		var/obj/item/grown/F = O
 		if(F.seed)
 			if(user && !user.drop_transfer_item_to_loc(O, extractor))
@@ -95,7 +95,7 @@
 		to_chat(user, span_notice("You have transfered seeds from [bag] into [src]."))
 		return ATTACK_CHAIN_PROCEED_SUCCESS
 
-	if(istype(I, /obj/item/seeds))
+	if(is_seeds(I))
 		add_fingerprint(user)
 		if(length(contents) >= max_seeds)
 			to_chat(user, span_warning("The [name] is full."))

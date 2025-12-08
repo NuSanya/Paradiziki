@@ -1513,3 +1513,29 @@
 /obj/effect/temp_visual/curse/Initialize(mapload)
 	. = ..()
 	deltimer(timerid)
+
+// MARK: staminaregen_block
+/datum/status_effect/staminaregen_block
+	id = "staminaregen_block"
+	alert_type = null
+	duration = 1 SECONDS
+
+/datum/status_effect/staminaregen_block/on_apply()
+	ADD_TRAIT(owner, TRAIT_BLOCK_STAMINA_REGEN, id)
+	return ..()
+
+/datum/status_effect/staminaregen_block/on_remove()
+	REMOVE_TRAIT(owner, TRAIT_BLOCK_STAMINA_REGEN, id)
+
+// MARK: metabolize_block
+/datum/status_effect/metabolize_block
+	id = "metabolize_block"
+	alert_type = null
+	duration = 10 SECONDS
+
+/datum/status_effect/metabolize_block/on_apply()
+	ADD_TRAIT(owner, TRAIT_BLOCK_METABOLIZE, id)
+	return ..()
+
+/datum/status_effect/metabolize_block/on_remove()
+	REMOVE_TRAIT(owner, TRAIT_BLOCK_METABOLIZE, id)

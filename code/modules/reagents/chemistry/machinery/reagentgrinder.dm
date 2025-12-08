@@ -208,7 +208,7 @@
 	if(exchange_parts(user, I))
 		return ATTACK_CHAIN_PROCEED_SUCCESS
 
-	if(istype(I, /obj/item/reagent_containers) && (I.container_type & OPENCONTAINER))
+	if(is_reagentcontainer(I) && (I.container_type & OPENCONTAINER))
 		add_fingerprint(user)
 		if(panel_open)
 			balloon_alert(user, "панель открыта!")
@@ -225,7 +225,7 @@
 		return ATTACK_CHAIN_BLOCKED_ALL
 
 	add_fingerprint(user)
-	if(is_type_in_list(I, dried_items) && istype(I, /obj/item/reagent_containers/food/snacks/grown))
+	if(is_type_in_list(I, dried_items) && is_grownsnacks(I))
 		var/obj/item/reagent_containers/food/snacks/grown/grown = I
 		if(!grown.dry)
 			balloon_alert(user, "сначала высушите!")

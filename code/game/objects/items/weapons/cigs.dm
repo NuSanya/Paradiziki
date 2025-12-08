@@ -700,7 +700,7 @@ LIGHTERS ARE IN LIGHTERS.DM
 /obj/item/rollingpaper/afterattack(atom/target, mob/user, proximity, params)
 	if(!proximity)
 		return
-	if(istype(target, /obj/item/reagent_containers/food/snacks/grown))
+	if(is_grownsnacks(target))
 		var/obj/item/reagent_containers/food/snacks/grown/O = target
 		if(O.dry)
 			user.temporarily_remove_item_from_inventory(target, force = TRUE)

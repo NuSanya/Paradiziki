@@ -31,14 +31,17 @@
 
 	var/installation = /obj/item/gun/energy/gun/turret		//the type of weapon installed
 	var/gun_charge = 0		//the charge of the gun inserted
-	var/projectile = null	//holder for bullettype
-	var/eprojectile = null	//holder for the shot when emagged
+	var/projectile = /obj/projectile	//holder for bullettype
+	var/eprojectile = /obj/projectile	//holder for the shot when emagged
 	var/reqpower = 500		//holder for power needed
 	var/iconholder = null	//holder for the icon_state. 1 for orange sprite, null for blue.
 	var/egun = null			//holder to handle certain guns switching bullettypes
 
 	var/last_fired = 0		//1: if the turret is cooling down from a shot, 0: turret is ready to fire
-	var/shot_delay = 15		//1.5 seconds between each shot
+	var/shot_delay = 1.5 SECONDS		//1.5 seconds between each shot
+
+	var/rapid = 1 //How many shots per volley.
+	var/rapid_fire_delay = 2 //Time between rapid fire shots
 
 	var/targetting_is_configurable = TRUE // if false, you cannot change who this turret attacks via its UI
 	var/check_arrest = TRUE	//checks if the perp is set to arrest
@@ -586,22 +589,22 @@ GLOBAL_LIST_EMPTY(turret_icons)
 	if(get_turf(L) == get_turf(src))
 		return TURRET_NOT_TARGET
 
-	if(!emagged && !syndicate && (issilicon(L) || isbot(L)))
-		return (check_borgs && isrobot(L)) ? TURRET_PRIORITY_TARGET : TURRET_NOT_TARGET
-
-	if(L.stat && !emagged)		//if the perp is dead/dying, no need to bother really
-		return TURRET_NOT_TARGET	//move onto next potential victim!
-
 	if(get_dist(src, L) > scan_range)	//if it's too far away, why bother?
 		return TURRET_NOT_TARGET
 
 	if(emagged)		// If emagged not even the dead get a rest
 		return L.stat ? TURRET_SECONDARY_TARGET : TURRET_PRIORITY_TARGET
 
+	if(L.stat && !emagged)		//if the perp is dead/dying, no need to bother really
+		return TURRET_NOT_TARGET	//move onto next potential victim!
+
+	if(!emagged && !syndicate && (issilicon(L) || isbot(L)))
+		return (check_borgs && isrobot(L)) ? TURRET_PRIORITY_TARGET : TURRET_NOT_TARGET
+
 	if(in_faction(L))
 		return TURRET_NOT_TARGET
 
-	if(("syndicate" in L.faction) && istype(L.get_id_card(), /obj/item/card/id/syndicate))
+	if(faction == "syndicate" && ("syndicate" in L.faction) && istype(L.get_id_card(), /obj/item/card/id/syndicate))
 		return TURRET_NOT_TARGET
 
 	if(lethal && locate(/mob/living/silicon/ai) in get_turf(L))		//don't accidentally kill the AI!
@@ -609,7 +612,7 @@ GLOBAL_LIST_EMPTY(turret_icons)
 
 	if(check_synth)	//If it's set to attack all non-silicons, target them!
 		if(L.body_position == LYING_DOWN)
-			return lethal ? TURRET_SECONDARY_TARGET : TURRET_NOT_TARGET
+			return lethal ? TURRET_SECONDARY_TARGET : (HAS_TRAIT(L, TRAIT_INCAPACITATED) ? TURRET_NOT_TARGET : TURRET_SECONDARY_TARGET)
 		return TURRET_PRIORITY_TARGET
 
 	if(iscuffed(L)) // If the target is handcuffed, leave it alone
@@ -626,7 +629,7 @@ GLOBAL_LIST_EMPTY(turret_icons)
 			return TURRET_NOT_TARGET	//if threat level < 4, keep going
 
 	if(L.body_position == LYING_DOWN)		//if the perp is lying down, it's still a target but a less-important target
-		return lethal ? TURRET_SECONDARY_TARGET : TURRET_NOT_TARGET
+		return lethal ? TURRET_SECONDARY_TARGET : (HAS_TRAIT(L, TRAIT_INCAPACITATED) ? TURRET_NOT_TARGET : TURRET_SECONDARY_TARGET)
 
 	return TURRET_PRIORITY_TARGET	//if the perp has passed all previous tests, congrats, it is now a "shoot-me!" nominee
 
@@ -726,29 +729,32 @@ GLOBAL_LIST_EMPTY(turret_icons)
 		return
 
 	update_icon(UPDATE_ICON_STATE)
-	var/obj/projectile/A
-	if(emagged || lethal)
-		if(eprojectile)
-			A = new eprojectile(loc)
-			playsound(loc, eshot_sound, 75, TRUE)
-	else
-		if(projectile)
-			A = new projectile(loc)
-			playsound(loc, shot_sound, 75, TRUE)
-
 	// Lethal/emagged turrets use twice the power due to higher energy beams
 	// Emagged turrets again use twice as much power due to higher firing rates
-	use_power(reqpower * (2 * (emagged || lethal)) * (2 * emagged))
+	use_power(reqpower * (2 * (emagged || lethal)) * (2 * emagged) * rapid)
 
-	if(istype(A))
-		A.original = target
-		A.current = T
-		A.yo = U.y - T.y
-		A.xo = U.x - T.x
-		A.fire()
+	if(rapid > 1)
+		var/datum/callback/cb = CALLBACK(src, PROC_REF(shoot), target)
+		for(var/i in 1 to rapid)
+			addtimer(cb, (i - 1) * rapid_fire_delay)
 	else
-		A.throw_at(target, scan_range, 1)
-	return A
+		shoot(target)
+
+/obj/machinery/porta_turret/proc/shoot(mob/living/target)
+	var/obj/projectile/proj
+	if(emagged || lethal)
+		proj = new eprojectile(loc)
+		playsound(loc, eshot_sound, 75, TRUE)
+	else
+		proj = new projectile(loc)
+		playsound(loc, shot_sound, 75, TRUE)
+	if(!istype(proj))
+		proj.throw_at(target, scan_range, 1)
+		return
+	proj.firer_source_atom = src
+	proj.original = target
+	proj.preparePixelProjectile(target, get_turf(target), src)
+	proj.fire()
 
 /obj/machinery/porta_turret/centcom
 	name = "Centcom Turret"
@@ -1119,6 +1125,147 @@ GLOBAL_LIST_EMPTY(turret_icons)
 	projectile = /obj/projectile/bullet/weakbullet3
 	eprojectile = /obj/projectile/bullet/weakbullet3
 
+// Swarmer turrets
+/obj/machinery/porta_turret/swarmer
+	name = "energy turret"
+	desc = "Вы это не должны видеть. Напишите баг-репорт, если увидели."
+	projectile = /obj/projectile/beam/disabler/swarmer
+	eprojectile = /obj/projectile/beam/disabler/swarmer // always non-lethal
+	shot_sound = 'sound/weapons/gunshots/1laser2.ogg'
+	eshot_sound = 'sound/weapons/gunshots/1laser2.ogg'
+
+	icon = 'icons/obj/swarmer.dmi'
+	icon_state = "barricade"
+
+	installation = null
+	always_up = TRUE
+	use_power = NO_POWER_USE
+	has_cover = FALSE
+	raised = TRUE
+	density = TRUE
+	scan_range = 9
+	shot_delay = 1 SECONDS
+
+	faction = ROLE_SWARMER
+
+	targetting_is_configurable = FALSE
+	check_arrest = FALSE
+	check_records = FALSE
+	check_access = FALSE
+	check_synth	= TRUE
+	check_borgs = TRUE
+	ailock = TRUE
+	req_access = list()
+
+/obj/machinery/porta_turret/swarmer/Initialize(mapload)
+	. = ..()
+	GLOB.swarmer_objects += src
+	RegisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED, PROC_REF(on_core_destroy))
+
+/obj/machinery/porta_turret/swarmer/proc/on_core_destroy()
+	SIGNAL_HANDLER
+	explosion(loc, devastation_range = 0, heavy_impact_range = 0, light_impact_range = 2, cause = src)
+	if(!QDELETED(src))
+		qdel(src)
+
+/obj/machinery/porta_turret/swarmer/Destroy()
+	. = ..()
+	GLOB.swarmer_objects -= src
+	UnregisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED)
+
+/// Icon state of these turrets don't change
+/obj/machinery/porta_turret/swarmer/update_icon_state()
+	return
+
+/obj/machinery/porta_turret/swarmer/swarmer_act(mob/living/simple_animal/hostile/swarmer/swarmer)
+	// Works the same way human intents are handled. It is what it is
+	switch(swarmer.a_intent)
+		if(INTENT_HELP)
+			swarmer_help_act(swarmer)
+		if(INTENT_DISARM)
+			swarmer_disarm_act(swarmer)
+		if(INTENT_GRAB)
+			swarmer_grab_act(swarmer)
+		if(INTENT_HARM)
+			swarmer_harm_act(swarmer)
+
+/// Special intent handling for swarmer clicks on swarmer turrets. Override as needed.
+/obj/machinery/porta_turret/swarmer/proc/swarmer_help_act(mob/living/simple_animal/hostile/swarmer/swarmer)
+	SHOULD_CALL_PARENT(TRUE)
+	ui_interact(src)
+
+/// Special intent handling for swarmer clicks on swarmer turrets. Used for repairing.
+/obj/machinery/porta_turret/swarmer/proc/swarmer_disarm_act(mob/living/simple_animal/hostile/swarmer/swarmer)
+	SHOULD_CALL_PARENT(TRUE)
+	swarmer.balloon_alert_to_viewers("чинит...", "починка!")
+	if(!do_after(swarmer, SWARMER_REPAIR_DELAY(swarmer), src, max_interact_count = 1))
+		return
+	if(!adjust_swarmer_metallic_resources(-SWARMER_REPAIR_COST))
+		swarmer.balloon_alert(swarmer, "недостаточно ресурсов!")
+		return
+	repair_damage(SWARMER_REPAIR_AMOUNT(swarmer))
+
+/// Special intent handling for swarmer clicks on swarmer turrets. Override as needed.
+/obj/machinery/porta_turret/swarmer/proc/swarmer_grab_act(mob/living/simple_animal/hostile/swarmer/swarmer)
+	SHOULD_CALL_PARENT(TRUE)
+	if(!is_builderswarmer(swarmer))
+		return FALSE
+	var/message = anchored ? "открепляем..." : "прикрепляем..."
+	swarmer.balloon_alert(swarmer, message)
+	if(!do_after(swarmer, 5 SECONDS, src, max_interact_count = 1))
+		swarmer.balloon_alert(swarmer, "сбито!")
+		return FALSE
+	swarmer.balloon_alert(swarmer, "успех!")
+	playsound(loc, 'sound/effects/empulse.ogg', 75, TRUE)
+	set_anchored(!anchored)
+	return
+
+/// Special intent handling for swarmer clicks on swarmer turrets. Override as needed.
+/obj/machinery/porta_turret/swarmer/proc/swarmer_harm_act(mob/living/simple_animal/hostile/swarmer/swarmer)
+	SHOULD_CALL_PARENT(TRUE)
+	return
+
+/// Swarmers can access the control panel
+/obj/machinery/porta_turret/swarmer/isLocked(mob/user)
+	if(isswarmer(user))
+		return TRUE
+	return FALSE
+
+/// No one except swarmers should be able to access the control panel
+/obj/machinery/porta_turret/swarmer/allowed(mob/M)
+	return FALSE
+
+/// Swarmer turrets get destroyed on break
+/obj/machinery/porta_turret/swarmer/die()
+	. = ..()
+	qdel(src)
+
+/obj/machinery/porta_turret/swarmer/setup()
+	return
+
+/obj/machinery/porta_turret/swarmer/assess_perp(mob/living/carbon/human/perp)
+	return 10 // Swarmer turrets shoot everything not in their faction
+
+/// Swarmer turret. Shoots 3 projectiles at once with small damage
+/obj/machinery/porta_turret/swarmer/turret
+	name = "swarmer turret"
+	desc = "Штурмовая энергетическая турель \"Свармеров\", способная стрелять залпом по три пули."
+	health = 125
+	icon_state = "turret_rapid"
+	shot_delay = SWARMER_RAPID_TURRET_COOLDOWN
+	projectile = /obj/projectile/beam/disabler/swarmer/weak_turret
+	eprojectile = /obj/projectile/beam/disabler/swarmer/weak_turret
+	rapid = 3
+
+/// Swarmer sentry. Shoots one strong projectile.
+/obj/machinery/porta_turret/swarmer/sniper
+	name = "swarmer sentry"
+	desc = "Снайперская энергетическая турель \"Свармеров\", способная стрелять мощным выстрелом, что пробивает целей насквозь."
+	health = 175
+	icon_state = "turret_sniper"
+	shot_delay = SWARMER_SNIPER_TURRET_COOLDOWN
+	projectile = /obj/projectile/beam/disabler/swarmer/strong_turret
+	eprojectile = /obj/projectile/beam/disabler/swarmer/strong_turret
 
 #undef TURRET_BUILD_LOOSEN
 #undef TURRET_BUILD_ANCHORED

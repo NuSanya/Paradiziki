@@ -246,6 +246,11 @@
 
 
 /mob/living/carbon/handle_chemicals_in_body()
+	if(HAS_TRAIT(src, TRAIT_GODMODE))
+		reagents.metabolize(src)
+		return
+	if(HAS_TRAIT(src, TRAIT_BLOCK_METABOLIZE))
+		return
 	reagents.metabolize(src)
 
 

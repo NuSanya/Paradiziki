@@ -64,7 +64,7 @@
 		START_PROCESSING(SSmachines, src)
 		return ATTACK_CHAIN_BLOCKED_ALL
 
-	if(bag && istype(I, /obj/item/reagent_containers))
+	if(bag && is_reagentcontainer(I))
 		add_fingerprint(user)
 		I.melee_attack_chain(user, bag, params)
 		return ATTACK_CHAIN_BLOCKED_ALL

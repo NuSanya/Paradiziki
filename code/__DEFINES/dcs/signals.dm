@@ -36,6 +36,7 @@
 #define COMSIG_GLOB_IFECTION_CREATED "!infection_created"
 #define COMSIG_GLOB_IFECTION_REMOVED "!infection_removed"
 #define COMSIG_GLOB_XENO_STORM_ENDED "!xeno_storm_ended"
+#define COMSIG_GLOB_SWARMER_CORE_DESTROYED "!swarmer_core_destroy"
 
 #define COMSIG_WEATHER_TELEGRAPH(event_type) "!weather_telegraph [event_type]"
 #define COMSIG_WEATHER_START(event_type) "!weather_start [event_type]"
@@ -1559,3 +1560,18 @@
 
 ///Sent after awards are saved in the database (/datum/controller/subsystem/achievements/save_achievements_to_db)
 #define COMSIG_ACHIEVEMENTS_SAVED_TO_DB "achievements_saved_to_db"
+
+/// From /mob/living/simple_animal/hostile/swarmer, sent by swarmer to swarmer_team datum
+#define COMSIG_SWARMER_TRY_PROCESS_ORGANIC_ITEM "swarmer_try_process_organic"
+/// From /datum/team/swarmer_team, sent by team to organic processer structure
+#define COMSIG_SWARMER_PROCESS_ORGANIC_ITEM_CHECK "swarmer_process_organic_check"
+
+/// From /mob/living/simple_animal/hostile/swarmer, sent by swarmer to swarmer_team datum
+#define COMSIG_SWARMER_TRY_ANALYZE_MOB "swarmer_try_process_mob"
+/// From /datum/team/swarmer_team, sent by team to organic analyzer structure
+#define COMSIG_SWARMER_ANALYZE_MOB_CHECK "swarmer_process_mob_check"
+
+/// From /obj/structure/swarmer/resource_storage, sent to swarmer_team on init
+#define COMSIG_SWARMER_STORAGE_INITIALIZED "swarmer_storage_initialized"
+/// From /obj/structure/swarmer/resource_storage, sent to swarmer_team on destroy
+#define COMSIG_SWARMER_STORAGE_DESTROYED "swarmer_storage_destroyed"
