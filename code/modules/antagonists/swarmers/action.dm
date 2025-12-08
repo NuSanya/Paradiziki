@@ -2,15 +2,13 @@
 	name = "Свармер что-то"
 	desc = "Напишите баг-репорт, если увидели это."
 
-/datum/action/innate/swarmer/IsAvailable()
+/datum/action/innate/swarmer/IsAvailable(feedback = FALSE)
 	if(!isswarmer(owner))
 		return FALSE
 	return ..()
 
-
 /datum/action/innate/swarmer/build
 	name = "Создать что-то"
-	desc = "Напишите баг-репорт, если увидели это."
 	/// What do we build
 	var/build_type = /obj/structure/swarmer
 	/// How many resources does it cost to build it
@@ -32,6 +30,9 @@
 		owner.balloon_alert(owner, "вне станции!")
 		return
 	if((locate(/obj/structure/swarmer) in our_turf))
+		owner.balloon_alert(owner, "нельзя строить сверху существующего!")
+		return
+	if((locate(/obj/machinery/porta_turret/swarmer) in our_turf))
 		owner.balloon_alert(owner, "нельзя строить сверху существующего!")
 		return
 	if(!do_after(owner, build_time, owner, max_interact_count = 1, cancel_on_max = TRUE))

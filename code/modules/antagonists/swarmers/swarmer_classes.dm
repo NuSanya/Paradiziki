@@ -38,7 +38,6 @@
 	melee_damage_upper = 25
 	health = 150
 	maxHealth = 150
-	dismantle_speed = NORMAL_SWARMER_DISMANTLE_DELAY
 	speed = 0
 	ranged = 1
 	projectiletype = /obj/projectile/beam/disabler/swarmer/generalist
@@ -70,7 +69,6 @@
 	melee_damage_upper = 30
 	health = 55
 	maxHealth = 55
-	dismantle_speed = NORMAL_SWARMER_DISMANTLE_DELAY
 	speed = -1
 	swap_resource_cost = ROVER_SWAP_COST
 	can_hide = TRUE
@@ -166,7 +164,6 @@
 	health = 120
 	maxHealth = 120
 	dismantle_speed = FAST_SWARMER_DISMANTLE_DELAY
-	speed = 1
 	swap_resource_cost = BUILDER_SWAP_COST
 	mob_size = MOB_SIZE_HUMAN
 	swarmer_class_info = "Данный класс является строительной единицей, способной строить множество различных конструкций.\n\

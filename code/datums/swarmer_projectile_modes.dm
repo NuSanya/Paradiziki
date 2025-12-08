@@ -1,4 +1,4 @@
-GLOBAL_LIST_INIT(swarmer_radial_cache, list())
+GLOBAL_LIST_EMPTY(swarmer_radial_cache)
 
 /**
  * Datum used in /mob/living/simple_animal/hostile/swarmer/combat mob
@@ -9,11 +9,11 @@ GLOBAL_LIST_INIT(swarmer_radial_cache, list())
 	/// Our swarmer
 	var/mob/living/simple_animal/hostile/swarmer/swarmer
 	/// Cooldown of projectiles in this mode
-	var/cooldown = 1 SECONDS
+	var/cooldown
 	/// Amount of projectiles in this mode
-	var/amount = 1
+	var/amount
 	/// Rapid fire delay in this mode
-	var/rapid_fire_delay = 0.2 SECONDS
+	var/rapid_fire_delay
 	/// Type of projectile in this mode
 	var/proj_type = /obj/projectile/beam/disabler/swarmer
 	/// Sound of projectiles in this mode
@@ -67,6 +67,7 @@ GLOBAL_LIST_INIT(swarmer_radial_cache, list())
 /datum/swarmer_proj_mode/general
 	cooldown = SWARMER_NORMAL_PROJECTILE_COOLDOWN
 	proj_type = /obj/projectile/beam/disabler/swarmer/generalist
+	amount = 1
 
 /datum/swarmer_proj_mode/double
 	cooldown = SWARMER_DOUBLE_PROJECTILE_COOLDOWN
@@ -77,7 +78,9 @@ GLOBAL_LIST_INIT(swarmer_radial_cache, list())
 /datum/swarmer_proj_mode/strong
 	cooldown = SWARMER_STRONG_PROJECTILE_COOLDOWN
 	proj_type = /obj/projectile/beam/disabler/swarmer/empowered
+	amount = 1
 
 /datum/swarmer_proj_mode/sabotage
 	cooldown = SWARMER_SABOTAGE_PROJECTILE_COOLDOWN
 	proj_type = /obj/projectile/beam/disabler/swarmer/sabotage
+	amount = 1

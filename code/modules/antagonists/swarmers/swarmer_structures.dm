@@ -685,7 +685,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	/// Targets that are currently processed by turret. Used by process()
 	var/list/processing_targets = list()
 
-/obj/structure/swarmer/acp_turret/Initialize()
+/obj/structure/swarmer/acp_turret/Initialize(mapload)
 	. = ..()
 	proximity_monitor = new(src, SWARMER_ACP_TURRET_RANGE)
 

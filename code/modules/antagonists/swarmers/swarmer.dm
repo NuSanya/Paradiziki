@@ -323,7 +323,7 @@
 	holder.icon_state = "hudstat"
 
 /atom/movable/proc/integrate_amount()
-    return 0
+	return 0
 
 /obj/item/integrate_amount()
 	if(!length(materials))
