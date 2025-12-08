@@ -81,17 +81,6 @@
 	disable_message = "Будучи призраком, теперь вы будете слышать радиосообщения во всём мире."
 	blackbox_message = "Toggle GhostRadio"
 
-/datum/preference_toggle/toggle_admin_radio
-	name = "Админ-радио"
-	description = "Включает слышимость всех радиосообщений."
-	preftoggle_bitflag = PREFTOGGLE_CHAT_RADIO
-	preftoggle_toggle = PREFTOGGLE_SOUND
-	preftoggle_category = PREFTOGGLE_CATEGORY_ADMIN
-	rights_required = R_ADMIN
-	enable_message = "Теперь вы не будете слышать все радиосообщения."
-	disable_message = "Теперь вы будете слышать все радиосообщения."
-	blackbox_message = "Toggle RadioChatter"
-
 /datum/preference_toggle/toggle_ai_voice_annoucements
 	name = "Слышимость аудио-оповещений ИИ"
 	description = "Включает слышимость звуковых оповещений ИИ."
@@ -177,7 +166,6 @@
 	. = ..()
 	if(user.prefs.sound & ~SOUND_LOBBY)
 		usr.stop_sound_channel(CHANNEL_ADMIN)
-
 
 /datum/preference_toggle/toggle_end_of_round_sound
 	name = "Отключение звука в конце раунда"
@@ -465,7 +453,7 @@
 	var/new_ooccolor = tgui_input_color(usr, "Выберите цвет ваших сообщений в OOC-чате.", "Цвет OOC-сообщений", user.prefs.ooccolor)
 	if(!isnull(new_ooccolor))
 		user.prefs.ooccolor = new_ooccolor
-		to_chat(usr, "Выбранный цвет OOC-сообщений – [new_ooccolor].")
+		to_chat(usr, "Выбранный цвет OOC-сообщений — [new_ooccolor].")
 	else
 		user.prefs.ooccolor = initial(user.prefs.ooccolor)
 		to_chat(usr, "Цвет OOC-сообщений был сброшен.")
@@ -669,7 +657,6 @@
 	disable_message = "Теперь содержимое UI не маштабируется."
 	blackbox_message = "Переключение маштабирования UI"
 
-
 /datum/preference_toggle/ui_scale/set_toggles(client/user)
 	. = ..()
 	if(!istype(user))
@@ -679,7 +666,6 @@
 		INVOKE_ASYNC(user, TYPE_VERB_REF(/client, refresh_tgui))
 		user.tgui_say?.load()
 		user.fix_title_screen()
-
 
 /datum/preference_toggle/pain_blurb
 	name = "Переключить вывод боли на экран"

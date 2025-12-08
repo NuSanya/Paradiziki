@@ -1,3 +1,23 @@
+/// Yellow-Blue colorblindness. Tajarans/Farwas have this.
+#define TRITANOPIA_COLOR_REPLACE list( \
+	"red" = "rebeccapurple", \
+	"blue" = "darkslateblue", \
+	"green" = "darkolivegreen", \
+	"orange" = "darkkhaki", \
+	"yellow" = "darkkhaki", \
+	"brown" = "rebeccapurple", \
+	"gold" = "darkkhaki", \
+	"cyan" = "darkseagreen", \
+	"magenta" = "darkslateblue", \
+	"purple" = "darkslateblue", \
+	"pink" = "lightgrey" \
+)
+
+#define MATRIX_TAJ_CBLIND list(\
+	0.95, 0.07, 0,\
+	0, 0.44, 0.52,\
+	0.05, 0.49, 0.48)
+
 /obj/item/organ/internal/liver/tajaran
 	species_type = /datum/species/tajaran
 	name = "tajaran liver"
@@ -13,7 +33,7 @@
 		DATIVE = "печени таярана",
 		ACCUSATIVE = "печень таярана",
 		INSTRUMENTAL = "печенью таярана",
-		PREPOSITIONAL = "печени таярана"
+		PREPOSITIONAL = "печени таярана",
 	)
 
 /obj/item/organ/internal/eyes/tajaran
@@ -33,7 +53,7 @@
 		DATIVE = "глазам таярана",
 		ACCUSATIVE = "глаза таярана",
 		INSTRUMENTAL = "глазами таярана",
-		PREPOSITIONAL = "глазах таярана"
+		PREPOSITIONAL = "глазах таярана",
 	)
 
 /obj/item/organ/internal/ears/tajaran
@@ -48,7 +68,7 @@
 		DATIVE = "ушам таярана",
 		ACCUSATIVE = "уши таярана",
 		INSTRUMENTAL = "ушами таярана",
-		PREPOSITIONAL = "ушах таярана"
+		PREPOSITIONAL = "ушах таярана",
 	)
 
 /obj/item/organ/internal/eyes/tajaran/farwa //Being the lesser form of Tajara, Farwas have an utterly incurable version of their colourblindness.
@@ -65,7 +85,7 @@
 		DATIVE = "глазам фарвы",
 		ACCUSATIVE = "глаза фарвы",
 		INSTRUMENTAL = "глазами фарвы",
-		PREPOSITIONAL = "глазах фарвы"
+		PREPOSITIONAL = "глазах фарвы",
 	)
 
 /obj/item/organ/internal/heart/tajaran
@@ -83,7 +103,7 @@
 		DATIVE = "сердцу таярана",
 		ACCUSATIVE = "сердце таярана",
 		INSTRUMENTAL = "сердцем таярана",
-		PREPOSITIONAL = "сердце таярана"
+		PREPOSITIONAL = "сердце таярана",
 	)
 
 /obj/item/organ/internal/brain/tajaran
@@ -100,7 +120,7 @@
 		DATIVE = "мозгу таярана",
 		ACCUSATIVE = "мозг таярана",
 		INSTRUMENTAL = "мозгом таярана",
-		PREPOSITIONAL = "мозге таярана"
+		PREPOSITIONAL = "мозге таярана",
 	)
 
 /obj/item/organ/internal/lungs/tajaran
@@ -117,7 +137,7 @@
 		DATIVE = "лёгким таярана",
 		ACCUSATIVE = "лёгкие таярана",
 		INSTRUMENTAL = "лёгкими таярана",
-		PREPOSITIONAL = "лёгких таярана"
+		PREPOSITIONAL = "лёгких таярана",
 	)
 
 /obj/item/organ/internal/kidneys/tajaran
@@ -134,7 +154,7 @@
 		DATIVE = "почкам таярана",
 		ACCUSATIVE = "почки таярана",
 		INSTRUMENTAL = "почками таярана",
-		PREPOSITIONAL = "почках таярана"
+		PREPOSITIONAL = "почках таярана",
 	)
 
 /obj/item/organ/external/tail/tajaran
@@ -151,5 +171,8 @@
 		DATIVE = "хвосту таярана",
 		ACCUSATIVE = "хвост таярана",
 		INSTRUMENTAL = "хвостом таярана",
-		PREPOSITIONAL = "хвосте таярана"
+		PREPOSITIONAL = "хвосте таярана",
 	)
+
+#undef TRITANOPIA_COLOR_REPLACE
+#undef MATRIX_TAJ_CBLIND

@@ -1,3 +1,22 @@
+/// Red colorblindness. Vulpkanins/Wolpins have this.
+#define PROTANOPIA_COLOR_REPLACE list( \
+	"red" = "darkolivegreen", \
+	"green" = "darkslategrey", \
+	"orange" = "goldenrod", \
+	"yellow" = "goldenrod", \
+	"brown" = "darkolivegreen", \
+	"gold" = "goldenrod", \
+	"cyan" = "steelblue", \
+	"magenta" = "blue", \
+	"purple" = "darkslategrey", \
+	"pink" = "beige" \
+)
+
+#define MATRIX_VULP_CBLIND list(\
+	0.51, 0.4, 0.12,\
+	0.49, 0.41, 0.12,\
+	0, 0.2, 0.76)
+
 /obj/item/organ/external/head/vulpkanin
 	species_type = /datum/species/vulpkanin
 
@@ -19,7 +38,7 @@
 		DATIVE = "печени вульпканина",
 		ACCUSATIVE = "печень вульпканина",
 		INSTRUMENTAL = "печенью вульпканина",
-		PREPOSITIONAL = "печени вульпканина"
+		PREPOSITIONAL = "печени вульпканина",
 	)
 
 /obj/item/organ/internal/eyes/vulpkanin
@@ -39,7 +58,7 @@
 		DATIVE = "глазам вульпканина",
 		ACCUSATIVE = "глаза вульпканина",
 		INSTRUMENTAL = "глазами вульпканина",
-		PREPOSITIONAL = "глазах вульпканина"
+		PREPOSITIONAL = "глазах вульпканина",
 	)
 
 /obj/item/organ/internal/eyes/vulpkanin/wolpin //Being the lesser form of Vulpkanin, Wolpins have an utterly incurable version of their colourblindness.
@@ -56,7 +75,7 @@
 		DATIVE = "глазам вульпина",
 		ACCUSATIVE = "глаза вульпина",
 		INSTRUMENTAL = "глазами вульпина",
-		PREPOSITIONAL = "глазах вульпина"
+		PREPOSITIONAL = "глазах вульпина",
 	)
 
 /obj/item/organ/internal/ears/vulpkanin
@@ -71,7 +90,7 @@
 		DATIVE = "ушам вульпканина",
 		ACCUSATIVE = "уши вульпканина",
 		INSTRUMENTAL = "ушами вульпканина",
-		PREPOSITIONAL = "ушах вульпканина"
+		PREPOSITIONAL = "ушах вульпканина",
 	)
 
 /obj/item/organ/internal/heart/vulpkanin
@@ -89,7 +108,7 @@
 		DATIVE = "сердцу вульпканина",
 		ACCUSATIVE = "сердце вульпканина",
 		INSTRUMENTAL = "сердцем вульпканина",
-		PREPOSITIONAL = "сердце вульпканина"
+		PREPOSITIONAL = "сердце вульпканина",
 	)
 
 /obj/item/organ/internal/brain/vulpkanin
@@ -106,7 +125,7 @@
 		DATIVE = "мозгу вульпканина",
 		ACCUSATIVE = "мозг вульпканина",
 		INSTRUMENTAL = "мозгом вульпканина",
-		PREPOSITIONAL = "мозге вульпканина"
+		PREPOSITIONAL = "мозге вульпканина",
 	)
 
 /obj/item/organ/internal/lungs/vulpkanin
@@ -123,7 +142,7 @@
 		DATIVE = "лёгким вульпканина",
 		ACCUSATIVE = "лёгкие вульпканина",
 		INSTRUMENTAL = "лёгкими вульпканина",
-		PREPOSITIONAL = "лёгких вульпканина"
+		PREPOSITIONAL = "лёгких вульпканина",
 	)
 
 /obj/item/organ/internal/kidneys/vulpkanin
@@ -140,7 +159,7 @@
 		DATIVE = "почкам вульпканина",
 		ACCUSATIVE = "почки вульпканина",
 		INSTRUMENTAL = "почками вульпканина",
-		PREPOSITIONAL = "почках вульпканина"
+		PREPOSITIONAL = "почках вульпканина",
 	)
 
 /obj/item/organ/external/tail/vulpkanin
@@ -157,5 +176,8 @@
 		DATIVE = "хвосту вульпканина",
 		ACCUSATIVE = "хвост вульпканина",
 		INSTRUMENTAL = "хвостом вульпканина",
-		PREPOSITIONAL = "хвосте вульпканина"
+		PREPOSITIONAL = "хвосте вульпканина",
 	)
+
+#undef PROTANOPIA_COLOR_REPLACE
+#undef MATRIX_VULP_CBLIND

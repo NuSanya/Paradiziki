@@ -1,6 +1,7 @@
 /obj/projectile/shrapnel
 	name = "shrapnel"
 	icon = 'icons/obj/shards.dmi'
+	icon_state = null
 	throw_speed =  EMBED_THROWSPEED_THRESHOLD
 	sharp = TRUE
 	range = 20
@@ -16,7 +17,7 @@
 		DATIVE = "шрапнели",
 		ACCUSATIVE = "шрапнель",
 		INSTRUMENTAL = "шрапнелью",
-		PREPOSITIONAL = "шрапнели"
+		PREPOSITIONAL = "шрапнели",
 	)
 
 /obj/projectile/shrapnel/Initialize(mapload)
@@ -53,7 +54,7 @@
 		DATIVE = "шрапнели",
 		ACCUSATIVE = "шрапнель",
 		INSTRUMENTAL = "шрапнелью",
-		PREPOSITIONAL = "шрапнели"
+		PREPOSITIONAL = "шрапнели",
 	)
 
 /obj/item/embedded/shrapnel/Initialize(mapload)

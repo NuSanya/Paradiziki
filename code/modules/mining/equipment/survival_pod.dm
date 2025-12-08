@@ -16,7 +16,6 @@
 	var/template_id = "shelter_alpha"
 	var/datum/map_template/shelter/template
 	var/used = FALSE
-	var/emagged = FALSE
 
 /obj/item/survivalcapsule/get_ru_names()
 	return list(
@@ -25,7 +24,7 @@
 		DATIVE = "капсуле блюспейс-убежища",
 		ACCUSATIVE = "капсулу блюспейс-убежища",
 		INSTRUMENTAL = "капсулой блюспейс-убежища",
-		PREPOSITIONAL = "капсуле блюспейс-убежища"
+		PREPOSITIONAL = "капсуле блюспейс-убежища",
 	)
 
 /obj/item/survivalcapsule/emag_act(mob/user)
@@ -64,7 +63,7 @@
 		to_chat(user, span_notice("Ошибка. Попытка развертывания в секторе станции. Развертывание отменено."))
 		playsound(user, 'sound/machines/buzz-sigh.ogg', 15, TRUE)
 		return
-	loc.visible_message(span_warning("[capitalize(declent_ru(NOMINATIVE))] начинает трястись. Отойдите!"))
+	loc.visible_message(span_warning("[capitalize(declent_ru(NOMINATIVE))] начинает вибрировать. Отойдите!"))
 	used = TRUE
 	addtimer(CALLBACK(src, PROC_REF(expand), user), 5 SECONDS)
 	return TRUE
@@ -149,7 +148,7 @@
 		DATIVE = "капсуле роскошного блюспейс-убежища",
 		ACCUSATIVE = "капсулу роскошного блюспейс-убежища",
 		INSTRUMENTAL = "капсулой роскошного блюспейс-убежища",
-		PREPOSITIONAL = "капсуле роскошного блюспейс-убежища"
+		PREPOSITIONAL = "капсуле роскошного блюспейс-убежища",
 	)
 /obj/item/survivalcapsule/luxuryelite
 	name = "luxury elite bar capsule"
@@ -163,7 +162,7 @@
 		DATIVE = "капсуле элитного бара",
 		ACCUSATIVE = "капсулу элитного бара",
 		INSTRUMENTAL = "капсулой элитного бара",
-		PREPOSITIONAL = "капсуле элитного бара"
+		PREPOSITIONAL = "капсуле элитного бара",
 	)
 
 //Pod turfs and objects
@@ -194,10 +193,8 @@
 	icon = 'icons/obj/lavaland/survival_pod.dmi'
 	icon_state = "pwindow"
 
-
 /obj/structure/window/reinforced/survival_pod/unhittable
 	obj_flags = IGNORE_HITS
-
 
 //Floors
 /turf/simulated/floor/pod
@@ -274,11 +271,13 @@
 	desc = "Настенный диспенсер медицинского оборудования. Этот кажется чуть меньше обычного."
 	req_access = list()
 
-	products = list(/obj/item/stack/medical/splint = 2,
-					/obj/item/reagent_containers/food/pill/patch/silver_sulf = 2,
-					/obj/item/reagent_containers/food/pill/patch/styptic = 2,
-					/obj/item/reagent_containers/hypospray/autoinjector = 1,
-					/obj/item/healthanalyzer = 1)
+	products = list(
+		/obj/item/stack/medical/splint = 2,
+		/obj/item/reagent_containers/food/pill/patch/silver_sulf = 2,
+		/obj/item/reagent_containers/food/pill/patch/styptic = 2,
+		/obj/item/reagent_containers/hypospray/autoinjector = 1,
+		/obj/item/healthanalyzer = 1,
+	)
 	contraband = list()
 
 /obj/machinery/vending/wallmed/survival_pod/get_ru_names()
@@ -288,7 +287,7 @@
 		DATIVE = "медицинскому модулю аварийного убежища",
 		ACCUSATIVE = "медицинский модуль аварийного убежища",
 		INSTRUMENTAL = "медицинским модулем аварийного убежища",
-		PREPOSITIONAL = "медицинском модуле аварийного убежища"
+		PREPOSITIONAL = "медицинском модуле аварийного убежища",
 	)
 
 //Computer
@@ -300,7 +299,6 @@
 	density = TRUE
 	pixel_y = -32
 	move_resist = MOVE_FORCE_STRONG
-
 
 /obj/item/gps/computer/wrench_act(mob/living/user, obj/item/I)
 	. = TRUE
@@ -315,7 +313,6 @@
 	transfer_prints_to(gps)
 	gps.add_fingerprint(user)
 	qdel(src)
-
 
 /obj/item/gps/computer/ui_state(mob/user)
 	return GLOB.default_state
@@ -404,7 +401,6 @@
 			new buildstacktype(loc, buildstackamount)
 	qdel(src)
 
-
 /obj/structure/fans/wrench_act(mob/living/user, obj/item/I)
 	. = TRUE
 	user.visible_message(
@@ -415,7 +411,6 @@
 	if(!I.use_tool(src, user, 2 SECONDS, volume = I.tool_volume))
 		return .
 	deconstruct()
-
 
 /obj/structure/fans/tiny
 	name = "tiny fan"
@@ -432,7 +427,7 @@
 		DATIVE = "системе контроля среды",
 		ACCUSATIVE = "систему контроля среды",
 		INSTRUMENTAL = "системой контроля среды",
-		PREPOSITIONAL = "системе контроля среды"
+		PREPOSITIONAL = "системе контроля среды",
 	)
 /obj/structure/fans/tiny/invisible
 	name = "air flow blocker"
@@ -441,7 +436,7 @@
 //Signs
 /obj/structure/sign/mining
 	name = "nanotrasen mining corps sign"
-	desc = "Знак облегчения для уставших шахтеров и предупреждение для потенциальных конкурентов Нанотрейзен."
+	desc = "Знак облегчения для уставших шахтеров и предупреждение для потенциальных конкурентов \"Нанотрейзен\"."
 	icon = 'icons/turf/walls/survival_pod_walls.dmi'
 	icon_state = "ntpod"
 
@@ -452,7 +447,7 @@
 		DATIVE = "знаку шахтёрского корпуса НТ",
 		ACCUSATIVE = "знак шахтёрского корпуса НТ",
 		INSTRUMENTAL = "знаком шахтёрского корпуса НТ",
-		PREPOSITIONAL = "знаке шахтёрского корпуса НТ"
+		PREPOSITIONAL = "знаке шахтёрского корпуса НТ",
 	)
 
 /obj/structure/sign/mining/survival
@@ -467,7 +462,7 @@
 		DATIVE = "знаку убежища",
 		ACCUSATIVE = "знак убежища",
 		INSTRUMENTAL = "знаком убежища",
-		PREPOSITIONAL = "знаке убежища"
+		PREPOSITIONAL = "знаке убежища",
 	)
 
 //Fluff
@@ -491,7 +486,6 @@
 	transfer_prints_to(rods)
 	rods.add_fingerprint(user)
 	qdel(src)
-
 
 /obj/item/fakeartefact
 	name = "expensive forgery"

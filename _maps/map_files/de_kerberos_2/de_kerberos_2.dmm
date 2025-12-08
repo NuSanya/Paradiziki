@@ -1075,9 +1075,7 @@
 	},
 /area/security/main)
 "akC" = (
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 10;
 	icon_state = "brown"
@@ -1641,9 +1639,7 @@
 	c_tag = "Hangar North";
 	dir = 6
 	},
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "darkyellow"
@@ -2180,9 +2176,7 @@
 	pixel_y = 2
 	},
 /obj/item/stock_parts/cell/high,
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel,
 /area/engineering/mechanic_workshop/expedition)
 "atV" = (
@@ -2971,9 +2965,7 @@
 /area/maintenance/fpmaint)
 "azi" = (
 /obj/structure/reagent_dispensers/watertank/high,
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /turf/simulated/floor/plasteel{
 	icon_state = "purple"
 	},
@@ -3633,9 +3625,7 @@
 /turf/simulated/wall,
 /area/janitor)
 "aDL" = (
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/machinery/camera{
 	c_tag = "Cargo Office North-West";
 	dir = 4
@@ -6106,9 +6096,7 @@
 /obj/machinery/light{
 	dir = 8
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/item/weldingtool/largetank,
 /turf/simulated/floor/plasteel{
 	dir = 8;
@@ -7878,10 +7866,7 @@
 /turf/simulated/floor/engine,
 /area/medical/chemistry)
 "bgi" = (
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 10
 	},
@@ -8637,8 +8622,6 @@
 /area/engineering/controlroom)
 "bjD" = (
 /obj/structure/table/wood,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/plating,
 /area/maintenance/starboard)
 "bjE" = (
@@ -9513,7 +9496,7 @@
 	},
 /area/engineering/mechanic_workshop/hangar)
 "bpf" = (
-/obj/structure/flora/grass/jungle/b,
+/obj/structure/flora/grass/jungle,
 /obj/machinery/light/small{
 	dir = 8
 	},
@@ -11317,10 +11300,7 @@
 	},
 /area/hallway/primary/fore)
 "bxX" = (
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 6
 	},
@@ -11355,9 +11335,7 @@
 /obj/structure/disposalpipe/trunk{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "darkblue"
@@ -13571,9 +13549,7 @@
 /obj/structure/kitchenspike,
 /obj/effect/decal/cleanable/blood/old,
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 6;
 	icon_state = "darkred"
@@ -14283,9 +14259,7 @@
 /turf/simulated/floor/engine,
 /area/engineering/controlroom)
 "bMo" = (
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
 /obj/structure/cable{
 	icon_state = "1-2"
@@ -15112,10 +15086,7 @@
 /area/security/securearmory)
 "bQe" = (
 /obj/item/twohanded/required/kirbyplants,
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -15437,7 +15408,6 @@
 /area/engineering/controlroom)
 "bRv" = (
 /obj/structure/table,
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "brown"
@@ -17307,9 +17277,7 @@
 /obj/structure/cable{
 	icon_state = "1-2"
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/wood/fancy/cherry,
 /area/magistrateoffice)
 "caw" = (
@@ -17681,9 +17649,7 @@
 /obj/machinery/light{
 	dir = 8
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/structure/closet/wardrobe/atmospherics_yellow,
 /obj/effect/decal/warning_stripes/yellow/hollow,
 /turf/simulated/floor/plasteel{
@@ -18489,7 +18455,12 @@
 /obj/structure/sign/poster/contraband/random{
 	pixel_y = -32
 	},
-/obj/structure/closet/loot_crate/ammo,
+/obj/structure/rack/gunrack,
+/obj/item/twohanded/spear/secspear,
+/obj/item/twohanded/spear/secspear,
+/obj/item/twohanded/spear/secspear,
+/obj/item/twohanded/spear/secspear,
+/obj/item/twohanded/spear/secspear,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -19032,10 +19003,7 @@
 	},
 /area/chapel/main)
 "cjD" = (
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	icon_state = "whitepurple"
 	},
@@ -19408,7 +19376,7 @@
 /turf/simulated/floor/plasteel,
 /area/atmos)
 "clF" = (
-/obj/structure/flora/grass/jungle/b,
+/obj/structure/flora/grass/jungle,
 /obj/structure/cable{
 	icon_state = "1-2"
 	},
@@ -19740,7 +19708,6 @@
 	name = "Cargo Bay Desk";
 	req_access = list(31)
 	},
-/obj/item/paper/deltainfo,
 /obj/machinery/door/firedoor,
 /obj/machinery/door/poddoor/shutters/preopen{
 	dir = 2;
@@ -21158,10 +21125,7 @@
 /obj/machinery/atmospherics/pipe/manifold/hidden/scrubbers{
 	dir = 8
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/wood/fancy/light,
 /area/crew_quarters/captain/bedroom)
 "cvH" = (
@@ -24547,9 +24511,7 @@
 	c_tag = "Detective's Lab";
 	network = list("SS13","Security")
 	},
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "darkblue"
@@ -24638,10 +24600,7 @@
 /turf/simulated/floor/plating,
 /area/library/game_zone)
 "cJO" = (
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -24854,9 +24813,7 @@
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 4;
 	icon_state = "darkblue"
@@ -24917,18 +24874,14 @@
 /turf/simulated/floor/plasteel,
 /area/quartermaster/storage)
 "cLj" = (
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/wood,
 /area/crew_quarters/cabin3)
 "cLl" = (
 /obj/structure/table/wood,
 /obj/item/folder/red,
 /obj/item/pen,
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/carpet,
 /area/crew_quarters/cabin4)
 "cLr" = (
@@ -24986,9 +24939,7 @@
 	dir = 4;
 	pixel_x = 26
 	},
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /obj/effect/decal/warning_stripes/yellow/hollow,
 /obj/item/paper/gravity_gen,
 /turf/simulated/floor/plasteel,
@@ -25378,9 +25329,7 @@
 	pixel_y = 2
 	},
 /obj/item/storage/firstaid/toxin,
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /turf/simulated/floor/plasteel{
 	icon_state = "whiteblue"
 	},
@@ -27932,10 +27881,7 @@
 /obj/structure/disposalpipe/trunk{
 	dir = 8
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "whiteblue"
@@ -28711,10 +28657,7 @@
 	},
 /area/medical/virology)
 "dbU" = (
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/machinery/power/apc{
 	dir = 8;
 	pixel_x = -26
@@ -28876,7 +28819,6 @@
 /obj/machinery/light{
 	dir = 1
 	},
-/obj/item/paper/deltainfo,
 /obj/item/radio/intercom{
 	pixel_y = 28
 	},
@@ -29025,9 +28967,6 @@
 /area/hallway/secondary/entry)
 "ddg" = (
 /obj/structure/table,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /obj/effect/decal/warning_stripes/yellow/hollow,
 /turf/simulated/floor/plasteel{
 	icon_state = "green"
@@ -29396,9 +29335,7 @@
 	dir = 5
 	},
 /obj/structure/disposalpipe/segment,
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/structure/closet/burial,
 /turf/simulated/floor/plasteel{
 	dir = 8;
@@ -30948,10 +30885,7 @@
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "freezerfloor"
 	},
@@ -31008,10 +30942,7 @@
 	icon_state = "1-2"
 	},
 /obj/structure/disposalpipe/segment,
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	icon_state = "white"
 	},
@@ -32104,9 +32035,7 @@
 	dir = 1
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 4;
 	icon_state = "whitepurple"
@@ -33145,10 +33074,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 9
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/effect/mine/explosive{
 	faction = "dk2"
 	},
@@ -34255,9 +34181,7 @@
 "dAr" = (
 /obj/structure/bed,
 /obj/item/bedsheet/hop,
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/carpet/orange,
 /area/crew_quarters/heads/hop)
 "dAt" = (
@@ -34781,9 +34705,7 @@
 	pixel_x = -3;
 	pixel_y = 11
 	},
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /turf/simulated/floor/plasteel{
 	icon_state = "white"
 	},
@@ -35405,13 +35327,6 @@
 "dFG" = (
 /turf/simulated/wall/rust,
 /area/maintenance/asmaint)
-"dFK" = (
-/obj/structure/table/wood,
-/obj/item/paper/deltainfo,
-/turf/simulated/floor/plasteel{
-	icon_state = "grimy"
-	},
-/area/maintenance/library)
 "dFM" = (
 /obj/structure/closet,
 /obj/effect/spawner/lootdrop/maintenance/tripple,
@@ -37791,9 +37706,7 @@
 	c_tag = "Courtroom East";
 	dir = 9
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/carpet,
 /area/crew_quarters/courtroom)
 "dQa" = (
@@ -38416,10 +38329,7 @@
 /obj/structure/cable{
 	icon_state = "2-8"
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/structure/disposalpipe/segment,
 /turf/simulated/floor/carpet,
 /area/library)
@@ -38439,9 +38349,6 @@
 /area/security/checkpoint/south)
 "dSP" = (
 /obj/structure/table,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/carpet/purple,
 /area/hallway/secondary/exit)
 "dSQ" = (
@@ -38660,10 +38567,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "darkred"
 	},
@@ -39031,9 +38935,7 @@
 	dir = 1;
 	pixel_y = -22
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/structure/closet/secure_closet/chaplain,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
@@ -39448,9 +39350,7 @@
 "dWL" = (
 /obj/structure/disposalpipe/trunk,
 /obj/machinery/disposal,
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "brown"
@@ -39575,9 +39475,7 @@
 /obj/item/storage/toolbox/mechanical,
 /obj/item/clothing/gloves/color/fyellow,
 /obj/item/multitool,
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel,
 /area/security/range)
 "dXj" = (
@@ -41213,7 +41111,7 @@
 	},
 /area/toxins/explab)
 "eiC" = (
-/obj/structure/flora/junglebush/c,
+/obj/structure/flora/junglebush,
 /obj/structure/disposalpipe/segment{
 	dir = 4
 	},
@@ -42902,9 +42800,6 @@
 /area/maintenance/starboard)
 "eCU" = (
 /obj/structure/table,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/plasteel{
 	icon_state = "neutralfull"
 	},
@@ -45352,10 +45247,7 @@
 	name = "Slime Processor"
 	},
 /obj/effect/decal/warning_stripes/yellow/hollow,
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "whitepurple"
 	},
@@ -45375,9 +45267,7 @@
 	pixel_x = 4;
 	pixel_y = -24
 	},
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /obj/structure/table/glass,
 /obj/item/storage/belt/medical,
 /turf/simulated/floor/plasteel{
@@ -45532,9 +45422,7 @@
 "fgB" = (
 /obj/structure/bed,
 /obj/item/bedsheet/blue,
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "grimy"
 	},
@@ -45915,11 +45803,6 @@
 /area/maintenance/starboard)
 "fma" = (
 /obj/structure/table/wood,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/plasteel{
 	icon_state = "grimy"
 	},
@@ -46181,11 +46064,6 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 1
-	},
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo{
-	pixel_x = -9;
-	pixel_y = -6
 	},
 /turf/simulated/floor/plating,
 /area/hallway/secondary/exit/maint)
@@ -47536,9 +47414,7 @@
 	dir = 4
 	},
 /obj/effect/decal/warning_stripes/red/hollow,
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -48480,10 +48356,6 @@
 	dir = 4;
 	network = list("Medical","SS13")
 	},
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "whiteblue"
@@ -48975,9 +48847,7 @@
 	pixel_x = 8
 	},
 /obj/item/reagent_containers/spray/cleaner/chemical,
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 4;
 	icon_state = "whitepurple"
@@ -48986,10 +48856,6 @@
 "fXm" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/table,
-/obj/item/paper/deltainfo{
-	pixel_x = 7;
-	pixel_y = -4
-	},
 /turf/simulated/floor/plasteel{
 	icon_state = "escape"
 	},
@@ -49423,9 +49289,7 @@
 /obj/machinery/light{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 4;
 	icon_state = "brown"
@@ -51539,9 +51403,7 @@
 /obj/structure/window/reinforced{
 	dir = 1
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/grass,
 /area/hydroponics)
 "gDz" = (
@@ -51728,10 +51590,7 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/wood/fancy/light,
 /area/crew_quarters/heads/hop)
 "gFl" = (
@@ -53410,10 +53269,7 @@
 /turf/simulated/floor/plasteel,
 /area/engineering/engine)
 "gVO" = (
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/structure/cable{
 	icon_state = "1-2"
 	},
@@ -53619,10 +53475,7 @@
 	dir = 4
 	},
 /obj/machinery/atmospherics/pipe/manifold/hidden/scrubbers,
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "hydrofloor"
 	},
@@ -54243,10 +54096,7 @@
 /area/security/hos)
 "hfR" = (
 /obj/item/twohanded/required/kirbyplants,
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "whitepurple"
@@ -55726,9 +55576,7 @@
 /obj/machinery/light/small{
 	dir = 1
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -56120,10 +55968,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/structure/closet/loot_crate/red,
 /turf/simulated/floor/plasteel{
 	icon_state = "grimy"
@@ -58825,9 +58670,7 @@
 	c_tag = "Medbay Staff Room";
 	network = list("SS13","Medical")
 	},
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /obj/structure/filingcabinet/chestdrawer,
 /turf/simulated/floor/plasteel{
 	icon_state = "cmo"
@@ -59958,10 +59801,7 @@
 	},
 /area/security/prison/cell_block/A)
 "iwS" = (
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/structure/closet/loot_crate/blue,
 /turf/simulated/floor/plasteel{
 	dir = 1;
@@ -60427,7 +60267,6 @@
 /obj/structure/sign/poster/contraband/random{
 	pixel_y = 32
 	},
-/obj/item/paper/deltainfo,
 /obj/effect/decal/cleanable{
 	color = "771919";
 	icon = 'icons/effects/crayondecal.dmi';
@@ -63369,10 +63208,7 @@
 /area/crew_quarters/locker)
 "jnr" = (
 /obj/item/twohanded/required/kirbyplants,
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -65765,9 +65601,7 @@
 /obj/structure/table/wood,
 /obj/item/folder,
 /obj/item/razor,
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/wood,
 /area/crew_quarters/cabin2)
 "jQt" = (
@@ -66322,9 +66156,7 @@
 /obj/structure/chair{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /turf/simulated/floor/plasteel{
 	icon_state = "red"
 	},
@@ -67281,9 +67113,7 @@
 	icon_state = "1-2"
 	},
 /obj/structure/disposalpipe/segment,
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/effect/mine/explosive{
 	faction = "dk2"
 	},
@@ -68647,9 +68477,7 @@
 "kCr" = (
 /obj/machinery/hydroponics/constructable,
 /obj/effect/decal/warning_stripes/yellow/hollow,
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -70395,10 +70223,7 @@
 	},
 /area/toxins/test_chamber)
 "lap" = (
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -72849,7 +72674,6 @@
 	dir = 1;
 	pixel_y = -26
 	},
-/obj/item/paper/deltainfo,
 /obj/machinery/alarm{
 	dir = 4;
 	pixel_x = -22
@@ -72876,15 +72700,6 @@
 /area/toxins/sm_test_chamber)
 "lFz" = (
 /obj/structure/table/wood,
-/obj/item/paper/deltainfo{
-	pixel_x = -9;
-	pixel_y = -6
-	},
-/obj/item/paper/deltainfo{
-	pixel_x = 7;
-	pixel_y = -4
-	},
-/obj/item/paper/deltainfo,
 /obj/machinery/computer/security/telescreen/entertainment{
 	pixel_x = 32
 	},
@@ -75763,10 +75578,7 @@
 /turf/simulated/floor/plasteel,
 /area/storage/eva)
 "mnO" = (
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/machinery/firealarm{
 	pixel_y = 26
 	},
@@ -77067,10 +76879,7 @@
 /area/security/processing)
 "mBR" = (
 /obj/structure/filingcabinet/chestdrawer,
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "darkred"
@@ -77821,9 +77630,7 @@
 /turf/simulated/floor/plating,
 /area/medical/cloning)
 "mJT" = (
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 10;
 	icon_state = "whitered"
@@ -78596,9 +78403,6 @@
 /obj/machinery/status_display{
 	pixel_y = 32
 	},
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -82713,9 +82517,7 @@
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "whiteblue"
@@ -83276,7 +83078,7 @@
 /area/toxins/launch)
 "nSZ" = (
 /obj/structure/chair{
-	desc = "Этот красивый стул был отлит из двух трофейных боргов синдиката.";
+	desc = "Этот красивый стул был отлит из двух трофейных боргов \"Синдиката\".";
 	name = "Дизайнерский стул"
 	},
 /obj/machinery/shower{
@@ -85057,7 +84859,7 @@
 	},
 /area/atmos)
 "ooo" = (
-/obj/structure/flora/grass/jungle/b,
+/obj/structure/flora/grass/jungle,
 /obj/item/flashlight/flare/glowstick/yellow{
 	on = 1
 	},
@@ -85533,9 +85335,7 @@
 "otM" = (
 /obj/structure/closet/secure_closet/brig,
 /obj/effect/decal/warning_stripes/red/hollow,
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -86146,10 +85946,7 @@
 /obj/machinery/newscaster/security_unit{
 	pixel_y = -28
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/wood,
 /area/security/hos)
 "oAp" = (
@@ -87014,9 +86811,7 @@
 /obj/machinery/light{
 	dir = 8
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel,
 /area/toxins/mixing)
 "oKE" = (
@@ -88429,10 +88224,7 @@
 /obj/machinery/atmospherics/pipe/manifold/hidden/supply{
 	dir = 1
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel,
 /area/teleporter)
 "paO" = (
@@ -89262,10 +89054,7 @@
 	},
 /area/maintenance/fpmaint)
 "pke" = (
-/obj/machinery/light_switch{
-	pixel_x = 5;
-	pixel_y = -23
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/machinery/holosign_switch{
 	dir = 1;
 	id = "surgery1";
@@ -90574,10 +90363,7 @@
 /obj/machinery/keycard_auth{
 	pixel_x = 24
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/carpet/royalblack,
 /area/ntrep)
 "pzN" = (
@@ -92934,7 +92720,6 @@
 /area/engineering/break_room)
 "pXq" = (
 /obj/structure/table,
-/obj/item/paper/deltainfo,
 /obj/structure/cable{
 	icon_state = "2-4"
 	},
@@ -93095,10 +92880,7 @@
 /obj/structure/cable{
 	icon_state = "4-8"
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/structure/disposalpipe/segment{
 	dir = 4
 	},
@@ -95597,9 +95379,7 @@
 "qxY" = (
 /obj/effect/landmark/spawner/late/cyborg,
 /obj/effect/decal/warning_stripes/yellow/partial,
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 4;
 	icon_state = "purple"
@@ -96529,9 +96309,7 @@
 "qJh" = (
 /obj/structure/table/wood,
 /obj/item/paper_bin,
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /obj/machinery/camera{
 	c_tag = "Chapel North"
 	},
@@ -99156,10 +98934,7 @@
 	pixel_y = 24;
 	req_access = list(58)
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "grimy"
 	},
@@ -100309,10 +100084,6 @@
 "rzU" = (
 /turf/simulated/floor/wood/fancy/light,
 /area/crew_quarters/captain)
-"rAa" = (
-/obj/structure/flora/junglebush/b,
-/turf/simulated/floor/grass,
-/area/maintenance/fpmaint)
 "rAh" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
 	dir = 4
@@ -100328,7 +100099,6 @@
 /area/maintenance/asmaint2)
 "rAl" = (
 /obj/structure/table/reinforced,
-/obj/item/paper/deltainfo,
 /obj/item/flashlight/seclite,
 /turf/simulated/floor/plasteel,
 /area/security/main)
@@ -100663,10 +100433,7 @@
 	},
 /area/hallway/primary/central/north)
 "rDK" = (
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "red"
@@ -101347,7 +101114,7 @@
 /turf/simulated/floor/plating,
 /area/security/podbay)
 "rLY" = (
-/obj/structure/flora/grass/jungle/b,
+/obj/structure/flora/grass/jungle,
 /obj/structure/flora/ausbushes,
 /obj/structure/table/wood,
 /obj/effect/mapping_helpers/table_flip{
@@ -101732,9 +101499,7 @@
 	pixel_x = -8;
 	pixel_y = 24
 	},
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "darkred"
@@ -102931,9 +102696,7 @@
 /obj/structure/chair/wood{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 5
 	},
@@ -104289,9 +104052,7 @@
 /obj/machinery/light{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "whitepurple"
@@ -104799,10 +104560,7 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 4
 	},
@@ -106750,10 +106508,6 @@
 	},
 /turf/simulated/floor/plasteel,
 /area/bridge/vip)
-"sYp" = (
-/obj/structure/flora/grass/jungle/b,
-/turf/simulated/floor/grass,
-/area/maintenance/fpmaint)
 "sYB" = (
 /obj/structure/cable{
 	icon_state = "0-8"
@@ -107372,11 +107126,6 @@
 /area/security/prisonershuttle)
 "teZ" = (
 /obj/structure/table/wood,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /obj/item/stack/tape_roll,
 /turf/simulated/floor/plasteel{
 	icon_state = "grimy"
@@ -108167,8 +107916,6 @@
 /area/security/medbay)
 "tny" = (
 /obj/structure/table/reinforced,
-/obj/item/paper/deltainfo,
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/plasteel{
 	icon_state = "yellow"
 	},
@@ -108359,10 +108106,7 @@
 /turf/simulated/floor/plasteel,
 /area/crew_quarters/fitness)
 "tpI" = (
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/carpet/cyan,
 /area/medical/cmo)
 "tpM" = (
@@ -108712,9 +108456,7 @@
 /area/aisat/aihallway)
 "tuS" = (
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /obj/structure/table,
 /obj/item/storage/fancy/donut_box,
 /turf/simulated/floor/plasteel{
@@ -109961,9 +109703,7 @@
 /obj/structure/disposalpipe/trunk{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "whitebluecorner"
@@ -110457,10 +110197,7 @@
 	},
 /area/medical/medbay)
 "tML" = (
-/obj/machinery/light_switch{
-	pixel_x = 5;
-	pixel_y = 25
-	},
+/obj/machinery/light_switch/directional/north,
 /obj/machinery/holosign_switch{
 	id = "surgery2";
 	pixel_x = -6;
@@ -110756,10 +110493,7 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/structure/cable{
 	icon_state = "2-8"
 	},
@@ -111094,10 +110828,7 @@
 	},
 /area/toxins/server)
 "tSz" = (
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/machinery/keycard_auth{
 	pixel_x = 38;
 	pixel_y = -24
@@ -112658,15 +112389,6 @@
 /area/security/prisonershuttle)
 "ukv" = (
 /obj/structure/table/wood,
-/obj/item/paper/deltainfo{
-	pixel_x = -9;
-	pixel_y = -6
-	},
-/obj/item/paper/deltainfo{
-	pixel_x = 7;
-	pixel_y = -4
-	},
-/obj/item/paper/deltainfo,
 /turf/simulated/floor/wood,
 /area/library)
 "ukA" = (
@@ -113085,9 +112807,7 @@
 /area/quartermaster/storage)
 "upr" = (
 /obj/effect/decal/warning_stripes/south,
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "neutral"
@@ -115872,7 +115592,6 @@
 /area/maintenance/starboard)
 "uXc" = (
 /obj/structure/table,
-/obj/item/paper/deltainfo,
 /obj/machinery/status_display{
 	pixel_x = -32
 	},
@@ -117227,9 +116946,7 @@
 /obj/item/grenade/chem_grenade/firefighting,
 /obj/effect/decal/warning_stripes/yellow/hollow,
 /obj/machinery/light/small,
-/obj/machinery/light_switch{
-	pixel_x = -24
-	},
+/obj/machinery/light_switch/directional/west,
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "neutral"
@@ -118819,9 +118536,7 @@
 /obj/structure/sign/poster/official/random{
 	pixel_x = 32
 	},
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /obj/machinery/newscaster/security_unit{
 	pixel_x = 28
 	},
@@ -119639,10 +119354,7 @@
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/effect/mine/explosive{
 	faction = "dk2"
 	},
@@ -120134,10 +119846,7 @@
 	},
 /area/hallway/primary/starboard/east)
 "vUJ" = (
-/obj/machinery/light_switch{
-	pixel_x = -24;
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/west,
 /obj/effect/decal/warning_stripes/yellow/hollow,
 /obj/structure/closet/secure_closet/engineering_electrical,
 /turf/simulated/floor/plasteel{
@@ -121142,9 +120851,7 @@
 /area/medical/medbay)
 "whh" = (
 /obj/machinery/light,
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /obj/structure/table/reinforced,
 /obj/item/stack/sheet/metal{
 	amount = 10
@@ -121871,7 +121578,6 @@
 /area/crew_quarters/theatre)
 "wqd" = (
 /obj/structure/table,
-/obj/item/paper/deltainfo,
 /obj/machinery/camera{
 	c_tag = "Brig Lobby";
 	dir = 8
@@ -122426,9 +122132,7 @@
 /obj/machinery/camera{
 	c_tag = "Library Games Room"
 	},
-/obj/machinery/light_switch{
-	pixel_y = 24
-	},
+/obj/machinery/light_switch/directional/north,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -123376,7 +123080,7 @@
 	},
 /area/hallway/primary/central/east)
 "wFH" = (
-/obj/structure/flora/junglebush/c,
+/obj/structure/flora/junglebush,
 /obj/item/trash/sosjerky,
 /turf/simulated/floor/grass,
 /area/maintenance/fpmaint)
@@ -124244,10 +123948,7 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /obj/effect/decal/warning_stripes/yellow,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
-/obj/machinery/light_switch{
-	pixel_x = 24;
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/east,
 /turf/simulated/floor/plasteel,
 /area/storage/tech)
 "wQr" = (
@@ -124622,9 +124323,7 @@
 	dir = 1;
 	pixel_y = -26
 	},
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/effect/decal/warning_stripes/yellow/hollow,
 /obj/item/stack/tape_roll,
 /turf/simulated/floor/plasteel,
@@ -125884,7 +125583,6 @@
 /area/crew_quarters/theatre)
 "xjj" = (
 /obj/structure/table,
-/obj/item/paper/deltainfo,
 /obj/item/storage/fancy/donut_box,
 /turf/simulated/floor/plasteel{
 	icon_state = "whitebluefull"
@@ -127045,9 +126743,7 @@
 /area/security/warden)
 "xwd" = (
 /obj/effect/decal/warning_stripes/southeast,
-/obj/machinery/light_switch{
-	pixel_x = 24
-	},
+/obj/machinery/light_switch/directional/east,
 /obj/structure/table/reinforced,
 /obj/item/wrench,
 /obj/item/crowbar,
@@ -131029,9 +130725,7 @@
 /obj/structure/disposalpipe/trunk{
 	dir = 4
 	},
-/obj/machinery/light_switch{
-	pixel_y = -24
-	},
+/obj/machinery/light_switch/directional/south,
 /turf/simulated/floor/wood/fancy/cherry,
 /area/lawoffice)
 "yjG" = (
@@ -160425,7 +160119,7 @@ cjn
 aBr
 moG
 csa
-sYp
+qEL
 wup
 bvG
 moG
@@ -160683,7 +160377,7 @@ nvO
 aeg
 moG
 ooo
-rAa
+bYT
 moG
 mMD
 aVS
@@ -161057,7 +160751,7 @@ pWT
 aos
 qks
 fwf
-dFK
+pmj
 dKE
 dFg
 wxU

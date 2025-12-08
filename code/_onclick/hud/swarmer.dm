@@ -1,4 +1,3 @@
-
 /datum/hud/swarmer/New(mob/owner)
 	..()
 	var/atom/movable/screen/using

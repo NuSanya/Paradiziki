@@ -19,7 +19,7 @@
 #define PREFTOGGLE_CHAT_GHOSTEARS (1<<2)
 #define PREFTOGGLE_CHAT_GHOSTSIGHT (1<<3)
 #define PREFTOGGLE_CHAT_PRAYER (1<<4)
-#define PREFTOGGLE_CHAT_RADIO (1<<5)
+// #define PREFTOGGLE_CHAT_RADIO (1<<5) // we have PREFTOGGLE_CHAT_GHOSTRADIO for all players
 // #define PREFTOGGLE_AZERTY (1<<6) // obsolete
 #define PREFTOGGLE_CHAT_DEBUGLOGS (1<<7)
 #define PREFTOGGLE_CHAT_LOOC (1<<8)
@@ -40,7 +40,7 @@
 
 #define TOGGLES_TOTAL 16777215 // If you add or remove a preference toggle above, make sure you update this define with the total value of the toggles combined.
 
-#define TOGGLES_DEFAULT (PREFTOGGLE_CHAT_OOC|PREFTOGGLE_CHAT_DEAD|PREFTOGGLE_CHAT_GHOSTEARS|PREFTOGGLE_CHAT_GHOSTSIGHT|PREFTOGGLE_CHAT_PRAYER|PREFTOGGLE_CHAT_RADIO|PREFTOGGLE_CHAT_LOOC|PREFTOGGLE_MEMBER_PUBLIC|PREFTOGGLE_DONATOR_PUBLIC|PREFTOGGLE_AMBIENT_OCCLUSION|PREFTOGGLE_CHAT_GHOSTPDA)
+#define TOGGLES_DEFAULT (PREFTOGGLE_CHAT_OOC|PREFTOGGLE_CHAT_DEAD|PREFTOGGLE_CHAT_GHOSTEARS|PREFTOGGLE_CHAT_GHOSTSIGHT|PREFTOGGLE_CHAT_PRAYER|PREFTOGGLE_CHAT_LOOC|PREFTOGGLE_MEMBER_PUBLIC|PREFTOGGLE_DONATOR_PUBLIC|PREFTOGGLE_AMBIENT_OCCLUSION|PREFTOGGLE_CHAT_GHOSTPDA)
 
 // toggles_2 variables. These MUST be prefixed with PREFTOGGLE_2
 #define PREFTOGGLE_2_RANDOMSLOT (1<<0) // 1
@@ -116,7 +116,6 @@
 /// Interacts with the toggles3 bitflag
 #define PREFTOGGLE_TOGGLE3 5
 
-
 // Admin attack logs filter system, see /proc/add_attack_logs
 #define ATKLOG_ALL 0 // All. no exceptions
 #define ATKLOG_ALMOSTALL 1 // exceptions: NPC vs NPC, strip/equip, vamp bites and pushing
@@ -143,7 +142,6 @@
 
 #define EXP_DEPT_TYPE_LIST list(EXP_TYPE_SERVICE, EXP_TYPE_MEDICAL, EXP_TYPE_ENGINEERING, EXP_TYPE_SCIENCE, EXP_TYPE_SECURITY, EXP_TYPE_COMMAND, EXP_TYPE_SILICON, EXP_TYPE_SPECIAL)
 
-
 /// Tags for 'age needed for this job' list.
 #define SPECIES_AGE_MIN "Min"
 #define SPECIES_AGE_MAX "Max"
@@ -151,7 +149,6 @@
 #define JOB_MIN_AGE_COMMAND "Command"
 
 #define AGE_SHEET list(SPECIES_AGE_MIN = 18, SPECIES_AGE_MAX = 85, JOB_MIN_AGE_HIGH_ED = 30, JOB_MIN_AGE_COMMAND = 30)
-
 
 // Defines just for parallax because its levels make storing it in the regular prefs a pain in the ass
 // These dont need to be bitflags because there isnt going to be more than one at a time of these active
@@ -168,7 +165,6 @@
 #define MULTIZ_DETAIL_HIGH 2
 #define MULTIZ_DETAIL_MEDIUM 1
 #define MULTIZ_DETAIL_LOW 0
-
 
 // Categories
 #define PREF_CATEGORY_GENERAL "Основные настройки"
@@ -231,3 +227,11 @@
 // Exoframes (machines only)
 #define PREF_EXOFRAME_REINFORCED "EXO_REINFORCED"
 #define PREF_EXOFRAME_INDUSTRIAL "EXO_INDUSTRIAL"
+
+/// This isnt in client_defines due to scoping issues
+#define DEFAULT_CLIENT_VIEWSIZE "17x15"
+
+// Used for alternate_option
+#define GET_RANDOM_JOB 0
+#define BE_ASSISTANT 1
+#define RETURN_TO_LOBBY 2

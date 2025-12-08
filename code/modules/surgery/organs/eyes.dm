@@ -1,3 +1,17 @@
+/// Pure Black and white colorblindness. Every species except Vulpkanins and Tajarans will have this.
+#define GREYSCALE_COLOR_REPLACE list( \
+	"red" = "grey", \
+	"blue" = "grey", \
+	"green" = "grey", \
+	"orange" = "light grey", \
+	"yellow" = "light grey", \
+	"brown" = "grey", \
+	"gold" = "light grey", \
+	"cyan" = "silver", \
+	"magenta" = "grey", \
+	"purple" = "grey", \
+	"pink" = "light grey" \
+)
 
 /obj/item/organ/internal/eyes
 	name = "eyeballs"
@@ -28,7 +42,7 @@
 		DATIVE = "глазам человека",
 		ACCUSATIVE = "глаза человека",
 		INSTRUMENTAL = "глазами человека",
-		PREPOSITIONAL = "глазах человека"
+		PREPOSITIONAL = "глазах человека",
 	)
 
 /obj/item/organ/internal/eyes/proc/update_colour()
@@ -53,7 +67,6 @@
 	if(is_robotic() || (see_in_dark > EYE_SHINE_THRESHOLD))
 		return TRUE
 
-
 /obj/item/organ/internal/eyes/insert(mob/living/carbon/human/target, special = ORGAN_MANIPULATION_DEFAULT)
 	. = ..()
 	if(ishuman(target) && eye_colour)
@@ -67,14 +80,12 @@
 		//If we're here, that means the mob acquired the colourblindness gene while they didn't have eyes. Better handle it.
 		target.update_client_colour()
 
-
 /obj/item/organ/internal/eyes/remove(mob/living/carbon/target, special = ORGAN_MANIPULATION_DEFAULT)
 	//If special is set, that means these eyes are getting deleted (i.e. during set_species())
 	if(special == ORGAN_MANIPULATION_DEFAULT && HAS_TRAIT(target, TRAIT_COLORBLIND))
 		LAZYOR(dependent_disabilities, TRAIT_COLORBLIND)
 		target.force_gene_block(GLOB.colourblindblock, FALSE)
 	return ..()
-
 
 /obj/item/organ/internal/eyes/surgeryize()
 	if(!owner)
@@ -117,7 +128,7 @@
 		DATIVE = "кибернетическим глазам",
 		ACCUSATIVE = "кибернетические глаза",
 		INSTRUMENTAL = "кибернетическими глазами",
-		PREPOSITIONAL = "кибернетических глазах"
+		PREPOSITIONAL = "кибернетических глазах",
 	)
 
 /obj/item/organ/internal/eyes/on_life()
@@ -131,3 +142,5 @@
 				E.heal_internal_damage(G.heal_rate)
 				owner.AdjustEyeBlurry(-2 SECONDS)
 	return ..() | update_flags
+
+#undef GREYSCALE_COLOR_REPLACE
