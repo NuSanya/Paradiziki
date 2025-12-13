@@ -135,10 +135,10 @@
 
 #define STATUS_EFFECT_VOMIT /datum/status_effect/tox_vomit // When carbon got enough tox damage - he will vomit.
 
-/// Makes the mob unable to adjust stamina (but can set its stamina)
+/// Makes the mob unable to adjust stamina (Duration is changeable on creation)
 #define STATUS_EFFECT_STAMINAREGEN_BLOCK /datum/status_effect/staminaregen_block
 
-/// Makes the mob unable to metabolize reagents
+/// Makes the mob unable to metabolize reagents (Duration is changeable on creation)
 #define STATUS_EFFECT_METABOLIZE_BLOCK /datum/status_effect/metabolize_block
 
 /// Whether a moth's wings are burnt

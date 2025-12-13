@@ -5,36 +5,46 @@
 /// Best swarmer deconstruction speed modifier
 #define FAST_SWARMER_DISMANTLE_DELAY 3 SECONDS
 
-/// How many inorganic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
+/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
 #define GENERALIST_SWAP_COST 20
-/// How many inorganic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
+/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
 #define ROVER_SWAP_COST 18
-/// How many inorganic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
+/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
 #define COMBAT_SWAP_COST 30
-/// How many inorganic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
+/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
 /// If there are no builders, the swap cost is zero
 #define BUILDER_SWAP_COST 20
 
 /// How much swarmers and swarmer structures get damaged on emp
 #define SWARMER_EMP_DAMAGE 25
 
-/// How many inorganic resources does it cost to make a barricade
+/// How many metallic resources does it cost to make a barricade
 #define SWARMER_BLOCKADE_COST 7
-/// How many inorganic resources does it cost to make a trap
+/// How many metallic resources does it cost to make a trap
 #define SWARMER_TRAP_COST 3
-/// How many inorganic resources does it cost to make a transport hub
+/// How many metallic resources does it cost to make a transport hub
 #define SWARMER_HUB_COST 15
-/// How many inorganic resources does it cost to make an organic processer
+/// How many metallic resources does it cost to make an organic processer
 #define SWARMER_PROCESSER_COST 20
-/// How many inorganic resources does it cost to make an organic analyzer
+/// How many metallic resources does it cost to make an organic analyzer
 #define SWARMER_ANALYZER_COST 20
+/// How many metallic resources does it cost to make a repair station
+#define SWARMER_REPAIR_STATION_COST 10
+/// How many metallic resources does it cost to make a resource storage
+#define SWARMER_STORAGE_COST 10
+/// How many metallic resources does it cost to make a rapid fire turret
+#define SWARMER_RAPID_TURRET_COST 20
+/// How many metallic resources does it cost to make a sniper turret
+#define SWARMER_SNIPER_TURRET_COST 25
+/// How many metallic resources does it cost to make an ACP turret
+#define SWARMER_ACP_COST 25
 
-/// How much time does it take to make a barricade
-#define SWARMER_BLOCKADE_BUILD_DELAY 2 SECONDS
-/// How much time does it take to make a trap
-#define SWARMER_TRAP_BUILD_DELAY 1 SECONDS
-/// How much time does it take to make a hub
-#define SWARMER_HUB_BUILD_DELAY 10 SECONDS
+/// Smallest build delay
+#define SWARMER_FAST_BUILD_DELAY 2 SECONDS
+/// Average build delay
+#define SWARMER_NORMAL_BUILD_DELAY 5 SECONDS
+/// Biggest build delay
+#define SWARMER_SLOW_BUILD_DELAY 10 SECONDS
 
 /// Cooldown of default swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/generalist&combat)
 #define SWARMER_NORMAL_PROJECTILE_COOLDOWN 1 SECONDS
@@ -44,6 +54,8 @@
 #define SWARMER_STRONG_PROJECTILE_COOLDOWN 2.5 SECONDS
 /// Cooldown of sabotage swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/combat)
 #define SWARMER_SABOTAGE_PROJECTILE_COOLDOWN 3 SECONDS
+/// Cooldown of mega swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/mega)
+#define SWARMER_MINIGUN_PROJECTILE_COOLDOWN 1.5 SECONDS
 
 /// How long does it take for a swarmer to teleport through hubs (Note: Rovers take twice less time)
 #define SWARMER_TELEPORT_DELAY(swarmer) (is_roverswarmer(swarmer) ? 4 SECONDS : 8 SECONDS)
@@ -55,7 +67,7 @@
 #define SWARMER_REPAIR_DELAY(swarmer) (is_builderswarmer(swarmer) ? 0.5 SECONDS : 1 SECONDS)
 /// How much swarmer related stuff gets repaired by (Builder swarmer repair twice more)
 #define SWARMER_REPAIR_AMOUNT(swarmer) (is_builderswarmer(swarmer) ? 30 : 15)
-/// How many inorganic resources does it cost for swarmer to repair something
+/// How many metallic resources does it cost for swarmer to repair something
 #define SWARMER_REPAIR_COST 0.5
 
 /// How long does it take for a swarmer to send anything to processer/analyzer
@@ -104,20 +116,32 @@
 /// Sniper turret cooldown
 #define SWARMER_SNIPER_TURRET_COOLDOWN 2.5 SECONDS
 /// ACP turret cooldown
-#define SWARMER_ACP_TURRET_COOLDOWN 6 SECONDS
+#define SWARMER_ACP_COOLDOWN 6 SECONDS
 
 /// ACP turret stamina damage (gets scaled)
-#define SWARMER_ACP_TURRET_DAMAGE 15
+#define SWARMER_ACP_DAMAGE 15
 /// ACP turret range
-#define SWARMER_ACP_TURRET_RANGE 3
-/// ACP damage turret modifier on range decrease (as in less range from target -> more damage multiplier)
-#define SWARMER_ACP_TURRET_RANGE_DAMAGE_MODIFIER 2
+#define SWARMER_ACP_RANGE 3
+/// ACP turret damage modifier on range decrease (as in less range from target -> more damage multiplier)
+#define SWARMER_ACP_RANGE_DAMAGE_MODIFIER 2
 /// ACP turret slowed chance (gets scaled)
-#define SWARMER_ACP_TURRET_SLOWED_CHANCE 60
+#define SWARMER_ACP_SLOWED_CHANCE 60
 /// ACP turret slowed duration (gets scaled up to 2x)
-#define SWARMER_ACP_TURRET_SLOWED_DURATION 2 SECONDS
+#define SWARMER_ACP_SLOWED_DURATION 2 SECONDS
 /// ACP turret slowed multiplier (doesn't scale)
-#define SWARMER_ACP_TURRET_SLOWED_MULTIPLIER 2
+#define SWARMER_ACP_SLOWED_MULTIPLIER 2
+/// ACP turret metabolize disable duration
+#define SWARMER_ACP_DISABLE_METABOLIZATION_DURATION 10 SECONDS
 
 /// For how long do swarmer structures get disabled for on emp_act
 #define SWARMER_STRUCTURE_EMP_DURATION 10 SECONDS
+
+/// For how long do swarmers disable stamina healing
+#define SWARMER_DISABLE_STAMINAREGEN_DURATION 1 SECONDS
+
+/// How many projectiles mega-swarmer shoots at once
+#define SWARMER_MEGA_RAPID 6
+/// Chance of reflecting projectiles for mega-swarmer
+#define SWARMER_MEGA_REFLECT_CHANCE 50
+/// Range of mega swarmer ACP attack
+#define SWARMER_MEGA_ACP_RANGE 5

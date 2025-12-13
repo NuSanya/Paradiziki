@@ -38,11 +38,20 @@
 	var/dismantle_speed = NORMAL_SWARMER_DISMANTLE_DELAY
 	/// How many resources does it require to swap to this class from an existing one
 	var/swap_resource_cost = 0
+	/// Can swarmers swap to this type in core?
+	var/can_swap_to = TRUE
 	/// Reference to swarmer team
 	var/datum/team/swarmer_team/team
+	/// Spark system (since we use them a lot)
+	var/datum/effect_system/spark_spread/spark_system
+	/// Mmi inside contents if this swarmer is from a cyborg
+	var/obj/item/mmi/mmi
 
 /mob/living/simple_animal/hostile/swarmer/Initialize(mapload)
 	. = ..()
+	spark_system = new
+	spark_system.set_up(5, 0, src)
+	spark_system.attach(src)
 	add_language(LANGUAGE_HIVE_SWARMER)
 	updatename()
 	RegisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED, PROC_REF(on_core_destroy))
@@ -63,10 +72,17 @@
 		after_assumed_control = CALLBACK(src, PROC_REF(add_datum_if_not_exist)), \
 	)
 
+/// Just some sparks on death.
+/mob/living/simple_animal/hostile/swarmer/death(gibbed)
+	spark_system.start()
+	return ..()
+
 /mob/living/simple_animal/hostile/swarmer/Destroy()
+	QDEL_NULL(spark_system)
 	UnregisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED)
 	UnregisterSignal(src, COMSIG_LIVING_UNARMED_ATTACK)
 	team = null
+	handle_mmi_on_destroy()
 	return ..()
 
 /// On core destroy, all swarmers related stuff gets deleted.
@@ -85,14 +101,15 @@
 	. = status_tab_data
 	status_tab_data[++status_tab_data.len] = list("Металлические ресурсы: ", team.metallic_resources)
 	status_tab_data[++status_tab_data.len] = list("Органические ресурсы: ", team.organic_resources)
-	status_tab_data[++status_tab_data.len] = list("Здоровье ядра: ", "[team.swarmer_core.obj_integrity]/[team.swarmer_core.max_integrity]")
+	if(team.swarmer_core)
+		status_tab_data[++status_tab_data.len] = list("Здоровье ядра: ", "[team.swarmer_core.obj_integrity]/[team.swarmer_core.max_integrity]")
 
 /// Swarmers get damaged on emp
 /mob/living/simple_animal/hostile/swarmer/emp_act()
 	..()
 	adjustHealth(SWARMER_EMP_DAMAGE, forced = TRUE)
 
-/// Projectiles pass through swarmers
+/// Swarmer projectiles pass through swarmers
 /mob/living/simple_animal/hostile/swarmer/CanAllowThrough(atom/movable/mover, border_dir)
 	. = ..()
 	if(is_swarmerprojectile(mover))
@@ -101,23 +118,27 @@
 /// Handles dealing actual damage to cyborgs and animals.
 /mob/living/simple_animal/hostile/swarmer/AttackingTarget()
 	. = ..()
+	if(isswarmer(target))
+		return .
 	if(issilicon(target) || isanimal(target))
 		var/mob/living/difficult_target = target
 		var/damage = rand(melee_damage_lower, melee_damage_upper)
 		difficult_target.apply_damage(damage, BURN)
 
 /**
- * This proc handles dispersing of living mobs to the
- * organic analyzer.
+ * This proc handles sending mobs to analyzers and converting cyborgs.
  */
 /mob/living/simple_animal/hostile/swarmer/CtrlClickOn(atom/A)
 	if(A == src)
 		return ..()
-	if(!isliving(A) || issilicon(A) || isswarmer(A))
-		return ..()
 	if(!A.Adjacent(src))
 		return ..()
-	try_disperse(A)
+	if(!isliving(A) || isswarmer(A))
+		return ..()
+	if(!issilicon(A)) // Non-silicon mobs
+		return try_disperse(A)
+	if(isrobot(A)) // Cyborgs
+		return try_convert(A)
 
 /// The only interaction by swarmers with other swarmers is repairing them.
 /mob/living/simple_animal/hostile/swarmer/swarmer_act(mob/living/simple_animal/hostile/swarmer/other_swarmer)
@@ -148,7 +169,6 @@
 	if(handle_organic_sending(atom))
 		return COMPONENT_CANCEL_ATTACK_CHAIN
 	INVOKE_ASYNC(atom, TYPE_PROC_REF(/atom, swarmer_act), src)
-
 	return COMPONENT_CANCEL_ATTACK_CHAIN
 
 /// Handles sending various stuff into organic processor.
@@ -217,7 +237,7 @@
 		return
 	if(SEND_SIGNAL(team, COMSIG_SWARMER_TRY_PROCESS_ORGANIC_ITEM, item) & TRUE)
 		balloon_alert(src, "успешно отправлено!")
-		do_sparks(5, TRUE, src)
+		spark_system.start()
 		return
 	balloon_alert(src, "нету места для органики!")
 
@@ -233,7 +253,7 @@
 	if(!do_after(src, SWARMER_SEND_ORGANIC_DELAY, target, max_interact_count = 1))
 		balloon_alert(src, "сбито!")
 		return
-	do_sparks(5, TRUE, target)
+	spark_system.start()
 	if(SEND_SIGNAL(team, COMSIG_SWARMER_TRY_ANALYZE_MOB, target) & TRUE)
 		balloon_alert(src, "отправлено в анализатор!")
 		return
@@ -261,6 +281,35 @@
 	adjust_swarmer_organic_resources(SWARMER_ANALYZE_TELEPORT_GAIN)
 	do_teleport(target, safe_turf)
 
+/// Proc used to convert cyborgs to swarmers.
+/mob/living/simple_animal/hostile/swarmer/proc/try_convert(mob/living/silicon/robot/target)
+	if(!target.mind)
+		balloon_alert(src, "не имеет разума!")
+		return
+	balloon_alert(src, "пересобираем...")
+	if(!do_after(src, 15 SECONDS, target, max_interact_count = 1))
+		balloon_alert(src, "сбито!")
+		return
+	var/mob/living/simple_animal/hostile/swarmer/combat/new_swarmer = new(get_turf(target))
+	if(target.mmi)
+		new_swarmer.mmi = target.mmi // Save a reference to mmi in src
+		target.mmi.forceMove(new_swarmer) // Forcemove mmi into new swarmer
+		target.mmi = null // Clean the reference to mmi in robot
+	target.mind.transfer_to(new_swarmer)
+	balloon_alert(src, "успех!")
+	new_swarmer.spark_system.start()
+	add_conversion_logs(target, "Converted into [new_swarmer.name].")
+	qdel(target)
+
+/// Proc used on destroy if we have a mmi inside
+/mob/living/simple_animal/hostile/swarmer/proc/handle_mmi_on_destroy()
+	if(!mmi || !mind)
+		return
+	mind.transfer_to(mmi.brainmob)
+	mmi.forceMove(get_turf(src))
+	addtimer(CALLBACK(mmi.brainmob, TYPE_PROC_REF(/mob, offer_ghostize)), 10 SECONDS, TIMER_DELETE_ME)
+	mmi = null
+
 /// Proc called in swarmer_act to adjust resources and destroy target
 /mob/living/simple_animal/hostile/swarmer/proc/Integrate(atom/movable/target)
 	var/resource_gain = target.integrate_amount()
@@ -268,7 +317,6 @@
 		balloon_alert(src, "не совместимо!")
 		to_chat(src, span_warning("[target] не является совместимым с нашим переработчиком материалов."))
 		return FALSE
-
 	. = TRUE
 	adjust_swarmer_metallic_resources(resource_gain, TRUE)
 	do_attack_animation(target)
@@ -321,6 +369,26 @@
 	var/image/holder = hud_list[DIAG_STAT_HUD]
 	holder.pixel_y = get_cached_height() - ICON_SIZE_Y
 	holder.icon_state = "hudstat"
+
+/// Proc used to toggle light on hud
+/mob/living/simple_animal/hostile/swarmer/proc/toggle_light()
+	if(!light_on && is_ventcrawling(src))
+		to_chat(src, span_warning("Нельзя переключить свет в вентиляции!"))
+		return
+	set_light_on(!light_on)
+
+/// Proc used to communicate with other swarmers - nusanya TODO another font
+/mob/living/simple_animal/hostile/swarmer/proc/contact_swarmers()
+	var/message = tgui_input_text(src, "Передайте сообщение другим \"Свармерам\"", "Канал \"Свармеров\"")
+	if(!message)
+		return
+	for(var/mob/mob in GLOB.player_list)
+		if(isswarmer(mob))
+			to_chat(mob, "<b>Коммуникация \"Свармеров\" - </b> [declent_ru(NOMINATIVE)] гудит: [message]")
+			continue
+		if((mob in GLOB.dead_mob_list) && !isnewplayer(mob))
+			to_chat(mob, "<b> <a href='byond://?src=[mob.UID()];follow=[UID()]'>(F)</a> гудит: [message] </b>")
+	add_say_logs(src, message, language = "SWARMER")
 
 /atom/movable/proc/integrate_amount()
 	return 0

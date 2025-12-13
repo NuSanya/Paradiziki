@@ -8,8 +8,13 @@
 	var/atom/target
 	var/ranged = FALSE
 	var/ranged_distance = INFINITY
-	var/rapid = 0 //How many shots per volley.
-	var/rapid_fire_delay = 2 //Time between rapid fire shots
+	/// Amount of shots per volley
+	var/rapid = 0
+	/// Time between rapid fire shots
+	var/rapid_fire_delay = 2
+	/// Angle spread in degrees for rapid fire shots
+	/// Won't work for NPC shots, until someone reworks projectiles
+	var/rapid_spread = 10
 
 	///Are we dodging?
 	var/dodging = TRUE
@@ -524,7 +529,7 @@
 				if(faction_check_mob(L) && !attack_same)
 					return TRUE
 
-/mob/living/simple_animal/hostile/proc/OpenFire(atom/A)
+/mob/living/simple_animal/hostile/proc/OpenFire(atom/A, params)
 	if(client && (a_intent == INTENT_HELP || intent == INTENT_HELP))
 		return
 	if(GLOB.pacifism_after_gt || HAS_TRAIT(src, TRAIT_PACIFISM))
@@ -534,29 +539,30 @@
 	visible_message(span_danger("<b>[capitalize(declent_ru(NOMINATIVE))]</b> [ranged_message] на [A.declent_ru(ACCUSATIVE)]!"))
 
 	if(rapid > 1)
-		var/datum/callback/cb = CALLBACK(src, PROC_REF(Shoot), A)
+		var/datum/callback/cb = CALLBACK(src, PROC_REF(Shoot), A, params, rapid_spread)
 		for(var/i in 1 to rapid)
 			addtimer(cb, (i - 1)*rapid_fire_delay)
 	else
-		Shoot(A)
+		Shoot(A, params)
 
 	COOLDOWN_START(src, ranged_cooldown, ranged_cooldown_time)
 
-/mob/living/simple_animal/hostile/proc/Shoot(atom/targeted_atom)
+/mob/living/simple_animal/hostile/proc/Shoot(atom/targeted_atom, params, proj_spread)
 	if(QDELETED(targeted_atom) || targeted_atom == targets_from.loc || targeted_atom == targets_from)
 		return
 	var/turf/startloc = get_turf(targets_from)
+	proj_spread = rand(-proj_spread, proj_spread)
 	if(casingtype)
 		var/obj/item/ammo_casing/casing = new casingtype(startloc)
 		playsound(src, projectilesound, 100, TRUE)
-		casing.fire(targeted_atom, src, zone_override = ran_zone())
+		casing.fire(targeted_atom, src, params, proj_spread, zone_override = ran_zone())
 		casing.after_fire()
 	else if(projectiletype)
 		var/obj/projectile/P = new projectiletype(startloc)
 		playsound(src, projectilesound, 100, TRUE)
 		P.firer = src
 		P.original = targeted_atom
-		P.preparePixelProjectile(targeted_atom, get_turf(targeted_atom), src)
+		P.preparePixelProjectile(targeted_atom, get_turf(targeted_atom), src, params, proj_spread)
 		if(AIStatus != AI_ON)//Don't want mindless mobs to have their movement screwed up firing in space
 			newtonian_move(get_dir(targeted_atom, targets_from))
 		P.fire()
@@ -652,7 +658,7 @@
 		return
 	if(ranged && COOLDOWN_FINISHED(src, ranged_cooldown))
 		add_target(A)
-		OpenFire(A)
+		OpenFire(A, params)
 		return
 	return ..()
 

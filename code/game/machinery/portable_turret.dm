@@ -1205,7 +1205,19 @@ GLOBAL_LIST_EMPTY(turret_icons)
 /// Special intent handling for swarmer clicks on swarmer turrets. Override as needed.
 /obj/machinery/porta_turret/swarmer/proc/swarmer_harm_act(mob/living/simple_animal/hostile/swarmer/swarmer)
 	SHOULD_CALL_PARENT(TRUE)
-	return
+	if(!is_builderswarmer(swarmer))
+		return FALSE
+	var/confirm = tgui_alert(swarmer, "Вы уверены, что хотите РАЗОБРАТЬ [declent_ru(ACCUSATIVE)]?", "Разбор структуры", list("Да", "Нет"))
+	if(confirm == "Нет")
+		return
+	swarmer.balloon_alert(swarmer, "уничтожаем...")
+	if(!do_after(swarmer, 5 SECONDS, src, max_interact_count = 1))
+		swarmer.balloon_alert(swarmer, "сбито!")
+		return FALSE
+	swarmer.balloon_alert(swarmer, "уничтожено!")
+	var/obj/effect/temp_visual/swarmer/disintegration/disintegrate_effect = new(get_turf(src))
+	disintegrate_effect.adjust_size(src)
+	qdel(src)
 
 /// Swarmers can access the control panel
 /obj/machinery/porta_turret/swarmer/isLocked(mob/user)

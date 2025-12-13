@@ -120,7 +120,7 @@ export const SwarmerCore = (_props: unknown) => {
                         style={{
                           fontFamily: 'inherit',
                           margin: 5,
-                          fontSize: 'small',
+                          fontSize: '15px',
                           whiteSpace: 'pre-wrap',
                           wordWrap: 'break-word',
                         }}

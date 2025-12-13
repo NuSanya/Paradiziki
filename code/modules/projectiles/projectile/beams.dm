@@ -603,13 +603,15 @@
  * Applies stamina regenerate block on hit.
  */
 /obj/projectile/beam/disabler/swarmer/on_hit(atom/target, blocked, hit_zone)
+	if(isswarmer(target))
+		return FALSE
 	if(issilicon(target) || isanimal(target))
 		var/mob/living/difficult_target = target
 		return difficult_target.apply_damage(damage, BURN, hit_zone, blocked)
 	. = ..()
 	if(. && isliving(target))
 		var/mob/living/living_target = target
-		living_target.apply_status_effect(STATUS_EFFECT_STAMINAREGEN_BLOCK)
+		living_target.apply_status_effect(STATUS_EFFECT_STAMINAREGEN_BLOCK, SWARMER_DISABLE_STAMINAREGEN_DURATION)
 
 /// Used in small swarmer turrets, is shooted three times
 /obj/projectile/beam/disabler/swarmer/weak_turret
@@ -643,13 +645,7 @@
 	name = "strong swarmer laser"
 	icon_state = "charged_shot_swarmer"
 	damage = 50
-
-/obj/projectile/beam/disabler/swarmer/empowered/on_hit(atom/target, blocked, hit_zone)
-	. = ..()
-	if(!isliving(target) || !.)
-		return
-	var/mob/living/target_mob = target
-	target_mob.Knockdown(1 SECONDS)
+	knockdown = 1 SECONDS
 
 /// Resets sybils, switches modes, unloads guns
 /obj/projectile/beam/disabler/swarmer/sabotage

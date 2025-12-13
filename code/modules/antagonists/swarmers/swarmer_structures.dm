@@ -1,4 +1,4 @@
-/// List of all swarmer structures (nuSanya -> might move to team datum, idk)
+/// List of all swarmer structures
 GLOBAL_LIST_EMPTY(swarmer_objects)
 
 /**
@@ -7,7 +7,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
  * Has 4 different interactions based on swarmer's intent, separated in swarmer_act().
  * All structures of this type allow swarmer projectiles to pass through them.
  */
-/obj/structure/swarmer //Default swarmer effect object visual feedback
+/obj/structure/swarmer
 	name = "swarmer structure"
 	desc = "Вы не должны это видеть."
 	icon = 'icons/obj/swarmer.dmi'
@@ -20,18 +20,12 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	density = 1
 	/// Light range
 	var/lon_range = 1
-	// If the structure requires a keyword (e.g. Teleport hubs)
-	var/req_keyword = FALSE
-	/// The actual keyword for the structure
-	var/keyword
 
-/obj/structure/swarmer/Initialize(mapload, set_keyword)
+/obj/structure/swarmer/Initialize(mapload)
 	. = ..()
 	GLOB.swarmer_objects += src
 	set_light(lon_range)
 	RegisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED, PROC_REF(on_core_destroy))
-	if(set_keyword)
-		keyword = set_keyword
 
 /obj/structure/swarmer/proc/on_core_destroy()
 	SIGNAL_HANDLER
@@ -96,7 +90,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		return FALSE
 	var/message = anchored ? "открепляем..." : "прикрепляем..."
 	swarmer.balloon_alert(swarmer, message)
-	if(!do_after(swarmer, 5 SECONDS, src, max_interact_count = 1))
+	if(!do_after(swarmer, 3 SECONDS, src, max_interact_count = 1))
 		swarmer.balloon_alert(swarmer, "сбито!")
 		return FALSE
 	swarmer.balloon_alert(swarmer, "успех!")
@@ -105,10 +99,22 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	update_icon(UPDATE_ICON_STATE)
 	return TRUE
 
-/// Special intent handling for swarmer clicks on swarmer structures. Override as needed.
+/// Special intent handling for swarmer clicks on swarmer structures. Used by builders for destroying.
 /obj/structure/swarmer/proc/swarmer_harm_act(mob/living/simple_animal/hostile/swarmer/swarmer)
 	SHOULD_CALL_PARENT(TRUE)
-	return
+	if(!is_builderswarmer(swarmer))
+		return FALSE
+	var/confirm = tgui_alert(swarmer, "Вы уверены, что хотите РАЗОБРАТЬ [declent_ru(ACCUSATIVE)]?", "Разбор структуры", list("Да", "Нет"))
+	if(confirm == "Нет")
+		return
+	swarmer.balloon_alert(swarmer, "уничтожаем...")
+	if(!do_after(swarmer, 5 SECONDS, src, max_interact_count = 1))
+		swarmer.balloon_alert(swarmer, "сбито!")
+		return FALSE
+	swarmer.balloon_alert(swarmer, "уничтожено!")
+	var/obj/effect/temp_visual/swarmer/disintegration/disintegrate_effect = new(get_turf(src))
+	disintegrate_effect.adjust_size(src)
+	qdel(src)
 
 /// Allows for all swarmer structures to be shoot through with swarmer projectiles.
 /obj/structure/swarmer/CanAllowThrough(atom/movable/mover, border_dir)
@@ -134,7 +140,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	max_integrity = 10
 	density = 0
 
-/obj/structure/swarmer/trap/Initialize(mapload, set_keyword)
+/obj/structure/swarmer/trap/Initialize(mapload)
 	. = ..()
 	var/static/list/loc_connections = list(
 		COMSIG_ATOM_ENTERED = PROC_REF(on_entered),
@@ -182,18 +188,18 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	desc = "Телепортер \"Свармеров\", позволяющий им телепортироваться к другим телепортерам."
 	icon_state = "hub_enabled"
 	max_integrity = 100
-	/// Key name of our hub, created on init
+	/// Key name of our hub, created on init and changed after on spell cast
 	var/listkey
 	/// Spark system (since we use them a lot)
 	var/datum/effect_system/spark_spread/spark_system
 	/// Current state (for emp act)
 	var/enabled = TRUE
 
-/obj/structure/swarmer/transport_hub/Initialize(mapload, set_keyword)
+/obj/structure/swarmer/transport_hub/Initialize(mapload)
 	. = ..()
 	var/area/A = get_area(src)
 	var/locname = initial(A.name)
-	listkey = keyword ? "[keyword] [locname]":"[locname]"
+	listkey = "[locname]" // Can be changed on conjure by a swarmer
 	spark_system = new
 	spark_system.set_up(5, 0, src)
 	spark_system.attach(src)
@@ -227,7 +233,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	. = ..()
 	if(!.)
 		return
-	if(!enabled)
+	if(!enabled) // Emped
 		swarmer.balloon_alert(swarmer, "калибруется!")
 		return
 
@@ -280,12 +286,12 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	max_integrity = 70
 	/// How many items we are currently processing
 	var/currently_processing = 0
-	/// How many stuff can we process at once
+	/// How much stuff can we process at once
 	var/process_limit = SWARMER_ORGANIC_ITEM_PROCESS_LIMIT
 	/// Spark system (since we use them a lot)
 	var/datum/effect_system/spark_spread/spark_system
 
-/obj/structure/swarmer/organic_processer/Initialize(mapload, set_keyword)
+/obj/structure/swarmer/organic_processer/Initialize(mapload)
 	. = ..()
 	RegisterSignal(src, COMSIG_SWARMER_PROCESS_ORGANIC_ITEM_CHECK, PROC_REF(try_load_item))
 	spark_system = new
@@ -373,7 +379,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	/// How many bodyparts we take from machine carbons
 	var/machine_organ_take = SWARMER_ANALYZE_FINISH_MACHINE_TAKE
 
-/obj/structure/swarmer/organic_analyzer/Initialize(mapload, set_keyword)
+/obj/structure/swarmer/organic_analyzer/Initialize(mapload)
 	. = ..()
 	RegisterSignal(src, COMSIG_SWARMER_ANALYZE_MOB_CHECK, PROC_REF(try_load_mob))
 	spark_system = new
@@ -560,6 +566,8 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	max_integrity = 100
 	/// Current swarmer in src
 	var/mob/living/simple_animal/occupant
+	/// Turf occupant entered from
+	var/turf/enter_turf
 	/// How much a swarmer gets healed per tick
 	var/heal_per_tick = SWARMER_REPAIR_STATION_HEAL
 
@@ -603,6 +611,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	if(!do_after(swarmer, SWARMER_REPAIR_STATION_DELAY, src, max_interact_count = 1))
 		swarmer.balloon_alert(swarmer, "сбито!")
 		return
+	enter_turf = get_turf(swarmer)
 	swarmer.forceMove(src)
 	occupant = swarmer
 	update_icon(UPDATE_ICON_STATE | UPDATE_OVERLAYS)
@@ -629,9 +638,11 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /// Exit repair station procs
 /obj/structure/swarmer/repair_station/proc/go_out()
 	if(!occupant)
+		enter_turf = null
 		return
-	occupant.forceMove(loc)
+	occupant.forceMove(enter_turf)
 	occupant = null
+	enter_turf = null
 	update_icon(UPDATE_ICON_STATE | UPDATE_OVERLAYS)
 	STOP_PROCESSING(SSobj, src)
 
@@ -648,7 +659,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	/// Team that we send signals to
 	var/static/datum/team/swarmer_team/team
 
-/obj/structure/swarmer/resource_storage/Initialize(mapload, set_keyword)
+/obj/structure/swarmer/resource_storage/Initialize(mapload)
 	. = ..()
 	if(!team)
 		team = GLOB.antagonist_teams[/datum/team/swarmer_team]
@@ -670,24 +681,30 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	desc = "Стационарная установка \"Свармеров\", которая способна оглушать и влиять на магнитное поле целей." // nuSanya idk better desc later
 	icon_state = "turret_acp"
 	max_integrity = 200
+	/// Overlay set on targets if we hit them
+	var/static/mutable_appearance/strike_overlay
+	/// Icon state for flick (when we strike)
+	var/strike_icon_state = "turret_acp_strike"
 	/// Cooldown of our turret
 	COOLDOWN_DECLARE(cooldown)
 	/// Our cooldown after turret striked
-	var/cooldown_after_strike = SWARMER_ACP_TURRET_COOLDOWN
-	/// Damage modifier on less range from target
-	var/range_damage_modifier = SWARMER_ACP_TURRET_RANGE_DAMAGE_MODIFIER
+	var/cooldown_after_strike = SWARMER_ACP_COOLDOWN
+	/// Range of our turret
+	var/range = SWARMER_ACP_RANGE
 	/// Basic damage of our turret
-	var/damage = SWARMER_ACP_TURRET_DAMAGE
+	var/damage = SWARMER_ACP_DAMAGE
 	/// Slowed chance after hit
-	var/slowed_chance = SWARMER_ACP_TURRET_SLOWED_CHANCE
+	var/slowed_chance = SWARMER_ACP_SLOWED_CHANCE
 	/// Slowed duration after hit
-	var/slowed_duration = SWARMER_ACP_TURRET_SLOWED_DURATION
+	var/slowed_duration = SWARMER_ACP_SLOWED_DURATION
 	/// Targets that are currently processed by turret. Used by process()
 	var/list/processing_targets = list()
 
 /obj/structure/swarmer/acp_turret/Initialize(mapload)
 	. = ..()
-	proximity_monitor = new(src, SWARMER_ACP_TURRET_RANGE)
+	if(!strike_overlay)
+		strike_overlay = mutable_appearance('icons/effects/swarmer.dmi', "acp_effect", ABOVE_ALL_MOB_LAYER)
+	proximity_monitor = new(src, range)
 
 /obj/structure/swarmer/acp_turret/Destroy(force)
 	QDEL_NULL(proximity_monitor)
@@ -722,7 +739,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		return
 	//Verify that targeted mobs are in our range. Otherwise, just remove them from processing.
 	for(var/mob/mob as anything in processing_targets)
-		if(!IN_GIVEN_RANGE(src, mob, SWARMER_ACP_TURRET_RANGE))
+		if(!IN_GIVEN_RANGE(loc, mob, range))
 			processing_targets -= mob
 	if(!COOLDOWN_FINISHED(src, cooldown))
 		return
@@ -731,27 +748,26 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 
 /// Calculate effects for all targets, apply metabolize block status effect
 /obj/structure/swarmer/acp_turret/proc/strike()
+	flick(strike_icon_state, src)
 	var/turf/our_turf = get_turf(src)
-	new /obj/effect/temp_visual/acp_stomp(our_turf)
-	playsound(our_turf, 'sound/swarmer/acp_turret.ogg', 100, TRUE)
-	flick("turret_acp_strike", src)
+	new /obj/effect/temp_visual/acp_stomp(our_turf, range)
 	for(var/mob/living/target as anything in processing_targets)
 		apply_range_based_effects(target)
-		target.apply_status_effect(STATUS_EFFECT_METABOLIZE_BLOCK)
+		target.apply_status_effect(STATUS_EFFECT_METABOLIZE_BLOCK, SWARMER_ACP_DISABLE_METABOLIZATION_DURATION, strike_overlay)
 
 /// Applies stamina damage, slow duration and chance, together with effects based on distance relative to the turret
 /obj/structure/swarmer/acp_turret/proc/apply_range_based_effects(mob/living/target)
-	var/modifier = SWARMER_ACP_TURRET_RANGE - get_dist(src, target)
+	var/modifier = range - get_dist(src, target)
 	// Slow is guaranteed if target is next to the turret.
-	var/slow_chance_increase_per_tile = (100 - slowed_chance) * (1 / (SWARMER_ACP_TURRET_RANGE - 1))
-	var/slow_duration_increase_per_tile = slowed_duration * (1 / (SWARMER_ACP_TURRET_RANGE - 1))
+	var/slow_chance_increase_per_tile = (100 - slowed_chance) * (1 / (range - 1))
+	var/slow_duration_increase_per_tile = slowed_duration * (1 / (range - 1))
 	var/final_slowed_chance = round(slowed_chance + modifier * slow_chance_increase_per_tile)
 	var/final_slowed_duration = round(slowed_duration + modifier * slow_duration_increase_per_tile)
-	var/final_damage = damage + damage * modifier * range_damage_modifier
+	var/final_damage = damage + damage * modifier * SWARMER_ACP_RANGE_DAMAGE_MODIFIER
 
 	target.apply_damage(final_damage, STAMINA)
 	if(prob(final_slowed_chance))
-		target.Slowed(final_slowed_duration, SWARMER_ACP_TURRET_SLOWED_MULTIPLIER)
+		target.Slowed(final_slowed_duration, SWARMER_ACP_SLOWED_MULTIPLIER)
 
 /// ACP strike effect
 /obj/effect/temp_visual/acp_stomp
@@ -761,8 +777,11 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	pixel_y = -16
 	pixel_x = -16
 
-/obj/effect/temp_visual/acp_stomp/Initialize(mapload)
+/obj/effect/temp_visual/acp_stomp/Initialize(mapload, range = 1)
 	. = ..()
+	// Reduce to 32x32
 	var/matrix/M = matrix() * 0.5
 	transform = M
-	animate(src, transform = M * 8, time = duration, alpha = 0)
+	// Increase size based on range input + 1 (accounting for src tile)
+	animate(src, transform = M * 2 * (range + 1), time = duration, alpha = 0)
+	playsound(loc, 'sound/swarmer/acp_turret.ogg', 100, TRUE)

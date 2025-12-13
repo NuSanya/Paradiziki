@@ -33,7 +33,7 @@
 	if(iscarbon(target))
 		changeNext_move(CLICK_CD_RANGE)
 
-/mob/living/simple_animal/hostile/guardian/charger/Shoot(atom/targeted_atom)
+/mob/living/simple_animal/hostile/guardian/charger/Shoot(atom/targeted_atom, proj_spread)
 	charging = 1
 	throw_at(targeted_atom, range, 1, src, 0, callback = CALLBACK(src, PROC_REF(charging_end)))
 

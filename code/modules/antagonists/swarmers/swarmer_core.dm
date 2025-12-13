@@ -1,7 +1,5 @@
-/// How many inorganic resources swarmers get on core spawn
-#define INORGANIC_START_RESOURCES 150
 /// How often based on organic resources do we spawn a swarmer
-#define SWARMER_SPAWN_VALUE 75
+#define SWARMER_SPAWN_VALUE 50
 /// How often based on organic resources do we spawn a mega-swarmer
 /// Must be divisable by SWARMER_SPAWN_VALUE
 #define MEGA_SWARMER_SPAWN_VALUE 1200
@@ -28,6 +26,8 @@
 	var/burn_damage = 15
 	/// How much stamina damage we deal on getting hit
 	var/stamina_damage = 20
+	/// Spark system used on melee reactions
+	var/datum/effect_system/spark_spread/spark_system
 	/// How many organic resources we had on last swarmer spawn
 	var/last_swarmer_spawn_value = 0
 	/// How many organic resources we had on last mega-swarmer spawn
@@ -53,15 +53,14 @@
 	if(team.swarmer_core) // This will delete all swarmer related atoms (including all cores)
 		qdel(src, TRUE)
 		return
-	team.swarmer_core = src
-
+	SEND_SIGNAL(team, COMSIG_SWARMER_CORE_INITIALIZED, src)
 	for(var/ddir in GLOB.alldirs)
 		new /obj/structure/swarmer/blockade(get_step(src, ddir))
-
 	if(!selection_classes)
 		generate_class_selection()
-
-	adjust_swarmer_metallic_resources(INORGANIC_START_RESOURCES)
+	spark_system = new
+	spark_system.set_up(3, 0, src)
+	spark_system.attach(src)
 	START_PROCESSING(SSfastprocess, src)
 	COOLDOWN_START(src, shock_cooldown, SHOCK_COOLDOWN)
 
@@ -78,6 +77,7 @@
 	team = null
 	STOP_PROCESSING(SSfastprocess, src)
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_SWARMER_CORE_DESTROYED)
+	QDEL_NULL(spark_system)
 	return ..()
 
 // Begin react damage procs //
@@ -91,7 +91,7 @@
 		return .
 	COOLDOWN_START(src, shock_cooldown, SHOCK_COOLDOWN)
 	if(user.electrocute_act(rand(5, 20), src))
-		do_sparks(3, TRUE, src)
+		spark_system.start()
 
 /obj/structure/swarmer/core/attackby(obj/item/I, mob/user, params)
 	. = ..()
@@ -104,7 +104,7 @@
 		return .
 	COOLDOWN_START(src, shock_cooldown, SHOCK_COOLDOWN)
 	if(target.electrocute_act(rand(5, 20), src))
-		do_sparks(3, TRUE, src)
+		spark_system.start()
 
 /obj/structure/swarmer/core/attack_generic(mob/user, damage_amount = 0, damage_type = BRUTE, damage_flag = 0, sound_effect = 1, armor_penetration = 0)
 	. = ..()
@@ -116,7 +116,7 @@
 		return .
 	COOLDOWN_START(src, shock_cooldown, SHOCK_COOLDOWN)
 	if(target.electrocute_act(rand(5, 20), src))
-		do_sparks(3, TRUE, src)
+		spark_system.start()
 // End react damage procs //
 
 /obj/structure/swarmer/core/process(seconds_per_tick)
@@ -134,7 +134,12 @@
 /// Core is only movable with an ability
 /obj/structure/swarmer/core/swarmer_grab_act(mob/living/simple_animal/hostile/swarmer/swarmer)
 	SHOULD_CALL_PARENT(FALSE)
-	return
+	swarmer.balloon_alert(swarmer, "это нельзя открутить!")
+
+/// Core is not destroyable by swarmers
+/obj/structure/swarmer/core/swarmer_harm_act(mob/living/simple_animal/hostile/swarmer/swarmer)
+	SHOULD_CALL_PARENT(FALSE)
+	swarmer.balloon_alert(swarmer, "это нельзя уничтожить!")
 
 /// Begin swarmer core tgui code ///
 /obj/structure/swarmer/core/swarmer_help_act(mob/living/simple_animal/hostile/swarmer/swarmer)
@@ -170,30 +175,34 @@
 			var/confirm = tgui_alert(ui.user, "Вы уверены, что хотите выбрать данный класс?", "Выбор класса", list("Да", "Нет"))
 			if(confirm == "Нет")
 				return
-
 			var/swarmer_path = text2path(params["class"])
 			if(ui.user.type == swarmer_path)
 				ui.user.balloon_alert(ui.user, "вы уже являетесь этим классом!")
 				return
-
 			var/mob/living/simple_animal/hostile/swarmer/old_swarmer = ui.user
 			var/swap_cost = text2path(params["cost"])
 			swap_cost = is_basicswarmer(old_swarmer) ? swap_cost : round(swap_cost / 2)// swarmer classes cost less on non-basic swap
 			if(!adjust_swarmer_metallic_resources(-swap_cost))
 				ui.user.balloon_alert(ui.user, "недостаточно ресурсов!")
 				return
-
+			spark_system.start()
 			var/mob/living/simple_animal/hostile/swarmer/new_swarmer = new swarmer_path(get_turf(old_swarmer))
+			// Handle mmi transfer to new swarmer
+			if(old_swarmer.mmi)
+				old_swarmer.mmi.forceMove(new_swarmer)
+				new_swarmer.mmi = old_swarmer.mmi
+				old_swarmer.mmi = null
 			old_swarmer.mind.transfer_to(new_swarmer)
 			new_swarmer.health = old_swarmer.health
 			new_swarmer.balloon_alert(new_swarmer, "успех!")
+			add_conversion_logs(old_swarmer, "Converted in core into [new_swarmer.name].")
 			qdel(old_swarmer)
 
 /obj/structure/swarmer/core/proc/generate_class_selection()
 	for(var/path in subtypesof(/mob/living/simple_animal/hostile/swarmer))
-		if(path == /mob/living/simple_animal/hostile/swarmer/basic) // can't get swapped to basic swarmer
-			continue
 		var/mob/living/simple_animal/hostile/swarmer/swarmer = path
+		if(swarmer::can_swap_to == FALSE)
+			continue
 		var/new_class = list(
 			"name" = swarmer::name,
 			"desc" = swarmer::desc,
@@ -207,7 +216,6 @@
 
 /// End swarmer core tgui code ///
 
-#undef INORGANIC_START_RESOURCES
 #undef SWARMER_SPAWN_VALUE
 #undef MEGA_SWARMER_SPAWN_VALUE
 #undef SHOCK_COOLDOWN

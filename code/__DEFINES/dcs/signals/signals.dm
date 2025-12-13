@@ -1603,3 +1603,6 @@
 #define COMSIG_SWARMER_STORAGE_INITIALIZED "swarmer_storage_initialized"
 /// From /obj/structure/swarmer/resource_storage, sent to swarmer_team on destroy
 #define COMSIG_SWARMER_STORAGE_DESTROYED "swarmer_storage_destroyed"
+
+/// From /obj/structure/swarmer/core, sent from core to team on init
+#define COMSIG_SWARMER_CORE_INITIALIZED "swarmer_core_initialized"
