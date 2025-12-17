@@ -1,5 +1,5 @@
 /atom/movable/screen/swarmer
-	icon = 'code/modules/antagonists/swarmers/swarmer_hud.dmi'
+	icon = 'icons/mob/screen_swarmer.dmi'
 
 /atom/movable/screen/swarmer/Click()
 	if(!isswarmer(usr))

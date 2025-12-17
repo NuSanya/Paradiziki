@@ -158,6 +158,7 @@
 	var/list/data = list()
 	data["organic_resources"] = team.organic_resources
 	data["cheaper_swap"] = !is_basicswarmer(user)
+	data["current_class_path"] = user.type
 	return data
 
 /obj/structure/swarmer/core/ui_static_data(mob/user)
@@ -176,11 +177,8 @@
 			if(confirm == "Нет")
 				return
 			var/swarmer_path = text2path(params["class"])
-			if(ui.user.type == swarmer_path)
-				ui.user.balloon_alert(ui.user, "вы уже являетесь этим классом!")
-				return
+			var/swap_cost = params["cost"]
 			var/mob/living/simple_animal/hostile/swarmer/old_swarmer = ui.user
-			var/swap_cost = text2path(params["cost"])
 			swap_cost = is_basicswarmer(old_swarmer) ? swap_cost : round(swap_cost / 2)// swarmer classes cost less on non-basic swap
 			if(!adjust_swarmer_metallic_resources(-swap_cost))
 				ui.user.balloon_alert(ui.user, "недостаточно ресурсов!")
@@ -192,12 +190,14 @@
 				old_swarmer.mmi.forceMove(new_swarmer)
 				new_swarmer.mmi = old_swarmer.mmi
 				old_swarmer.mmi = null
+			// Adjust health based on old swarmer health
+			new_swarmer.health *= old_swarmer.health / old_swarmer.maxHealth
 			old_swarmer.mind.transfer_to(new_swarmer)
-			new_swarmer.health = old_swarmer.health
 			new_swarmer.balloon_alert(new_swarmer, "успех!")
 			add_conversion_logs(old_swarmer, "Converted in core into [new_swarmer.name].")
 			qdel(old_swarmer)
 
+/// Generates classes selection array in TGUI
 /obj/structure/swarmer/core/proc/generate_class_selection()
 	for(var/path in subtypesof(/mob/living/simple_animal/hostile/swarmer))
 		var/mob/living/simple_animal/hostile/swarmer/swarmer = path

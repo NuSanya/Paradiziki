@@ -3,8 +3,8 @@
 	roundend_category = "swarmers"
 	job_rank = ROLE_SWARMER
 	special_role = SPECIAL_ROLE_SWARMER
-	//wiki_page_name = "Swarmer"
-	//russian_wiki_name = "Свармер"
+	wiki_page_name = "Swarmer"
+	russian_wiki_name = "Свармер"
 	show_in_roundend = FALSE
 	show_in_orbit = FALSE
 	antag_menu_name = "Свармер"

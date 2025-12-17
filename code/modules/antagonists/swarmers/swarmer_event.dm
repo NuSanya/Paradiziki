@@ -1,5 +1,3 @@
-// nuSanya -> to redo
-
 /datum/event/spawn_swarmer
 	startWhen = 3 //30 minutes
 	announceWhen = 10
@@ -28,3 +26,4 @@
 		if(istype(M, /mob/living/simple_animal/hostile/swarmer) && M.client) //If there is a swarmer with an active client, we've found our swarmer
 			return 1
 	return 0
+

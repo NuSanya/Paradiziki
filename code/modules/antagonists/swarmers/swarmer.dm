@@ -58,6 +58,10 @@
 	RegisterSignal(src, COMSIG_LIVING_UNARMED_ATTACK, PROC_REF(on_unarmed_attack))
 	for(var/datum/atom_hud/data/diagnostic/diag_hud in GLOB.huds)
 		diag_hud.add_atom_to_hud(src)
+	// Grants all required on-init actions to this type
+	for(var/action_type in GLOB.swarmer_actions_by_type[type])
+		var/datum/action/innate/swarmer/action = new action_type
+		action.Grant(src)
 
 /mob/living/simple_animal/hostile/swarmer/ComponentInitialize()
 	AddComponent( \
@@ -131,9 +135,9 @@
 /mob/living/simple_animal/hostile/swarmer/CtrlClickOn(atom/A)
 	if(A == src)
 		return ..()
-	if(!A.Adjacent(src))
-		return ..()
 	if(!isliving(A) || isswarmer(A))
+		return ..()
+	if(!A.Adjacent(src))
 		return ..()
 	if(!issilicon(A)) // Non-silicon mobs
 		return try_disperse(A)

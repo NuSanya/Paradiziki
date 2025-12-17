@@ -67,6 +67,12 @@
 
 	return FALSE
 
+/// Fills the cylinder back with nulls, breaks otherwise
+/obj/item/ammo_box/magazine/internal/cylinder/empty_magazine()
+	. = ..()
+	for(var/i in 1 to max_ammo)
+		stored_ammo += null
+
 /obj/item/ammo_box/magazine/internal/cylinder/rev38
 	name = "detective revolver cylinder"
 	ammo_type = /obj/item/ammo_casing/c38

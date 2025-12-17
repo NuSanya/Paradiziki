@@ -1,3 +1,35 @@
+/// Assoc list containing all action types that are given based on type on init
+/// I think this is better than doing this for each type on init separately
+GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
+	// Generalist swarmer
+	/mob/living/simple_animal/hostile/swarmer/generalist = list(
+		/datum/action/innate/swarmer/build/barricade,
+		/datum/action/innate/swarmer/build/trap,
+		/datum/action/innate/swarmer/build/rapid_turret,
+		),
+	// Rover swarmer
+	/mob/living/simple_animal/hostile/swarmer/rover = list(
+		/datum/action/innate/swarmer/build/trap,
+		/datum/action/innate/swarmer/build/transport_hub,
+		),
+	// Combat swarmer
+	/mob/living/simple_animal/hostile/swarmer/combat = list(
+		/datum/action/innate/swarmer/build/barricade,
+		/datum/action/innate/swarmer/mode_switcher,
+		),
+	// Builder swarmer
+	/mob/living/simple_animal/hostile/swarmer/builder = list(
+		/datum/action/innate/swarmer/build/processer,
+		/datum/action/innate/swarmer/build/analyzer,
+		/datum/action/innate/swarmer/build/repair_station,
+		/datum/action/innate/swarmer/build/storage,
+		/datum/action/innate/swarmer/build/rapid_turret,
+		/datum/action/innate/swarmer/build/sniper_turret,
+		/datum/action/innate/swarmer/build/acp_turret,
+		/datum/action/innate/swarmer/move_core,
+		),
+	))
+
 /**
  * Starting swarmer
  *
@@ -48,15 +80,6 @@
 	swarmer_class_info = "Данный класс является базовой боевой единицей, оснащённой пушкой, а также способностью строить мелкие туррели, баррикады и ловушки.\n\
 		Скорость равна человеческой."
 
-/mob/living/simple_animal/hostile/swarmer/generalist/Initialize(mapload)
-	. = ..()
-	var/datum/action/innate/swarmer/build/rapid_turret/build_rapid_turret = new
-	var/datum/action/innate/swarmer/build/barricade/build_barricade = new
-	var/datum/action/innate/swarmer/build/trap/build_trap = new
-	build_rapid_turret.Grant(src)
-	build_barricade.Grant(src)
-	build_trap.Grant(src)
-
 /**
  * Rover Swarmer
  *
@@ -86,10 +109,6 @@
 /mob/living/simple_animal/hostile/swarmer/rover/Initialize(mapload)
 	. = ..()
 	RegisterSignal(src, COMSIG_HOSTILE_POST_ATTACKINGTARGET, PROC_REF(on_attack))
-	var/datum/action/innate/swarmer/build/transport_hub/build_hub = new
-	var/datum/action/innate/swarmer/build/trap/build_trap = new
-	build_hub.Grant(src)
-	build_trap.Grant(src)
 
 /mob/living/simple_animal/hostile/swarmer/rover/Destroy(force)
 	UnregisterSignal(src, COMSIG_HOSTILE_POST_ATTACKINGTARGET)
@@ -127,25 +146,13 @@
 		Оснащён следующими типами выстрелов: Обычный выстрел, двойной выстрел, сильный выстрел, саботажный выстрел.\n\
 		Способен строить баррикады.\n\
 		Чинится автоматически у ядра, становится быстрее у ядра."
-	/// Our current projectile mode datum, used in mode_switcher action and on init
-	var/datum/swarmer_proj_mode/swarmer_proj_mode
 
 /mob/living/simple_animal/hostile/swarmer/combat/Initialize(mapload)
 	. = ..()
-	swarmer_proj_mode = new /datum/swarmer_proj_mode/general // set to default mode on init
-	swarmer_proj_mode.link_mode(src)
-	swarmer_proj_mode.apply_mode()
-
 	START_PROCESSING(SSprocessing, src)
 	ADD_TRAIT(src, TRAIT_HEALS_FROM_SWARMER_CORES, INNATE_TRAIT)
 
-	var/datum/action/innate/swarmer/mode_switcher/mode_switcher = new
-	var/datum/action/innate/swarmer/build/barricade/build_barricade = new
-	build_barricade.Grant(src)
-	mode_switcher.Grant(src)
-
 /mob/living/simple_animal/hostile/swarmer/combat/Destroy()
-	QDEL_NULL(swarmer_proj_mode)
 	STOP_PROCESSING(SSprocessing, src)
 	REMOVE_TRAIT(src, TRAIT_HEALS_FROM_SWARMER_CORES, INNATE_TRAIT)
 	return ..()
@@ -182,24 +189,6 @@
 	/// Builder swarmers heal passively by a little bit
 	var/auto_repair_amount = 1
 
-// To be fair this is a bit too much, but whatever
-/mob/living/simple_animal/hostile/swarmer/builder/Initialize(mapload)
-	. = ..()
-	var/datum/action/innate/swarmer/build/processer/build_processer = new
-	var/datum/action/innate/swarmer/build/analyzer/build_analyzer = new
-	var/datum/action/innate/swarmer/build/repair_station/build_repair_station = new
-	var/datum/action/innate/swarmer/build/storage/build_storage = new
-	var/datum/action/innate/swarmer/build/rapid_turret/build_rapid_turret = new
-	var/datum/action/innate/swarmer/build/sniper_turret/build_sniper_turret = new
-	var/datum/action/innate/swarmer/build/acp_turret/build_acp = new
-	build_processer.Grant(src)
-	build_analyzer.Grant(src)
-	build_repair_station.Grant(src)
-	build_storage.Grant(src)
-	build_rapid_turret.Grant(src)
-	build_sniper_turret.Grant(src)
-	build_acp.Grant(src)
-
 /mob/living/simple_animal/hostile/swarmer/builder/Life(seconds, times_fired)
 	. = ..()
 	adjustHealth(-auto_repair_amount)
@@ -209,7 +198,6 @@
  *
  * Tanky, reflects projectiles, has a built-in
  * minigun and ACP.
- * nuSanya -> this should have minigun recharge mechanics, later
  */
 /mob/living/simple_animal/hostile/swarmer/mega
 	name = "Mega Swarmer"
@@ -239,8 +227,6 @@
 	var/reflection_chance = SWARMER_MEGA_REFLECT_CHANCE
 	/// Built-in ACP turret
 	var/obj/structure/swarmer/acp_turret/acp
-	/// Built-in ACP turret range
-	var/acp_range = SWARMER_MEGA_ACP_RANGE
 
 /mob/living/simple_animal/hostile/swarmer/mega/Initialize(mapload)
 	. = ..()
@@ -281,8 +267,8 @@
 /// Configures ACP to work within src
 /mob/living/simple_animal/hostile/swarmer/mega/proc/configure_acp()
 	QDEL_NULL(acp.proximity_monitor)
-	acp.proximity_monitor = new(src, acp_range)
-	acp.range = acp_range
+	acp.proximity_monitor = new(src, SWARMER_MEGA_ACP_RANGE)
+	acp.range = SWARMER_MEGA_ACP_RANGE
 
 /// Connects proximity monitor of us with acp's
 /mob/living/simple_animal/hostile/swarmer/mega/HasProximity(atom/movable/AM)

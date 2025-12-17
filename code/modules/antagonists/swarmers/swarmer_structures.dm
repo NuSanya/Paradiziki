@@ -237,23 +237,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		swarmer.balloon_alert(swarmer, "калибруется!")
 		return
 
-	var/list/potential_hubs = list()
-	var/list/hub_names = list()
-	var/list/duplicate_hub_count = list()
-
-	for(var/obj/structure/swarmer/transport_hub/hub in GLOB.swarmer_objects)
-		if(!hub.enabled)
-			continue
-		var/resultkey = hub.listkey
-		if(resultkey in hub_names)
-			duplicate_hub_count[resultkey]++
-			resultkey = "[resultkey] ([duplicate_hub_count[resultkey]])"
-		else
-			hub_names += resultkey
-			duplicate_hub_count[resultkey] = 1
-		if(hub != src)
-			potential_hubs[resultkey] = hub
-
+	var/list/potential_hubs = get_hub_list()
 	if(!length(potential_hubs))
 		swarmer.balloon_alert(swarmer, "отсутствуют другие хабы!")
 		return
@@ -270,6 +254,25 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	swarmer.forceMove(target_turf)
 	spark_system.start()
 	actual_selected_hub.spark_system.start()
+
+/// Proc used to get a list of all active hubs
+/obj/structure/swarmer/transport_hub/proc/get_hub_list()
+	var/list/potential_hubs = list()
+	var/list/hub_names = list()
+	var/list/duplicate_hub_count = list()
+	for(var/obj/structure/swarmer/transport_hub/hub in GLOB.swarmer_objects)
+		if(!hub.enabled)
+			continue
+		var/resultkey = hub.listkey
+		if(resultkey in hub_names)
+			duplicate_hub_count[resultkey]++
+			resultkey = "[resultkey] ([duplicate_hub_count[resultkey]])"
+		else
+			hub_names += resultkey
+			duplicate_hub_count[resultkey] = 1
+		if(hub != src)
+			potential_hubs[resultkey] = hub
+	return potential_hubs
 
 /**
  * Swarmer organic processer

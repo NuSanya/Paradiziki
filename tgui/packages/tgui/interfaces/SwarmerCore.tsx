@@ -14,7 +14,7 @@ type SwarmerCoreData = {
   organic_resources: number;
   organic_goal: number;
   cheaper_swap: boolean;
-  builders_exist: boolean;
+  current_class_path: string;
 };
 
 type Class = {
@@ -54,7 +54,7 @@ const SwarmerGoalProgressBar = (props: unknown) => {
 
 export const SwarmerCore = (_props: unknown) => {
   const { act, data } = useBackend<SwarmerCoreData>();
-  const { classes, cheaper_swap } = data;
+  const { classes, cheaper_swap, current_class_path } = data;
   const [selectedInfo, setSelectedInfo] = useState<string>('');
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
 
@@ -82,28 +82,30 @@ export const SwarmerCore = (_props: unknown) => {
               <Stack.Item width={20}>
                 <Section textAlign="center" title="Классы" fill scrollable>
                   <Stack vertical fill>
-                    {classes.map((classInfo) => (
-                      <Stack.Item textAlign="center" key={classInfo.path}>
-                        <ImageButton
-                          color={'blue'}
-                          dmIcon={classInfo.icon}
-                          dmIconState={classInfo.icon_state}
-                          dmFallback={classInfo.name}
-                          imageSize={90}
-                          tooltip={
-                            <>
-                              <b>{classInfo.name}</b>
-                              <br />
-                              {classInfo.desc}
-                            </>
-                          }
-                          onClick={() => handleClassSelect(classInfo)}
-                          fluid
-                          selected={selectedClass === classInfo}
-                          title={classInfo.name}
-                        />
-                      </Stack.Item>
-                    ))}
+                    {classes.map((classInfo) =>
+                      current_class_path === classInfo.path ? null : (
+                        <Stack.Item textAlign="center" key={classInfo.path}>
+                          <ImageButton
+                            color={'blue'}
+                            dmIcon={classInfo.icon}
+                            dmIconState={classInfo.icon_state}
+                            dmFallback={classInfo.name}
+                            imageSize={90}
+                            tooltip={
+                              <>
+                                <b>{classInfo.name}</b>
+                                <br />
+                                {classInfo.desc}
+                              </>
+                            }
+                            onClick={() => handleClassSelect(classInfo)}
+                            fluid
+                            selected={selectedClass === classInfo}
+                            title={classInfo.name}
+                          />
+                        </Stack.Item>
+                      )
+                    )}
                   </Stack>
                 </Section>
               </Stack.Item>

@@ -145,3 +145,12 @@
 #define SWARMER_MEGA_REFLECT_CHANCE 50
 /// Range of mega swarmer ACP attack
 #define SWARMER_MEGA_ACP_RANGE 5
+
+/// How long does it take to move core
+#define SWARMER_CORE_MOVE_DELAY 25 SECONDS
+/// How many metallic resources are required to move core
+#define SWARMER_CORE_MOVE_COST 100
+/// How long does it take for initial forcefield on core spawn to disappear
+#define SWARMER_CORE_START_FORCEFIELD_DURATION 15 SECONDS
+/// How long does it take for forcefield on core move to disappear
+#define SWARMER_CORE_MOVE_FORCEFIELD_DURATION 5 SECOND
