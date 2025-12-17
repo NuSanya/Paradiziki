@@ -203,7 +203,7 @@
 		var/mob/living/simple_animal/hostile/swarmer/swarmer = path
 		if(swarmer::can_swap_to == FALSE)
 			continue
-		var/new_class = list(
+		var/list/new_class = list(
 			"name" = swarmer::name,
 			"desc" = swarmer::desc,
 			"icon" = swarmer::icon,

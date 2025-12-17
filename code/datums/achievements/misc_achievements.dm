@@ -79,6 +79,14 @@
 	database_id = MEDAL_KERBEROS_MASTER
 	icon_state = "de_kerberos_2"
 
+/* nuSanya -> after swarmer pr
+/datum/award/achievement/misc/mega_swarmer_punch
+	name = "Получи по лицу"
+	desc = "Нанесите завершающий удар по мега-свармеру голыми руками. Вы, случаем, не лысеете?"
+	database_id = MEDAL_PUNCHED_SWARMER
+	icon_state = "swarmer" // nuSanya new sprite needed
+/*
+
 //TODO Uncomment when be implemented
 /*
 /datum/award/achievement/misc/round_and_full

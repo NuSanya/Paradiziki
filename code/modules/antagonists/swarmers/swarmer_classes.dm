@@ -278,3 +278,11 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 /mob/living/simple_animal/hostile/swarmer/mega/disintegrate(atom/movable/target)
 	. = ..()
 	target.ex_act(EXPLODE_DEVASTATE)
+
+/* nuSanya -> add after swarmer pr
+/// Grants achievement for, somehow, killing the mega swarmer with bare hands.
+/mob/living/simple_animal/hostile/swarmer/mega/attack_hand(mob/living/carbon/human/attacker)
+	. = ..()
+	if(. && is_dead() && attacker.client)
+		attacker.client.give_award(/datum/award/achievement/misc/mega_swarmer_punch)
+/*
