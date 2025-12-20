@@ -1606,3 +1606,5 @@
 
 /// From /obj/structure/swarmer/core, sent from core to team on init
 #define COMSIG_SWARMER_CORE_INITIALIZED "swarmer_core_initialized"
+/// From /obj/structure/swarmer/core, sent from core to team on mega-swarmer spawn
+#define COMSIG_MEGA_SWARMER_CORE_SPAWN "mega_swarmer_core_spawn"

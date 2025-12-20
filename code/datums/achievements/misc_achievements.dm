@@ -85,7 +85,7 @@
 	desc = "Нанесите завершающий удар по мега-свармеру голыми руками. Вы, случаем, не лысеете?"
 	database_id = MEDAL_PUNCHED_SWARMER
 	icon_state = "swarmer" // nuSanya new sprite needed
-/*
+*/
 
 //TODO Uncomment when be implemented
 /*

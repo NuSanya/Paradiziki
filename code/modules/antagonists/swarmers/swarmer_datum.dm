@@ -8,6 +8,7 @@
 	show_in_roundend = FALSE
 	show_in_orbit = FALSE
 	antag_menu_name = "Свармер"
+	/// Text we send on greet to tell about current class. Created on gain.
 	var/swarmer_class_info = "Если ты это видишь, это баг."
 
 /datum/antagonist/swarmer/on_gain()
@@ -16,16 +17,6 @@
 	var/mob/living/simple_animal/hostile/swarmer/swarmer = owner.current
 	swarmer_class_info = span_bold("Ваш класс: [initial(swarmer.name)]!") + "\n" + swarmer.swarmer_class_info
 	. = ..()
-
-/*
-/datum/antagonist/swarmer/give_objectives()
-	if(!swarmer_team.main_objective)
-		terror_team.other_target = new
-		terror_team.other_target.owner = team
-		terror_team.other_target.generate_text(terror_team)
-	add_objective(terror_team.other_target)
-	terror_team.other_target.check_completion()
-*/
 
 /datum/antagonist/swarmer/roundend_report_header()
 	return
@@ -44,8 +35,9 @@
 	messages.Add("4. Интент \"Разбор\", или же \"четвёртый\", используется для разбора структур \"Свармеров\".")
 	messages.Add(span_bold("Полезная информация"))
 	messages.Add("Все ваши выстрелы и атаки, включая от построек, накладывают на цель блокировку лечения стамины.")
-	messages.Add("Используя Ctrl + Click на цели, вы сможете начать процесс телепортации, что может обеспечить вас источником органических ресурсов.")
-	messages.Add("Все ваши выстрелы, включая от турелей, пролетают насквозь всех структур \"Свармеров\", кроме турелей.\n")
+	messages.Add("Все ваши выстрелы, включая от турелей, пролетают насквозь всех структур \"Свармеров\", кроме турелей.")
+	messages.Add("Вы можете телепортировать в обработчики семена, овощи, реагенты и растения с лотков, добывая с них органические ресурсы.")
+	messages.Add("Используя Ctrl + Click на цели, вы сможете начать процесс телепортации существ, а также конвертации киборгов.\n")
 	messages.Add("[swarmer_class_info]\n")
-	SEND_SOUND(owner.current, sound('sound/effects/bin_close.ogg'))
+	SEND_SOUND(owner.current, sound('sound/swarmer/swarmer_intro.ogg'))
 	return messages

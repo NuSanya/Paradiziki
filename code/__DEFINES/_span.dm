@@ -152,6 +152,10 @@
 #define span_mind_control(str) ("<span class='mind_control'>" + str + "</span>")
 #define span_his_grace(str) ("<span class='his_grace'>" + str + "</span>")
 #define span_shadowling(str) ("<span class='shadowling'>" + str + "</span>")
+#define span_swarmer(str) ("<span class='swarmer'>" + str + "</span>")
+#define span_swarmerbold(str) ("<span class='swarmerbold'>" + str + "</span>")
+#define span_swarmeritalic(str) ("<span class='swarmeritalic'>" + str + "</span>")
+#define span_swarmerboldlarge(str) ("<span class='swarmerboldlarge'>" + str + "</span>")
 
 /**
  * MARK: Cults

@@ -1,3 +1,36 @@
+/**
+ * Global proc to adjust metallic swarmer resource.
+ *
+ * Set use_modifier to TRUE if you want to use the team metal gather modifier.
+ * Returns FALSE if amount was negative and the result is smaller than zero.
+ * Returns TRUE otherwise.
+ */
+/proc/adjust_swarmer_metallic_resources(amount, use_modifier = FALSE)
+	var/datum/team/swarmer_team/team = GLOB.antagonist_teams[/datum/team/swarmer_team]
+	if(!team.swarmer_core) // Core is the storage
+		return FALSE
+	if(use_modifier) // Resource storage modifiers (used on swarmer metal gathering)
+		amount *= team.metal_modifier
+	if(team.metallic_resources + amount < 0)
+		return FALSE
+	team.metallic_resources = max(team.metallic_resources + amount, 0) // extra precaution
+	return TRUE
+
+/**
+ * Global proc to adjust organic swarmer resource.
+ *
+ * Returns FALSE if amount was negative and the result is smaller than zero.
+ * Returns TRUE otherwise.
+ */
+/proc/adjust_swarmer_organic_resources(amount)
+	var/datum/team/swarmer_team/team = GLOB.antagonist_teams[/datum/team/swarmer_team]
+	if(!team.swarmer_core) // Core is the storage
+		return FALSE
+	if(team.organic_resources + amount < 0)
+		return FALSE
+	team.organic_resources = max(team.organic_resources + amount, 0) // extra precaution
+	return TRUE
+
 /// How many metallic resources swarmers get on core init
 #define METALLIC_START_RESOURCES 150
 
@@ -13,6 +46,10 @@
 	var/organic_resources = 0
 	/// Modifier of metal gatherings by swarmers (not structures)
 	var/metal_modifier = 1
+	/// Main objective given to all swarmers
+	var/datum/objective/swarmer_goal/swarmer_objective
+	/// Have we made an announcement about mega-swarmer already or not
+	var/made_announcement = FALSE
 	/// Cooldown system for messages on core integrity change
 	COOLDOWN_DECLARE(message_cooldown)
 
@@ -24,6 +61,9 @@
 	RegisterSignal(src, COMSIG_SWARMER_TRY_ANALYZE_MOB, PROC_REF(try_analyze_mob))
 	RegisterSignal(src, COMSIG_SWARMER_STORAGE_INITIALIZED, PROC_REF(increase_modifier))
 	RegisterSignal(src, COMSIG_SWARMER_STORAGE_DESTROYED, PROC_REF(decrease_modifier))
+	RegisterSignal(src, COMSIG_MEGA_SWARMER_CORE_SPAWN, PROC_REF(on_mega_swarmer_spawn))
+	swarmer_objective = new(team_to_join = src)
+	add_objective_to_members(swarmer_objective)
 
 /datum/team/swarmer_team/Destroy(force)
 	if(swarmer_core) // signals registered on core init
@@ -35,6 +75,8 @@
 	UnregisterSignal(src, COMSIG_SWARMER_TRY_ANALYZE_MOB)
 	UnregisterSignal(src, COMSIG_SWARMER_STORAGE_INITIALIZED)
 	UnregisterSignal(src, COMSIG_SWARMER_STORAGE_DESTROYED)
+	UnregisterSignal(src, COMSIG_MEGA_SWARMER_CORE_SPAWN)
+	QDEL_NULL(swarmer_objective)
 	return ..()
 
 /**
@@ -84,7 +126,7 @@
 		if(!target)
 			continue
 		target.balloon_alert(target, "обнаружено повреждение ядра!")
-		to_chat(target, span_boldwarning("Внимание: Обнаружено повреждение ядра! Местоположение: [locname]."))
+		to_chat(target, span_swarmerboldlarge("Внимание: Обнаружено повреждение ядра! Местоположение: [locname]."))
 		// nuSanya -> add some sound
 
 /**
@@ -101,7 +143,7 @@
 		if(!target)
 			continue
 		target.balloon_alert(target, "обнаружено перемещение ядра!")
-		to_chat(target, span_boldwarning("Внимание: Обнаружено перемещение ядра! Новое местоположение: [locname]."))
+		to_chat(target, span_swarmerboldlarge("Внимание: Обнаружено перемещение ядра! Новое местоположение: [locname]."))
 		// nuSanya -> add some sound
 
 /**
@@ -156,40 +198,36 @@
 	SIGNAL_HANDLER
 	metal_modifier = max(metal_modifier - SWARMER_STORAGE_MODIFIER, 1)
 
+/**
+ * Signal proc from mega-swarmer core spawn
+ *
+ * Completes swarmer objectives,
+ * makes an announce to the station,
+ * sets gamma code.
+ */
+/datum/team/swarmer_team/proc/on_mega_swarmer_spawn(datum/source, mob/swarmer)
+	SIGNAL_HANDLER
+	if(made_announcement)
+		return
+	made_announcement = TRUE
+	swarmer_objective.completed = TRUE
+	GLOB.major_announcement.announce(
+		message = "Обнаружено появление \"Мега-Свармера\" на борту станции [station_name()]. Экипаж должен любой ценой остановить его до того, как станция перейдёт под полный контроль \"Свармеров\".",
+		new_title = ANNOUNCE_CCMSG_RU,
+		new_sound = 'sound/AI/commandreport.ogg'
+	)
+	// gamma level will be kept until rounend, since there would still be swarmers and more mega-swarmer can spawn
+	addtimer(CALLBACK(SSsecurity_level, TYPE_PROC_REF(/datum/controller/subsystem/security_level, set_level), SEC_LEVEL_GAMMA), 5 SECONDS)
+
 /datum/team/swarmer_team/declare_completion()
-	return
+	var/list/text = list()
+	if(swarmer_objective.completed)
+		text += span_fontsize3("<br><br><b>Победа \"Свармеров\"!</b>")
+		text += "<br><b>Свармеры смогли создать Мега-Свармера! Экипаж не смог остановить их до того, как они накопят достаточно ресурсов.</b>"
+	else
+		text += span_fontsize3("<br><br><b>Поражение \"Свармеров\"!</b>")
+		text += "<br><b>Свармеры не сумели создать Мега-Свармера! Экипаж остановил их до того, как они накопят достаточно ресурсов.</b>"
+	return text.Join("")
 
-/**
- * Global proc to adjust metallic swarmer resource.
- *
- * Set use_modifier to TRUE if you want to use the team metal gather modifier.
- * Returns FALSE if amount was negative and the result is smaller than zero.
- * Returns TRUE otherwise.
- */
-/proc/adjust_swarmer_metallic_resources(amount, use_modifier = FALSE)
-	var/datum/team/swarmer_team/team = GLOB.antagonist_teams[/datum/team/swarmer_team]
-	if(!team.swarmer_core) // Core is the storage
-		return FALSE
-	if(use_modifier) // Resource storage modifiers (used on swarmer metal gathering)
-		amount *= team.metal_modifier
-	if(team.metallic_resources + amount < 0)
-		return FALSE
-	team.metallic_resources = max(team.metallic_resources + amount, 0) // extra precaution
-	return TRUE
-
-/**
- * Global proc to adjust organic swarmer resource.
- *
- * Returns FALSE if amount was negative and the result is smaller than zero.
- * Returns TRUE otherwise.
- */
-/proc/adjust_swarmer_organic_resources(amount)
-	var/datum/team/swarmer_team/team = GLOB.antagonist_teams[/datum/team/swarmer_team]
-	if(!team.swarmer_core) // Core is the storage
-		return FALSE
-	if(team.organic_resources + amount < 0)
-		return FALSE
-	team.organic_resources = max(team.organic_resources + amount, 0) // extra precaution
-	return TRUE
 
 #undef METALLIC_START_RESOURCES

@@ -1514,7 +1514,7 @@
 // MARK: metabolize_block
 /datum/status_effect/metabolize_block
 	id = "metabolize_block"
-	alert_type = null // nuSanya TODO: add an alert
+	alert_type = null
 	duration = 10 SECONDS
 	/// Overlay applied to mob, if set on creation
 	var/mutable_appearance/overlay

@@ -554,7 +554,7 @@
 	proj_spread = rand(-proj_spread, proj_spread)
 	if(casingtype)
 		var/obj/item/ammo_casing/casing = new casingtype(startloc)
-		playsound(src, projectilesound, 100, TRUE)
+		playsound(loc, projectilesound, 100, TRUE)
 		casing.fire(targeted_atom, src, params, proj_spread, zone_override = ran_zone())
 		casing.after_fire()
 	else if(projectiletype)
@@ -564,7 +564,7 @@
 		playsound(src, projectilesound, 100, TRUE)
 		P.firer = src
 		P.original = targeted_atom
-		P.preparePixelProjectile(targeted_atom, src, params, proj_spread)
+		P.preparePixelProjectile(targeted_atom, loc, deviation = proj_spread)
 		P.fire()
 		return P
 

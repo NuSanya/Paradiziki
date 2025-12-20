@@ -1,3 +1,9 @@
+/// How often based on organic resources do we spawn a swarmer
+#define SWARMER_SPAWN_VALUE 50
+/// How often based on organic resources do we spawn a mega-swarmer
+/// Ideally divisable by SWARMER_SPAWN_VALUE
+#define MEGA_SWARMER_SPAWN_VALUE 1200
+
 /// Worst swarmer deconstruction speed modifier
 #define SLOW_SWARMER_DISMANTLE_DELAY 15 SECONDS
 /// Average swarmer deconstruction speed modifier

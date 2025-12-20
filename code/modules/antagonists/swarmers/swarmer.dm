@@ -72,7 +72,7 @@
 	AddComponent(\
 		/datum/component/ghost_direct_control, \
 		ban_type = ROLE_SWARMER, \
-		poll_candidates = TRUE, \
+		poll_candidates = FALSE, \
 		after_assumed_control = CALLBACK(src, PROC_REF(add_datum_if_not_exist)), \
 	)
 
@@ -381,19 +381,21 @@
 		return
 	set_light_on(!light_on)
 
-/// Proc used to communicate with other swarmers - nusanya TODO another font
+/// Proc used to communicate with other swarmers
 /mob/living/simple_animal/hostile/swarmer/proc/contact_swarmers()
 	var/message = tgui_input_text(src, "Передайте сообщение другим \"Свармерам\"", "Канал \"Свармеров\"")
 	if(!message)
 		return
+	message = span_swarmeritalic("<b>[name]:</b> [message]")
 	for(var/mob/mob in GLOB.player_list)
 		if(isswarmer(mob))
-			to_chat(mob, "<b>Коммуникация \"Свармеров\" - </b> [declent_ru(NOMINATIVE)] гудит: [message]")
+			to_chat(mob, message)
 			continue
 		if((mob in GLOB.dead_mob_list) && !isnewplayer(mob))
-			to_chat(mob, "<b> <a href='byond://?src=[mob.UID()];follow=[UID()]'>(F)</a> гудит: [message] </b>")
+			to_chat(mob, span_swarmeritalic("<a href='byond://?src=[mob.UID()];follow=[UID()]'>(F)</a> [message]"))
 	add_say_logs(src, message, language = "SWARMER")
 
+/// How many metallic resources swarmers get on integrating this atom
 /atom/movable/proc/integrate_amount()
 	return 0
 
@@ -403,6 +405,7 @@
 	if(materials[MAT_METAL] || materials[MAT_GLASS])
 		return 1
 	return ..()
+
 
 /obj/effect/temp_visual/swarmer
 	icon = 'icons/effects/swarmer.dmi'
@@ -432,3 +435,45 @@
 /obj/effect/temp_visual/swarmer/integrate/Initialize(mapload)
 	. = ..()
 	playsound(loc, SFX_SPARKS, 100, TRUE)
+
+// Disabled swarmer shell
+/obj/item/deactivated_swarmer
+	name = "unactivated swarmer"
+	desc = "Деактивированная оболочка свармера. Может оказаться полезным для изучения."
+	icon = 'icons/mob/swarmer.dmi'
+	icon_state = "swarmer_unactivated"
+	origin_tech = "bluespace=4;materials=4;programming=7"
+	materials = list(MAT_METAL=10000, MAT_GLASS=4000)
+
+// Swarmer shell spawned, if no one chose to play as swarmer
+/obj/effect/mob_spawn/swarmer
+	name = "unactivated swarmer"
+	desc = "Неактивированная оболочка свармера, которая может активироваться в любой момент. Кажется, её можно отключить отвёрткой."
+	icon = 'icons/mob/swarmer.dmi'
+	icon_state = "swarmer_unactivated"
+	density = FALSE
+	layer = ABOVE_ALL_MOB_LAYER
+	anchored = FALSE
+	mob_type = /mob/living/simple_animal/hostile/swarmer/basic
+	death = FALSE
+	roundstart = FALSE
+	allow_tts_pick = FALSE
+	banType = ROLE_SWARMER
+
+/obj/effect/mob_spawn/swarmer/Initialize(mapload)
+	. = ..()
+	var/area/A = get_area(src)
+	if(A)
+		notify_ghosts("Оболочка свамера была создана в [A.name].", 'sound/effects/bin_close.ogg', source = src, action = NOTIFY_ATTACK, flashwindow = FALSE)
+
+/obj/effect/mob_spawn/swarmer/screwdriver_act(mob/user, obj/item/I)
+	. = TRUE
+	if(!I.use_tool(src, user, 2 SECONDS, volume = I.tool_volume))
+		return
+	user.balloon_alert(user, "деактивировано!")
+	new /obj/item/deactivated_swarmer(get_turf(src))
+	qdel(src)
+
+/// Flavour var override
+/obj/effect/mob_spawn/swarmer/create(mob/plr, flavour = FALSE, name, prefs = FALSE, _mob_name = FALSE, _mob_gender = FALSE, _mob_species = FALSE)
+	return ..()

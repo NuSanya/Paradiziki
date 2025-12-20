@@ -564,7 +564,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
  */
 /obj/structure/swarmer/repair_station
 	name = "swarmer repair station"
-	desc = "Ремонтная станция \"Свармеров\", способная починить свармера за считанное время." // nuSanya bad desc later
+	desc = "Ремонтная станция \"Свармеров\"."
 	icon_state = "repair_station"
 	max_integrity = 100
 	/// Current swarmer in src
@@ -656,7 +656,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
  */
 /obj/structure/swarmer/resource_storage
 	name = "swarmer resource storage"
-	desc = "Хранилище ресурсов \"Свармеров\", позволяющее собирать больше материалов с объектов." // nuSanya bad desc later
+	desc = "Хранилище ресурсов \"Свармеров\", позволяющее собирать больше материалов с объектов."
 	icon_state = "metal_storage"
 	max_integrity = 100
 	/// Team that we send signals to
@@ -681,7 +681,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
  */
 /obj/structure/swarmer/acp_turret
 	name = "swarmer ACP turret"
-	desc = "Стационарная установка \"Свармеров\", которая способна оглушать и влиять на магнитное поле целей." // nuSanya idk better desc later
+	desc = "Стационарная установка \"Свармеров\", которая способна оглушать и влиять на магнитное поле целей."
 	icon_state = "turret_acp"
 	max_integrity = 200
 	/// Overlay set on targets if we hit them

@@ -1,8 +1,3 @@
-/// How often based on organic resources do we spawn a swarmer
-#define SWARMER_SPAWN_VALUE 50
-/// How often based on organic resources do we spawn a mega-swarmer
-/// Must be divisable by SWARMER_SPAWN_VALUE
-#define MEGA_SWARMER_SPAWN_VALUE 1200
 /// How often does the swarmer core shock on getting melee hit
 #define SHOCK_COOLDOWN 3 SECONDS
 /// How much does the healing aura component heal
@@ -119,17 +114,60 @@
 		spark_system.start()
 // End react damage procs //
 
+/// Spawns swarmers based on organic materials value.
 /obj/structure/swarmer/core/process(seconds_per_tick)
 	if((team.organic_resources - last_swarmer_spawn_value) < SWARMER_SPAWN_VALUE)
 		return
 
 	if((team.organic_resources - last_mega_swarmer_spawn_value) < MEGA_SWARMER_SPAWN_VALUE)
 		last_swarmer_spawn_value = team.organic_resources
-		// add basic swarmer spawn here later
+		INVOKE_ASYNC(src, PROC_REF(spawn_swarmer_from_ghost))
 		return
 
 	last_mega_swarmer_spawn_value = team.organic_resources
-	// add mega swarmer spawn here later
+	INVOKE_ASYNC(src, PROC_REF(spawn_mega_swarmer_from_ghost))
+
+/// Makes a ghost poll for basic swarmer spawn
+/obj/structure/swarmer/core/proc/spawn_swarmer_from_ghost()
+	var/image/poll_source = image('icons/mob/swarmer.dmi', "swarmer_combat")
+	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Свармера?", ROLE_SWARMER, TRUE, poll_time = 15 SECONDS, source = poll_source)
+	if(!length(candidates)) // Makes a spawner if no-one wanted to
+		var/rand_dir = pick(GLOB.cardinal)
+		new /obj/effect/mob_spawn/swarmer(get_step(loc, rand_dir))
+		return
+	var/turf/spawn_loc = get_turf(src)
+	if(isnull(spawn_loc))
+		return
+
+	var/mob/dead/observer/selected = pick(candidates)
+	var/datum/mind/player_mind = new /datum/mind(selected.key)
+	player_mind.active = TRUE
+	var/mob/living/simple_animal/hostile/swarmer/basic/swarmer = new(spawn_loc)
+	player_mind.transfer_to(swarmer)
+
+	message_admins("[ADMIN_LOOKUPFLW(swarmer)] has been made into Swarmer (core spawn).")
+	log_game("[key_name(swarmer)] was spawned as Swarmer by the core.")
+
+/// Makes a ghost poll for mega swarmer spawn
+/obj/structure/swarmer/core/proc/spawn_mega_swarmer_from_ghost()
+	var/image/poll_source = image('icons/mob/swarmer.dmi', "swarmer_mega")
+	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Мега-Свармера?", ROLE_SWARMER, TRUE, poll_time = 30 SECONDS, source = poll_source)
+	if(!length(candidates)) // Someone must pick that anyway
+		INVOKE_ASYNC(src, PROC_REF(spawn_mega_swarmer_from_ghost))
+		return
+	var/turf/spawn_loc = get_turf(src)
+	if(isnull(spawn_loc))
+		return
+
+	var/mob/dead/observer/selected = pick(candidates)
+	var/datum/mind/player_mind = new /datum/mind(selected.key)
+	player_mind.active = TRUE
+	var/mob/living/simple_animal/hostile/swarmer/mega/swarmer = new(spawn_loc)
+	player_mind.transfer_to(swarmer)
+
+	SEND_SIGNAL(team, COMSIG_MEGA_SWARMER_CORE_SPAWN)
+	message_admins("[ADMIN_LOOKUPFLW(swarmer)] has been made into Mega-Swarmer (core spawn).")
+	log_game("[key_name(swarmer)] was spawned as Mega-Swarmer by the core.")
 
 /// Core is only movable with an ability
 /obj/structure/swarmer/core/swarmer_grab_act(mob/living/simple_animal/hostile/swarmer/swarmer)
@@ -216,8 +254,6 @@
 
 /// End swarmer core tgui code ///
 
-#undef SWARMER_SPAWN_VALUE
-#undef MEGA_SWARMER_SPAWN_VALUE
 #undef SHOCK_COOLDOWN
 #undef HEALING_AURA_AMOUNT
 #undef HEALING_AURA_RANGE

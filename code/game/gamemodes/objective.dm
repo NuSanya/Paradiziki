@@ -1705,3 +1705,12 @@ GLOBAL_LIST_EMPTY(admin_objective_list)
 	name = "Геноцид разумной жизни"
 	needs_target = FALSE
 	explanation_text = "Убивайте всех, кто не является ксеноморфом. Утопите станцию в крови!"
+
+/// Main goal of swarmers, completed on mega-swarmer spawn
+/datum/objective/swarmer_goal
+	antag_menu_name = "Создать Мега-Свармера"
+	needs_target = FALSE
+
+/datum/objective/swarmer_goal/New(text, datum/team/team_to_join)
+	..()
+	explanation_text = "Создайте Мега-Свармера, накопив командой [MEGA_SWARMER_SPAWN_VALUE] органических ресурсов."
