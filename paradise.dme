@@ -1650,7 +1650,6 @@
 #include "code\game\objects\structures\morgue.dm"
 #include "code\game\objects\structures\nest.dm"
 #include "code\game\objects\structures\noticeboard.dm"
-#include "code\game\objects\structures\obj_walls.dm"
 #include "code\game\objects\structures\pit.dm"
 #include "code\game\objects\structures\plasticflaps.dm"
 #include "code\game\objects\structures\railings.dm"

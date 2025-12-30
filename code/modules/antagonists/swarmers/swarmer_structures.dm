@@ -153,10 +153,8 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	if(!isliving(arrived) || isswarmer(arrived))
 		return
 
-	playsound(loc, 'sound/effects/snap.ogg', 50, TRUE, -1)
-	arrived.electrocute_act(100, src, flags = SHOCK_NOGLOVES | SHOCK_ILLUSION)
-	if(isrobot(arrived) || ismachineperson(arrived))
-		arrived.Weaken(10 SECONDS)
+	playsound(loc, 'sound/effects/snap.ogg', 50, TRUE)
+	arrived.apply_effects(weaken = SWARMER_TRAP_WEAKEN, knockdown = SWARMER_TRAP_KNOCKDOWN, stamina = SWARMER_TRAP_DAMAGE, jitter = 10 SECONDS)
 	qdel(src)
 
 /**

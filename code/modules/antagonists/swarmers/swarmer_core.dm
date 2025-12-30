@@ -132,18 +132,16 @@
 	var/image/poll_source = image('icons/mob/swarmer.dmi', "swarmer_combat")
 	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Свармера?", ROLE_SWARMER, TRUE, poll_time = 15 SECONDS, source = poll_source)
 	if(!length(candidates)) // Makes a spawner if no-one wanted to
-		var/rand_dir = pick(GLOB.cardinal)
-		new /obj/effect/mob_spawn/swarmer(get_step(loc, rand_dir))
+		new /obj/effect/mob_spawn/swarmer(get_step(loc, pick(GLOB.alldirs)))
 		return
 	var/turf/spawn_loc = get_turf(src)
 	if(isnull(spawn_loc))
 		return
 
-	var/mob/dead/observer/selected = pick(candidates)
-	var/datum/mind/player_mind = new /datum/mind(selected.key)
-	player_mind.active = TRUE
+	var/mob/dead/observer/selected = pick_n_take(candidates)
 	var/mob/living/simple_animal/hostile/swarmer/basic/swarmer = new(spawn_loc)
-	player_mind.transfer_to(swarmer)
+	swarmer.possess_by_player(selected.key)
+	swarmer.add_datum_if_not_exist()
 
 	message_admins("[ADMIN_LOOKUPFLW(swarmer)] has been made into Swarmer (core spawn).")
 	log_game("[key_name(swarmer)] was spawned as Swarmer by the core.")
@@ -159,11 +157,10 @@
 	if(isnull(spawn_loc))
 		return
 
-	var/mob/dead/observer/selected = pick(candidates)
-	var/datum/mind/player_mind = new /datum/mind(selected.key)
-	player_mind.active = TRUE
+	var/mob/dead/observer/selected = pick_n_take(candidates)
 	var/mob/living/simple_animal/hostile/swarmer/mega/swarmer = new(spawn_loc)
-	player_mind.transfer_to(swarmer)
+	swarmer.possess_by_player(selected.key)
+	swarmer.add_datum_if_not_exist()
 
 	SEND_SIGNAL(team, COMSIG_MEGA_SWARMER_CORE_SPAWN)
 	message_admins("[ADMIN_LOOKUPFLW(swarmer)] has been made into Mega-Swarmer (core spawn).")

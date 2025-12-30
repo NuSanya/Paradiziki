@@ -3,30 +3,30 @@
 GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 	// Generalist swarmer
 	/mob/living/simple_animal/hostile/swarmer/generalist = list(
-		/datum/action/innate/swarmer/build/barricade,
-		/datum/action/innate/swarmer/build/trap,
-		/datum/action/innate/swarmer/build/rapid_turret,
+		/datum/action/cooldown/swarmer/build/barricade,
+		/datum/action/cooldown/swarmer/build/trap,
+		/datum/action/cooldown/swarmer/build/rapid_turret,
 		),
 	// Rover swarmer
 	/mob/living/simple_animal/hostile/swarmer/rover = list(
-		/datum/action/innate/swarmer/build/trap,
-		/datum/action/innate/swarmer/build/transport_hub,
+		/datum/action/cooldown/swarmer/build/trap,
+		/datum/action/cooldown/swarmer/build/transport_hub,
 		),
 	// Combat swarmer
 	/mob/living/simple_animal/hostile/swarmer/combat = list(
-		/datum/action/innate/swarmer/build/barricade,
-		/datum/action/innate/swarmer/mode_switcher,
+		/datum/action/cooldown/swarmer/build/barricade,
+		/datum/action/cooldown/swarmer/mode_switcher,
 		),
 	// Builder swarmer
 	/mob/living/simple_animal/hostile/swarmer/builder = list(
-		/datum/action/innate/swarmer/build/processer,
-		/datum/action/innate/swarmer/build/analyzer,
-		/datum/action/innate/swarmer/build/repair_station,
-		/datum/action/innate/swarmer/build/storage,
-		/datum/action/innate/swarmer/build/rapid_turret,
-		/datum/action/innate/swarmer/build/sniper_turret,
-		/datum/action/innate/swarmer/build/acp_turret,
-		/datum/action/innate/swarmer/move_core,
+		/datum/action/cooldown/swarmer/build/processer,
+		/datum/action/cooldown/swarmer/build/analyzer,
+		/datum/action/cooldown/swarmer/build/repair_station,
+		/datum/action/cooldown/swarmer/build/storage,
+		/datum/action/cooldown/swarmer/build/rapid_turret,
+		/datum/action/cooldown/swarmer/build/sniper_turret,
+		/datum/action/cooldown/swarmer/build/acp_turret,
+		/datum/action/cooldown/swarmer/move_core,
 		),
 	))
 

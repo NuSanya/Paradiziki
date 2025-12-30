@@ -60,7 +60,7 @@
 		diag_hud.add_atom_to_hud(src)
 	// Grants all required on-init actions to this type
 	for(var/action_type in GLOB.swarmer_actions_by_type[type])
-		var/datum/action/innate/swarmer/action = new action_type
+		var/datum/action/cooldown/swarmer/action = new action_type
 		action.Grant(src)
 
 /mob/living/simple_animal/hostile/swarmer/ComponentInitialize()
@@ -445,7 +445,7 @@
 	origin_tech = "bluespace=4;materials=4;programming=7"
 	materials = list(MAT_METAL=10000, MAT_GLASS=4000)
 
-// Swarmer shell spawned, if no one chose to play as swarmer
+// Used in cases where no-one wanted to play as swarmer
 /obj/effect/mob_spawn/swarmer
 	name = "unactivated swarmer"
 	desc = "Неактивированная оболочка свармера, которая может активироваться в любой момент. Кажется, её можно отключить отвёрткой."
@@ -468,7 +468,7 @@
 
 /obj/effect/mob_spawn/swarmer/screwdriver_act(mob/user, obj/item/I)
 	. = TRUE
-	if(!I.use_tool(src, user, 2 SECONDS, volume = I.tool_volume))
+	if(!I.use_tool(src, user, 3 SECONDS, volume = I.tool_volume))
 		return
 	user.balloon_alert(user, "деактивировано!")
 	new /obj/item/deactivated_swarmer(get_turf(src))

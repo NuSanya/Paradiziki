@@ -30,6 +30,8 @@
 
 ///from [/obj/structure/closet/supplypod/proc/preOpen]:
 #define COMSIG_SUPPLYPOD_LANDED "supplypodgoboom"
+/// From [/obj/structure/closet/supplypod/proc/open_pod]
+#define COMSIG_SUPPLYPOD_OPENED "supplypodopened"
 
 #define COMSIG_MORTAR_DETONATE "mortar_prime"
 

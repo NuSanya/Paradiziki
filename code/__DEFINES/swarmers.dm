@@ -1,9 +1,19 @@
+// === SWARMER SPAWNING ===
 /// How often based on organic resources do we spawn a swarmer
 #define SWARMER_SPAWN_VALUE 50
 /// How often based on organic resources do we spawn a mega-swarmer
 /// Ideally divisable by SWARMER_SPAWN_VALUE
 #define MEGA_SWARMER_SPAWN_VALUE 1200
 
+// === SWARMER CLASSES & SWAPPING ===
+/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
+#define GENERALIST_SWAP_COST 20
+#define ROVER_SWAP_COST 18
+#define COMBAT_SWAP_COST 30
+/// If there are no builders, the swap cost is zero
+#define BUILDER_SWAP_COST 20
+
+// === TIMING & DELAYS ===
 /// Worst swarmer deconstruction speed modifier
 #define SLOW_SWARMER_DISMANTLE_DELAY 15 SECONDS
 /// Average swarmer deconstruction speed modifier
@@ -11,19 +21,32 @@
 /// Best swarmer deconstruction speed modifier
 #define FAST_SWARMER_DISMANTLE_DELAY 3 SECONDS
 
-/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
-#define GENERALIST_SWAP_COST 20
-/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
-#define ROVER_SWAP_COST 18
-/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
-#define COMBAT_SWAP_COST 30
-/// How many metallic resources are required to swap to this class (Note: Swapping from non-basic swarmer costs twice less)
-/// If there are no builders, the swap cost is zero
-#define BUILDER_SWAP_COST 20
+/// Smallest build delay
+#define SWARMER_FAST_BUILD_DELAY 2 SECONDS
+/// Average build delay
+#define SWARMER_NORMAL_BUILD_DELAY 5 SECONDS
+/// Biggest build delay
+#define SWARMER_SLOW_BUILD_DELAY 10 SECONDS
 
-/// How much swarmers and swarmer structures get damaged on emp
-#define SWARMER_EMP_DAMAGE 25
+/// How long does it take for a combat swarmer to switch modes
+#define SWARMER_MODE_SWITCH_DELAY 1.5 SECONDS
 
+/// How long does it take for a swarmer to teleport through hubs (Note: Rovers take twice less time)
+#define SWARMER_TELEPORT_DELAY(swarmer) (is_roverswarmer(swarmer) ? 4 SECONDS : 8 SECONDS)
+
+// === PROJECTILE COOLDOWNS ===
+/// Cooldown of default swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/generalist&combat)
+#define SWARMER_NORMAL_PROJECTILE_COOLDOWN 1 SECONDS
+/// Cooldown of double swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/combat)
+#define SWARMER_DOUBLE_PROJECTILE_COOLDOWN 2 SECONDS
+/// Cooldown of strong swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/combat)
+#define SWARMER_STRONG_PROJECTILE_COOLDOWN 2.5 SECONDS
+/// Cooldown of sabotage swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/combat)
+#define SWARMER_SABOTAGE_PROJECTILE_COOLDOWN 3 SECONDS
+/// Cooldown of mega swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/mega)
+#define SWARMER_MINIGUN_PROJECTILE_COOLDOWN 1.5 SECONDS
+
+// === STRUCTURE COSTS ===
 /// How many metallic resources does it cost to make a barricade
 #define SWARMER_BLOCKADE_COST 7
 /// How many metallic resources does it cost to make a trap
@@ -45,30 +68,7 @@
 /// How many metallic resources does it cost to make an ACP turret
 #define SWARMER_ACP_COST 25
 
-/// Smallest build delay
-#define SWARMER_FAST_BUILD_DELAY 2 SECONDS
-/// Average build delay
-#define SWARMER_NORMAL_BUILD_DELAY 5 SECONDS
-/// Biggest build delay
-#define SWARMER_SLOW_BUILD_DELAY 10 SECONDS
-
-/// Cooldown of default swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/generalist&combat)
-#define SWARMER_NORMAL_PROJECTILE_COOLDOWN 1 SECONDS
-/// Cooldown of double swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/combat)
-#define SWARMER_DOUBLE_PROJECTILE_COOLDOWN 2 SECONDS
-/// Cooldown of strong swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/combat)
-#define SWARMER_STRONG_PROJECTILE_COOLDOWN 2.5 SECONDS
-/// Cooldown of sabotage swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/combat)
-#define SWARMER_SABOTAGE_PROJECTILE_COOLDOWN 3 SECONDS
-/// Cooldown of mega swarmer projectile (used by /mob/living/simple_animal/hostile/swarmer/mega)
-#define SWARMER_MINIGUN_PROJECTILE_COOLDOWN 1.5 SECONDS
-
-/// How long does it take for a swarmer to teleport through hubs (Note: Rovers take twice less time)
-#define SWARMER_TELEPORT_DELAY(swarmer) (is_roverswarmer(swarmer) ? 4 SECONDS : 8 SECONDS)
-
-/// How long does it take for a combat swarmer to switch modes
-#define SWARMER_MODE_SWITCH_DELAY 1.5 SECONDS
-
+// === REPAIR RELATED ===
 /// How long does it take for swarmer to repair something (Builder swarmers take twice less time)
 #define SWARMER_REPAIR_DELAY(swarmer) (is_builderswarmer(swarmer) ? 0.5 SECONDS : 1 SECONDS)
 /// How much swarmer related stuff gets repaired by (Builder swarmer repair twice more)
@@ -76,6 +76,12 @@
 /// How many metallic resources does it cost for swarmer to repair something
 #define SWARMER_REPAIR_COST 0.5
 
+/// How long does it take to enter a repair station
+#define SWARMER_REPAIR_STATION_DELAY 2 SECONDS
+/// How much a swarmer gets healed by while being in a repair station per tick
+#define SWARMER_REPAIR_STATION_HEAL 5
+
+// === ORGANIC PROCESSING ===
 /// How long does it take for a swarmer to send anything to processer/analyzer
 #define SWARMER_SEND_ORGANIC_DELAY 2 SECONDS
 
@@ -86,6 +92,7 @@
 /// How many organic resources we gain on item processing
 #define SWARMER_ORGANIC_ITEM_PROCESS_GAIN (rand(2, 5))
 
+// === ORGANIC ANALYZER ===
 /// How much time does it take for an organic analyzer to finish (non-carbon mobs take less time)
 #define SWARMER_ANALYZE_DELAY(target) (iscarbon(target) ? 45 SECONDS : 15 SECONDS)
 
@@ -107,16 +114,13 @@
 /// What is the chance to remove a bodypart or organ on non-machine analyze
 #define SWARMER_ANALYZE_ORGAN_REMOVE_CHANCE 20
 
-/// How long does it take to enter a repair station
-#define SWARMER_REPAIR_STATION_DELAY 2 SECONDS
-/// How much a swarmer gets healed by while being in a repair station per tick
-#define SWARMER_REPAIR_STATION_HEAL 5
-
+// === RESOURCE STORAGE ===
 /// Metal gather modifier increase/decrease on storage init/destroy
 #define SWARMER_STORAGE_MODIFIER 0.2
 /// Metal gather modifier limit
 #define SWARMER_STORAGE_MODIFIER_LIMIT 3
 
+// === TURRETS ===
 /// Rapid turret cooldown
 #define SWARMER_RAPID_TURRET_COOLDOWN 1.5 SECONDS
 /// Sniper turret cooldown
@@ -124,6 +128,7 @@
 /// ACP turret cooldown
 #define SWARMER_ACP_COOLDOWN 6 SECONDS
 
+// === ACP TURRET SPECIFICS ===
 /// ACP turret stamina damage (gets scaled)
 #define SWARMER_ACP_DAMAGE 15
 /// ACP turret range
@@ -139,12 +144,17 @@
 /// ACP turret metabolize disable duration
 #define SWARMER_ACP_DISABLE_METABOLIZATION_DURATION 10 SECONDS
 
+// === EMP EFFECTS ===
+/// How much swarmers and swarmer structures get damaged on emp
+#define SWARMER_EMP_DAMAGE 25
 /// For how long do swarmer structures get disabled for on emp_act
 #define SWARMER_STRUCTURE_EMP_DURATION 10 SECONDS
 
+// === DAMAGE EFFECTS ===
 /// For how long do swarmers disable stamina healing
 #define SWARMER_DISABLE_STAMINAREGEN_DURATION 1 SECONDS
 
+// === MEGA SWARMER ===
 /// How many projectiles mega-swarmer shoots at once
 #define SWARMER_MEGA_RAPID 6
 /// Chance of reflecting projectiles for mega-swarmer
@@ -152,6 +162,7 @@
 /// Range of mega swarmer ACP attack
 #define SWARMER_MEGA_ACP_RANGE 5
 
+// === CORE MOVE ===
 /// How long does it take to move core
 #define SWARMER_CORE_MOVE_DELAY 25 SECONDS
 /// How many metallic resources are required to move core
@@ -159,4 +170,12 @@
 /// How long does it take for initial forcefield on core spawn to disappear
 #define SWARMER_CORE_START_FORCEFIELD_DURATION 15 SECONDS
 /// How long does it take for forcefield on core move to disappear
-#define SWARMER_CORE_MOVE_FORCEFIELD_DURATION 5 SECOND
+#define SWARMER_CORE_MOVE_FORCEFIELD_DURATION 5 SECONDS
+
+// === SWARMER TRAP ===
+/// How much staminadamage does a trap deal
+#define SWARMER_TRAP_DAMAGE 40
+/// Trap knockdown time
+#define SWARMER_TRAP_KNOCKDOWN 4 SECONDS
+/// Trap weaken time
+#define SWARMER_TRAP_WEAKEN 2 SECONDS

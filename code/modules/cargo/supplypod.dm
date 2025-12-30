@@ -264,6 +264,13 @@
 
 	SSticker.mode.end_game()
 
+/obj/structure/closet/supplypod/swarmer
+	style = /datum/pod_style/swarmer
+	bluespace = TRUE
+	delays = list(POD_TRANSIT = 3 SECONDS, POD_FALLING = 5 SECONDS, POD_OPENING = 3 SECONDS, POD_LEAVING = 0 SECONDS)
+	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
+	specialised = TRUE
+
 /obj/structure/closet/supplypod/Initialize(mapload, customStyle = FALSE)
 	. = ..()
 	if(!loc)
@@ -496,6 +503,7 @@
 	if(opened) //This is to ensure we don't open something that has already been opened
 		return
 	holder.setOpened()
+	SEND_SIGNAL(holder, COMSIG_SUPPLYPOD_OPENED)
 	var/turf/turf_underneath = get_turf(holder) //Get the turf of whoever's contents we're talking about
 	if(istype(holder, /mob)) //Allows mobs to assume the role of the holder, meaning we look at the mob's contents rather than the supplypod's contents. Typically by this point the supplypod's contents have already been moved over to the mob's contents
 		var/mob/holder_as_mob = holder

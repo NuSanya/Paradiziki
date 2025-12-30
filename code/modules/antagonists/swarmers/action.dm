@@ -1,25 +1,26 @@
 // TODO: Move to spell actions, once they are done
 
-/datum/action/innate/swarmer
+/datum/action/cooldown/swarmer
 	name = "Свармер что-то"
 	desc = "Напишите баг-репорт, если увидели это."
 	button_icon = 'icons/mob/actions/actions_swarmer.dmi'
 	/// How many metallic resources does it cost to do this action
 	var/action_cost = 0
 
-/datum/action/innate/swarmer/IsAvailable(feedback = FALSE)
+/datum/action/cooldown/swarmer/IsAvailable(feedback = FALSE)
 	if(!isswarmer(owner))
 		return FALSE
 	return ..()
 
 /// Updates description to include material cost.
-/datum/action/innate/swarmer/update_button_name(atom/movable/screen/movable/action_button/button, force)
+/datum/action/cooldown/swarmer/update_button_name(atom/movable/screen/movable/action_button/button, force)
 	. = ..()
 	if(action_cost)
 		desc = "[initial(desc)] Стоимость: [action_cost] металлических материалов."
 
-/datum/action/innate/swarmer/build
+/datum/action/cooldown/swarmer/build
 	name = "Создать что-то"
+	cooldown_time = SWARMER_FAST_BUILD_DELAY
 	/// What do we build
 	var/build_type = /obj/structure/swarmer
 	/// How long does it take to build
@@ -27,7 +28,8 @@
 	/// Does it require the user to type a keyword for the structure
 	var/req_keyword = FALSE
 
-/datum/action/innate/swarmer/build/Activate()
+/datum/action/cooldown/swarmer/build/Activate()
+	. = ..()
 	var/mob/living/user = owner
 	var/turf/our_turf = get_turf(user)
 	if(isspaceturf(our_turf))
@@ -52,7 +54,7 @@
 	user.balloon_alert(user, "успех!")
 	return new build_type(our_turf)
 
-/datum/action/innate/swarmer/build/barricade
+/datum/action/cooldown/swarmer/build/barricade
 	name = "Создать баррикаду"
 	desc = "Создаёт баррикаду, через которую могут проходить \"Свармеры\", и пролетать их лазеры."
 	button_icon_state = "swarmer_barricade"
@@ -60,7 +62,7 @@
 	action_cost = SWARMER_BLOCKADE_COST
 	build_time = SWARMER_FAST_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/trap
+/datum/action/cooldown/swarmer/build/trap
 	name = "Создать ловушку"
 	desc = "Создаёт ловушку, которая будет оглушать всех, кроме \"Свармеров\"."
 	button_icon_state = "swarmer_trap"
@@ -68,7 +70,15 @@
 	action_cost = SWARMER_TRAP_COST
 	build_time = SWARMER_FAST_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/transport_hub
+/// Trap is built immediately for rover swarmers, and instead has cooldown
+/datum/action/cooldown/swarmer/build/trap/Grant(mob/granted_to)
+	. = ..()
+	if(!is_roverswarmer(granted_to))
+		return
+	cooldown_time = build_time
+	build_time = 0
+
+/datum/action/cooldown/swarmer/build/transport_hub
 	name = "Создать Хаб"
 	desc = "Создаёт Хаб, между которыми смогут перемещаться все \"Свармеры\"."
 	button_icon_state = "swarmer_hub"
@@ -76,7 +86,7 @@
 	action_cost = SWARMER_HUB_COST
 	build_time = SWARMER_SLOW_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/transport_hub/Activate()
+/datum/action/cooldown/swarmer/build/transport_hub/Activate()
 	. = ..() // Returns built hub
 	if(!.)
 		return
@@ -86,7 +96,7 @@
 	var/obj/structure/swarmer/transport_hub/hub = .
 	hub.listkey = "[keyword] ([hub.listkey])"
 
-/datum/action/innate/swarmer/build/processer
+/datum/action/cooldown/swarmer/build/processer
 	name = "Создать переработчик органики"
 	desc = "Обрабатывает неживую материю."
 	button_icon_state = "swarmer_processor"
@@ -94,7 +104,7 @@
 	action_cost = SWARMER_PROCESSER_COST
 	build_time = SWARMER_NORMAL_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/analyzer
+/datum/action/cooldown/swarmer/build/analyzer
 	name = "Создать анализатор органики"
 	desc = "Обрабатывает живую и металлическую материю."
 	button_icon_state = "swarmer_analyzer"
@@ -102,7 +112,7 @@
 	action_cost = SWARMER_ANALYZER_COST
 	build_time = SWARMER_NORMAL_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/repair_station
+/datum/action/cooldown/swarmer/build/repair_station
 	name = "Создать станцию починки"
 	desc = "Быстрая починка для \"Свармеров\"."
 	button_icon_state = "swarmer_repair"
@@ -110,7 +120,7 @@
 	action_cost = SWARMER_REPAIR_STATION_COST
 	build_time = SWARMER_NORMAL_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/storage
+/datum/action/cooldown/swarmer/build/storage
 	name = "Создать хранилище для ресурсов"
 	desc = "Ускоряет ручной сбор материалов."
 	button_icon_state = "swarmer_storage"
@@ -118,7 +128,7 @@
 	action_cost = SWARMER_STORAGE_COST
 	build_time = SWARMER_FAST_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/rapid_turret
+/datum/action/cooldown/swarmer/build/rapid_turret
 	name = "Создать штурмовую турель"
 	desc = "Турель, стреляющая залпами лучей."
 	button_icon_state = "swarmer_rapid_turret"
@@ -126,7 +136,7 @@
 	action_cost = SWARMER_RAPID_TURRET_COST
 	build_time = SWARMER_NORMAL_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/sniper_turret
+/datum/action/cooldown/swarmer/build/sniper_turret
 	name = "Создать снайперскую турель"
 	desc = "Турель, стреляющая сильным, пробивающим лучом."
 	button_icon_state = "swarmer_sniper_turret"
@@ -134,7 +144,7 @@
 	action_cost = SWARMER_SNIPER_TURRET_COST
 	build_time = SWARMER_SLOW_BUILD_DELAY
 
-/datum/action/innate/swarmer/build/acp_turret
+/datum/action/cooldown/swarmer/build/acp_turret
 	name = "Создать установку ACP"
 	desc = "Турель, бьющая целей по области, накладывая дебаффы."
 	button_icon_state = "swarmer_acp"
@@ -143,20 +153,21 @@
 	build_time = SWARMER_NORMAL_BUILD_DELAY
 
 /// Action for combat swarmer for projectile mode switching
-/datum/action/innate/swarmer/mode_switcher
+/datum/action/cooldown/swarmer/mode_switcher
 	name = "Сменить режим стрельбы"
 	desc = "Сменяет текущий режим стрельбы на другие доступные."
 	button_icon_state = "shoot_mode"
 	/// Datum that handles switching modes
 	var/datum/swarmer_proj_mode/swarmer_proj_mode
 
-/datum/action/innate/swarmer/mode_switcher/Grant(mob/living/simple_animal/hostile/swarmer/swarmer)
+/datum/action/cooldown/swarmer/mode_switcher/Grant(mob/living/simple_animal/hostile/swarmer/swarmer)
 	. = ..()
 	swarmer_proj_mode = new /datum/swarmer_proj_mode/general // set to default mode on grant
 	swarmer_proj_mode.link_mode(swarmer) // link the mode swapper to swarmer
 	swarmer_proj_mode.apply_mode()
 
-/datum/action/innate/swarmer/mode_switcher/Activate()
+/datum/action/cooldown/swarmer/mode_switcher/Activate()
+	. = ..()
 	var/choice = swarmer_proj_mode.swap_radial_menu_to_path()
 	if(!choice)
 		return
@@ -168,18 +179,19 @@
 	swarmer_proj_mode.link_mode(owner)
 	swarmer_proj_mode.apply_mode()
 
-/datum/action/innate/swarmer/mode_switcher/Remove(mob/user)
+/datum/action/cooldown/swarmer/mode_switcher/Remove(mob/user)
 	. = ..()
 	QDEL_NULL(swarmer_proj_mode)
 
 /// Action for moving the core to any available transport hub
-/datum/action/innate/swarmer/move_core
+/datum/action/cooldown/swarmer/move_core
 	name = "Переместить ядро"
 	desc = "Перемещает ядро на выбранный \"Хаб\", при этом уничтожая его."
 	button_icon_state = "swarmer_core_swap"
 	action_cost = SWARMER_CORE_MOVE_COST
 
-/datum/action/innate/swarmer/move_core/Activate()
+/datum/action/cooldown/swarmer/move_core/Activate()
+	. = ..()
 	var/obj/structure/swarmer/core/core = locate() in range(1, owner)
 	if(!core)
 		owner.balloon_alert(owner, "далеко от ядра!")
@@ -211,7 +223,7 @@
 	qdel(actual_selected_hub)
 
 /// Used to get a list of all active transport hubs
-/datum/action/innate/swarmer/move_core/proc/get_hub_list()
+/datum/action/cooldown/swarmer/move_core/proc/get_hub_list()
 	var/list/potential_hubs = list()
 	var/list/hub_names = list()
 	var/list/duplicate_hub_count = list()
