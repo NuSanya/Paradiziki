@@ -828,9 +828,10 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /// Applies stamina damage, slow duration and chance, together with effects based on distance relative to the turret
 /obj/structure/swarmer/acp_turret/proc/apply_range_based_effects(mob/living/target)
 	var/modifier = range - get_dist(src, target)
+	var/increase_modifier = max((range - 1), 1)
 	// Slow is guaranteed if target is next to the turret.
-	var/slow_chance_increase_per_tile = (100 - slowed_chance) * (1 / (range - 1))
-	var/slow_duration_increase_per_tile = slowed_duration * (1 / (range - 1))
+	var/slow_chance_increase_per_tile = (100 - slowed_chance) * (1 / increase_modifier)
+	var/slow_duration_increase_per_tile = slowed_duration * (1 / increase_modifier)
 	var/final_slowed_chance = round(slowed_chance + modifier * slow_chance_increase_per_tile)
 	var/final_slowed_duration = round(slowed_duration + modifier * slow_duration_increase_per_tile)
 	var/final_damage = damage + damage * modifier * SWARMER_ACP_RANGE_DAMAGE_MODIFIER

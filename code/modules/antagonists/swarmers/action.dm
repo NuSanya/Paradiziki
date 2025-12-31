@@ -237,6 +237,5 @@
 		else
 			hub_names += resultkey
 			duplicate_hub_count[resultkey] = 1
-		if(hub != src)
-			potential_hubs[resultkey] = hub
+		potential_hubs[resultkey] = hub
 	return potential_hubs

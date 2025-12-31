@@ -236,7 +236,7 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 	. = ..()
 	adjustHealth(-auto_repair_amount)
 
-/mob/living/simple_animal/hostile/swarmer/combat/get_ru_names()
+/mob/living/simple_animal/hostile/swarmer/builder/get_ru_names()
 	return list(
 		NOMINATIVE = "строительный свармер",
 		GENITIVE = "строительного свармера",

@@ -557,16 +557,17 @@
 		playsound(loc, projectilesound, 100, TRUE)
 		casing.fire(targeted_atom, src, params, proj_spread, zone_override = ran_zone())
 		casing.after_fire()
-	else if(projectiletype)
-		if(AIStatus != AI_ON)//Don't want mindless mobs to have their movement screwed up firing in space
-			newtonian_move(get_dir(targeted_atom, targets_from))
-		var/obj/projectile/P = new projectiletype(startloc)
-		playsound(src, projectilesound, 100, TRUE)
-		P.firer = src
-		P.original = targeted_atom
-		P.preparePixelProjectile(targeted_atom, loc, deviation = proj_spread)
-		P.fire()
-		return P
+		return
+
+	if(!projectiletype)
+		return
+	if(AIStatus != AI_ON)//Don't want mindless mobs to have their movement screwed up firing in space
+		newtonian_move(get_dir(targeted_atom, targets_from))
+	var/obj/projectile/P = new projectiletype(startloc)
+	playsound(src, projectilesound, 100, TRUE)
+	P.preparePixelProjectile(targeted_atom, targets_from, deviation = proj_spread)
+	P.fire()
+	return P
 
 /mob/living/simple_animal/hostile/proc/CanSmashTurfs(turf/T)
 	return (iswallturf(T) || ismineralturf(T))

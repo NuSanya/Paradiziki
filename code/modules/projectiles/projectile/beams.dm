@@ -758,6 +758,5 @@
 		return
 	if(!istype(magazine, /obj/item/ammo_box/magazine/internal))
 		gun.unload_act(target)
-		magazine.drop_location()
 		return
 	magazine.empty_magazine() // If the magazine is built in, empty it instead

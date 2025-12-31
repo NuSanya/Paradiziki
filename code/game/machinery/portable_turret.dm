@@ -759,9 +759,7 @@ GLOBAL_LIST_EMPTY(turret_icons)
 	if(!istype(proj))
 		proj.throw_at(target, scan_range, 1)
 		return
-	proj.firer_source_atom = src
-	proj.original = target
-	proj.preparePixelProjectile(target, get_turf(target), src)
+	proj.preparePixelProjectile(target, loc)
 	proj.fire()
 
 /obj/machinery/porta_turret/centcom
@@ -1306,7 +1304,7 @@ GLOBAL_LIST_EMPTY(turret_icons)
 		DATIVE = "снайперской турели \"Свармеров\"",
 		ACCUSATIVE = "снайперскую турель \"Свармеров\"",
 		INSTRUMENTAL = "снайперской турелью \"Свармеров\"",
-		PREPOSITIONAL = "онайперской турели \"Свармеров\""
+		PREPOSITIONAL = "снайперской турели \"Свармеров\""
 	)
 
 #undef TURRET_BUILD_LOOSEN
