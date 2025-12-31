@@ -196,31 +196,33 @@ Works together with spawning an observer, noted above.
 		ghostize()
 
 /mob/proc/ghostize(flags = GHOST_CAN_REENTER)
-	if(key)
-		if(GLOB.non_respawnable_keys[ckey])
-			flags &= ~GHOST_CAN_REENTER
+	if(!key)
+		return
 
-		var/mob/dead/observer/ghost = new(src, flags)	//Transfer safety to observer spawning proc.
-		if(client)
-			client.mouse_pointer_icon = initial(client.mouse_pointer_icon) //Возвращает курсор в изначальное положение (после меха, нинзи, спелла и т.п)
+	if(GLOB.non_respawnable_keys[ckey])
+		flags &= ~GHOST_CAN_REENTER
 
-		var/recordable_time = world.time
-		var/mob/living/former_mob = ghost.mind?.current
-		if(isliving(former_mob))
-			recordable_time = former_mob.timeofdeath
+	var/mob/dead/observer/ghost = new(src, flags)	//Transfer safety to observer spawning proc.
+	if(client)
+		client.mouse_pointer_icon = initial(client.mouse_pointer_icon) //Возвращает курсор в изначальное положение (после меха, нинзи, спелла и т.п)
 
-		ghost.persistent_client?.time_of_death = recordable_time
-		GLOB.respawnable_list -= src
+	var/recordable_time = world.time
+	var/mob/living/former_mob = ghost.mind?.current
+	if(isliving(former_mob))
+		recordable_time = former_mob.timeofdeath
 
-		if(ghost.can_reenter_corpse)
-			GLOB.respawnable_list += ghost
-		else
-			GLOB.non_respawnable_keys[ckey] = 1
+	ghost.persistent_client?.time_of_death = recordable_time
+	GLOB.respawnable_list -= src
 
-		ghost.possess_by_player(key)
-		ghost.client?.init_verbs()
-		SEND_SIGNAL(src, COMSIG_MOB_GHOSTIZE, ghost)
-		return ghost
+	if(ghost.can_reenter_corpse)
+		GLOB.respawnable_list += ghost
+	else
+		GLOB.non_respawnable_keys[ckey] = 1
+
+	ghost.possess_by_player(key)
+	ghost.client?.init_verbs()
+	SEND_SIGNAL(src, COMSIG_MOB_GHOSTIZE, ghost)
+	return ghost
 
 /mob/proc/ManualFollow(atom/movable/target)
 	if(!target)
@@ -240,7 +242,7 @@ Works together with spawning an observer, noted above.
 This is the proc mobs get to turn into a ghost. Forked from ghostize due to compatibility issues.
 */
 /mob/living/verb/ghost()
-	set category = STATPANEL_OOC
+	set category = VERB_CATEGORY_OOC
 	set name = "Призрак"
 	set desc = "Relinquish your life and enter the land of the dead."
 
@@ -331,7 +333,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	status_tab_data[++status_tab_data.len] = list("Возрождение:", "[(src in GLOB.respawnable_list) ? "Возможно" : "Невозможно"]")
 
 /mob/dead/observer/verb/reenter_corpse()
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	set name = "Вернуться в тело"
 	if(!client)
 		return FALSE
@@ -382,7 +384,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	H.hide_from(src)
 
 /mob/dead/observer/verb/open_hud_panel()
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	set name = "HUD призраков"
 	if(!client)
 		return
@@ -412,7 +414,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 /mob/dead/observer/verb/set_dnr()
 	set name = "Запретить реанимацию"
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	set desc = "Предотвращает возрождение вашего персонажа."
 
 	if(!isobserver(src)) // Somehow
@@ -445,7 +447,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	SEND_SIGNAL(mind.current, COMSIG_LIVING_SET_DNR)
 
 /mob/dead/observer/proc/dead_tele()
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	set name = "Телепортация"
 	set desc= "Teleport to a location"
 
@@ -473,7 +475,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	update_parallax_contents()
 
 /mob/dead/observer/verb/follow()
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	set name = "Следовать за" // "Haunt"
 	set desc = "Follow and orbit a mob."
 
@@ -484,7 +486,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 // TODO: Remove this verb when "True-Observing" be merged.
 /mob/dead/observer/verb/toggle_sight_view()
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	set name = "Видимость стен"
 	set desc = "Переключает вашу возможность видеть сквозь стены."
 
@@ -542,7 +544,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	return ..()
 
 /mob/dead/observer/verb/jumptomob() //Moves the ghost instead of just changing the ghosts's eye -Nodrak
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	set name = "К существу"
 	set desc = "Teleport to a mob"
 
@@ -574,7 +576,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/verb/toggle_health_scan()
 	set name = "Анализ здоровья"
 	set desc = "Toggles whether you health-scan living beings on click"
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 
 	if(health_scan) //remove old huds
 		to_chat(src, span_notice("Сканирование здоровья отключено."))
@@ -586,7 +588,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/verb/toggle_gas_scan()
 	set name = "Анализ атмосферы"
 	set desc = "Toggles whether you analyze gas contents on click"
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 
 	if(gas_scan)
 		to_chat(src, span_notice("Сканирование газов отключено."))
@@ -598,7 +600,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/verb/toggle_plant_anaylzer()
 	set name = "Анализ растений"
 	set desc = "Toggles wether you can anaylze plants and seeds on click"
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 
 	if(plant_analyzer)
 		to_chat(src, span_notice("Анализатор растений отключён."))
@@ -609,7 +611,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 /mob/dead/observer/verb/view_manifest()
 	set name = "Манифест экипажа"
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	GLOB.generic_crew_manifest.ui_interact(usr)
 
 //this is called when a ghost is drag clicked to something.
@@ -758,7 +760,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/verb/toggle_ghostsee()
 	set name = "Видимость призраков"
 	set desc = "Toggles your ability to see things only ghosts can see, like other ghosts"
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 
 	ghostvision = !(ghostvision)
 	update_sight()
@@ -767,7 +769,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/verb/pick_darkness()
 	set name = "Освещённость"
 	set desc = "Choose how much darkness you want to see."
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 	var/list/ghost_darkness_levels = list("Стандартное освещение" = LIGHTING_PLANE_ALPHA_VISIBLE,
 											"Темнее" = LIGHTING_PLANE_ALPHA_MOSTLY_VISIBLE,
 											"Ярче" = LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE,
@@ -823,7 +825,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	return FALSE
 
 /mob/dead/observer/can_admin_interact()
-	return check_rights(R_ADMIN, 0, src)
+	return check_rights(R_ADMIN, FALSE, src)
 
 /mob/dead/observer/can_advanced_admin_interact()
 	if(!can_admin_interact())
@@ -914,7 +916,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/proc/open_spawners_menu()
 	set name = "Роли призраков"
 	set desc = "See all currently available ghost spawners"
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 
 	var/datum/spawners_menu/menu = new /datum/spawners_menu(src)
 	menu.ui_interact(src)
@@ -922,7 +924,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/proc/open_minigames_menu()
 	set name = "Мини-игры"
 	set desc = "See all currently available mini games"
-	set category = STATPANEL_GHOST
+	set category = VERB_CATEGORY_GHOST
 
 	var/datum/minigames_explorer = new /datum/minigames_explorer(src)
 	minigames_explorer.ui_interact(src)
