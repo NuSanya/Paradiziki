@@ -157,6 +157,16 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	arrived.apply_effects(weaken = SWARMER_TRAP_WEAKEN, knockdown = SWARMER_TRAP_KNOCKDOWN, stamina = SWARMER_TRAP_DAMAGE, jitter = 10 SECONDS)
 	qdel(src)
 
+/obj/structure/swarmer/trap/get_ru_names()
+	return list(
+		NOMINATIVE = "ловушка \"Свармеров\"",
+		GENITIVE = "ловушки \"Свармеров\"",
+		DATIVE = "ловушке \"Свармеров\"",
+		ACCUSATIVE = "ловушку \"Свармеров\"",
+		INSTRUMENTAL = "ловушкой \"Свармеров\"",
+		PREPOSITIONAL = "ловушке \"Свармеров\""
+	)
+
 /**
  * Swarmer barricade
  *
@@ -174,6 +184,16 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	. = ..()
 	if(isswarmer(mover))
 		return TRUE
+
+/obj/structure/swarmer/blockade/get_ru_names()
+	return list(
+		NOMINATIVE = "баррикада \"Свармеров\"",
+		GENITIVE = "баррикады \"Свармеров\"",
+		DATIVE = "баррикаде \"Свармеров\"",
+		ACCUSATIVE = "баррикаду \"Свармеров\"",
+		INSTRUMENTAL = "баррикадой \"Свармеров\"",
+		PREPOSITIONAL = "баррикаде \"Свармеров\""
+	)
 
 /**
  * Swarmer transport hub
@@ -272,6 +292,16 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 			potential_hubs[resultkey] = hub
 	return potential_hubs
 
+/obj/structure/swarmer/transport_hub/get_ru_names()
+	return list(
+		NOMINATIVE = "телепортатор \"Свармеров\"",
+		GENITIVE = "телепортатора \"Свармеров\"",
+		DATIVE = "телепортатору \"Свармеров\"",
+		ACCUSATIVE = "телепортатор \"Свармеров\"",
+		INSTRUMENTAL = "телепортатором \"Свармеров\"",
+		PREPOSITIONAL = "телепортаторе \"Свармеров\""
+	)
+
 /**
  * Swarmer organic processer
  *
@@ -353,13 +383,22 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 			qdel(item)
 	balloon_alert_to_viewers("обработано!")
 	playsound(loc, 'sound/machines/ding.ogg', 50, TRUE)
-	animate(src, transform=matrix()) // Reset animation if no work
 	adjust_swarmer_organic_resources(SWARMER_ORGANIC_ITEM_PROCESS_GAIN)
 	currently_processing -= 1
 	if(currently_processing) // Restart the timer
 		addtimer(CALLBACK(src, PROC_REF(finish_processing)), SWARMER_ORGANIC_ITEM_PROCESS_DELAY, TIMER_UNIQUE | TIMER_OVERRIDE | TIMER_NO_HASH_WAIT | TIMER_DELETE_ME)
-		spasm_animation()
 		return
+	animate(src, transform=matrix()) // Reset animation if no work
+
+/obj/structure/swarmer/organic_processer/get_ru_names()
+	return list(
+		NOMINATIVE = "переработчик органики \"Свармеров\"",
+		GENITIVE = "переработчика органики \"Свармеров\"",
+		DATIVE = "переработчику органики \"Свармеров\"",
+		ACCUSATIVE = "переработчик органики \"Свармеров\"",
+		INSTRUMENTAL = "переработчиком органики \"Свармеров\"",
+		PREPOSITIONAL = "переработчике органики \"Свармеров\""
+	)
 
 /**
  * Swarmer mob analyzer
@@ -555,6 +594,16 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	occupant.SetSleeping(5 SECONDS)
 	do_teleport(occupant, safe_turf)
 
+/obj/structure/swarmer/organic_analyzer/get_ru_names()
+	return list(
+		NOMINATIVE = "анализатор \"Свармеров\"",
+		GENITIVE = "анализатора \"Свармеров\"",
+		DATIVE = "анализатору \"Свармеров\"",
+		ACCUSATIVE = "анализатор \"Свармеров\"",
+		INSTRUMENTAL = "анализатором \"Свармеров\"",
+		PREPOSITIONAL = "анализаторе \"Свармеров\""
+	)
+
 /**
  * Swarmer repair station
  *
@@ -647,6 +696,16 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	update_icon(UPDATE_ICON_STATE | UPDATE_OVERLAYS)
 	STOP_PROCESSING(SSobj, src)
 
+/obj/structure/swarmer/repair_station/get_ru_names()
+	return list(
+		NOMINATIVE = "станция починки \"Свармеров\"",
+		GENITIVE = "станции починки \"Свармеров\"",
+		DATIVE = "станции починки \"Свармеров\"",
+		ACCUSATIVE = "станцию починки \"Свармеров\"",
+		INSTRUMENTAL = "станцией починки \"Свармеров\"",
+		PREPOSITIONAL = "станции починки \"Свармеров\""
+	)
+
 /**
  * Swarmer resource storage
  *
@@ -669,6 +728,16 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /obj/structure/swarmer/resource_storage/Destroy(force)
 	SEND_SIGNAL(team, COMSIG_SWARMER_STORAGE_DESTROYED)
 	return ..()
+
+/obj/structure/swarmer/resource_storage/get_ru_names()
+	return list(
+		NOMINATIVE = "хранилище ресурсов \"Свармеров\"",
+		GENITIVE = "хранилища ресурсов \"Свармеров\"",
+		DATIVE = "хранилищу ресурсов \"Свармеров\"",
+		ACCUSATIVE = "хранилище ресурсов \"Свармеров\"",
+		INSTRUMENTAL = "хранилищем ресурсов \"Свармеров\"",
+		PREPOSITIONAL = "хранилище ресурсов \"Свармеров\""
+	)
 
 /**
  * Swarmer ACP turret
@@ -769,6 +838,16 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	target.apply_damage(final_damage, STAMINA)
 	if(prob(final_slowed_chance))
 		target.Slowed(final_slowed_duration, SWARMER_ACP_SLOWED_MULTIPLIER)
+
+/obj/structure/swarmer/acp_turret/get_ru_names()
+	return list(
+		NOMINATIVE = "стационарная турель \"Свармеров\"",
+		GENITIVE = "стационарной турели \"Свармеров\"",
+		DATIVE = "стационарной турели \"Свармеров\"",
+		ACCUSATIVE = "стационарную турель \"Свармеров\"",
+		INSTRUMENTAL = "стационарной турелью \"Свармеров\"",
+		PREPOSITIONAL = "стационарной турели \"Свармеров\""
+	)
 
 /// ACP strike effect
 /obj/effect/temp_visual/acp_stomp

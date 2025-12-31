@@ -1,6 +1,10 @@
 /// Assoc list containing all action types that are given based on type on init
 /// I think this is better than doing this for each type on init separately
 GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
+	// Starting swarmer
+	/mob/living/simple_animal/hostile/swarmer/basic = list(
+		/datum/action/innate/hide/swarmer, // Until someone refactors the way hide action is handled
+		),
 	// Generalist swarmer
 	/mob/living/simple_animal/hostile/swarmer/generalist = list(
 		/datum/action/cooldown/swarmer/build/barricade,
@@ -9,6 +13,7 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 		),
 	// Rover swarmer
 	/mob/living/simple_animal/hostile/swarmer/rover = list(
+		/datum/action/innate/hide/swarmer, // Until someone refactors the way hide action is handled
 		/datum/action/cooldown/swarmer/build/trap,
 		/datum/action/cooldown/swarmer/build/transport_hub,
 		),
@@ -47,7 +52,6 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 	maxHealth = 25
 	dismantle_speed = SLOW_SWARMER_DISMANTLE_DELAY
 	speed = 0.25
-	can_hide = TRUE
 	pass_door_while_hidden = TRUE
 	pass_flags = PASSTABLE | PASSMOB
 	ventcrawler_trait = TRAIT_VENTCRAWLER_ALWAYS
@@ -55,6 +59,16 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 	swarmer_class_info = "Данный класс не отличается ничем особенным, и существует для того, чтобы вы его сменили в ядре на новый.\n\
 		Для смены класса, нажмите по ядру в 1 интенте \"Помощь\".\n\
 		Достаточно маленький для того, чтобы проползать под столами и шлюзами."
+
+/mob/living/simple_animal/hostile/swarmer/basic/get_ru_names()
+	return list(
+		NOMINATIVE = "свармер — дрон",
+		GENITIVE = "свармер — дрона",
+		DATIVE = "свармер — дрону",
+		ACCUSATIVE = "свармер — дрона",
+		INSTRUMENTAL = "свармер — дроном",
+		PREPOSITIONAL = "свармер — дроне",
+	)
 
 /**
  * Generalist swarmer
@@ -80,6 +94,16 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 	swarmer_class_info = "Данный класс является базовой боевой единицей, оснащённой пушкой, а также способностью строить мелкие туррели, баррикады и ловушки.\n\
 		Скорость равна человеческой."
 
+/mob/living/simple_animal/hostile/swarmer/generalist/get_ru_names()
+	return list(
+		NOMINATIVE = "свармер — генералист",
+		GENITIVE = "свармер — генералиста",
+		DATIVE = "свармер — генералисту",
+		ACCUSATIVE = "свармер — генералиста",
+		INSTRUMENTAL = "свармер — генералистом",
+		PREPOSITIONAL = "свармер — генералисте",
+	)
+
 /**
  * Rover Swarmer
  *
@@ -97,7 +121,6 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 	maxHealth = 55
 	speed = -1
 	swap_resource_cost = ROVER_SWAP_COST
-	can_hide = TRUE
 	pass_door_while_hidden = TRUE
 	pass_flags = PASSTABLE | PASSMOB
 	swarmer_class_info = "Данный класс является разведовательной единицей, оснащённой колёсами вместо ног, а также мощным тараном, способным сбивать целей с ног.\n\
@@ -122,6 +145,16 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 	if(!istype(target))
 		return
 	target.Knockdown(knockdown_time)
+
+/mob/living/simple_animal/hostile/swarmer/rover/get_ru_names()
+	return list(
+		NOMINATIVE = "свармер — ровер",
+		GENITIVE = "свармер — ровера",
+		DATIVE = "свармер — роверу",
+		ACCUSATIVE = "свармер — ровера",
+		INSTRUMENTAL = "свармер — ровером",
+		PREPOSITIONAL = "свармер — ровере",
+	)
 
 /**
  * Combat Swarmer
@@ -164,6 +197,16 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 		return
 	set_varspeed(initial(speed))
 
+/mob/living/simple_animal/hostile/swarmer/combat/get_ru_names()
+	return list(
+		NOMINATIVE = "боевой свармер",
+		GENITIVE = "боевого свармера",
+		DATIVE = "боевому свармеру",
+		ACCUSATIVE = "боевого свармера",
+		INSTRUMENTAL = "боевым свармером",
+		PREPOSITIONAL = "боевом свармере",
+	)
+
 /**
  * Builder Swarmer
  *
@@ -192,6 +235,16 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 /mob/living/simple_animal/hostile/swarmer/builder/Life(seconds, times_fired)
 	. = ..()
 	adjustHealth(-auto_repair_amount)
+
+/mob/living/simple_animal/hostile/swarmer/combat/get_ru_names()
+	return list(
+		NOMINATIVE = "строительный свармер",
+		GENITIVE = "строительного свармера",
+		DATIVE = "строительному свармеру",
+		ACCUSATIVE = "строительного свармера",
+		INSTRUMENTAL = "строительным свармером",
+		PREPOSITIONAL = "строительном свармере",
+	)
 
 /**
  * Finishing goal of swarmers.
@@ -277,8 +330,11 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 
 /// Makes this swarmer one-shot most allowed things.
 /mob/living/simple_animal/hostile/swarmer/mega/disintegrate(atom/movable/target)
-	. = ..()
-	target.ex_act(EXPLODE_DEVASTATE)
+	var/obj/effect/temp_visual/swarmer/disintegration/disintegrate_effect = new(get_turf(target))
+	disintegrate_effect.adjust_size(target)
+	target.ex_act(EXPLODE_DEVASTATE) // This is what actually damages structures on swarmer_act
+	do_attack_animation(target)
+	changeNext_move(CLICK_CD_MELEE)
 
 /// Grants achievement for, somehow, killing the mega swarmer with bare hands.
 /mob/living/simple_animal/hostile/swarmer/mega/attack_hand(mob/living/carbon/human/attacker)
@@ -287,3 +343,13 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 		// nuSanya -> after swarmer pr
 		//attacker.client.give_award(/datum/award/achievement/misc/mega_swarmer_punch)
 		attacker.balloon_alert(attacker, "жесть вы крутой!!!") // to remove after
+
+/mob/living/simple_animal/hostile/swarmer/mega/get_ru_names()
+	return list(
+		NOMINATIVE = "мега — свармер",
+		GENITIVE = "мега — свармера",
+		DATIVE = "мега — свармеру",
+		ACCUSATIVE = "мега — свармера",
+		INSTRUMENTAL = "мега — свармером",
+		PREPOSITIONAL = "мега — свармере",
+	)

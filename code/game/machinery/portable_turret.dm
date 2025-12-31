@@ -754,6 +754,8 @@ GLOBAL_LIST_EMPTY(turret_icons)
 	else
 		proj = new projectile(loc)
 		playsound(loc, shot_sound, 75, TRUE)
+	if(!proj)
+		return
 	if(!istype(proj))
 		proj.throw_at(target, scan_range, 1)
 		return
@@ -1256,6 +1258,16 @@ GLOBAL_LIST_EMPTY(turret_icons)
 /obj/machinery/porta_turret/swarmer/assess_perp(mob/living/carbon/human/perp)
 	return 10 // Swarmer turrets shoot everything not in their faction
 
+/obj/machinery/porta_turret/swarmer/get_ru_names()
+	return list(
+		NOMINATIVE = "турель \"Свармеров\"",
+		GENITIVE = "турели \"Свармеров\"",
+		DATIVE = "турели \"Свармеров\"",
+		ACCUSATIVE = "турель \"Свармеров\"",
+		INSTRUMENTAL = "турелью \"Свармеров\"",
+		PREPOSITIONAL = "турели \"Свармеров\""
+	)
+
 /// Swarmer turret. Shoots 3 projectiles at once with small damage
 /obj/machinery/porta_turret/swarmer/turret
 	name = "swarmer turret"
@@ -1267,6 +1279,16 @@ GLOBAL_LIST_EMPTY(turret_icons)
 	eprojectile = /obj/projectile/beam/disabler/swarmer/weak_turret
 	rapid = 3
 
+/obj/machinery/porta_turret/swarmer/turret/get_ru_names()
+	return list(
+		NOMINATIVE = "штурмовая турель \"Свармеров\"",
+		GENITIVE = "штурмовой турели \"Свармеров\"",
+		DATIVE = "штурмовой турели \"Свармеров\"",
+		ACCUSATIVE = "штурмовую турель \"Свармеров\"",
+		INSTRUMENTAL = "штурмовой турелью \"Свармеров\"",
+		PREPOSITIONAL = "штурмовой турели \"Свармеров\""
+	)
+
 /// Swarmer sentry. Shoots one strong projectile.
 /obj/machinery/porta_turret/swarmer/sniper
 	name = "swarmer sentry"
@@ -1276,6 +1298,16 @@ GLOBAL_LIST_EMPTY(turret_icons)
 	shot_delay = SWARMER_SNIPER_TURRET_COOLDOWN
 	projectile = /obj/projectile/beam/disabler/swarmer/strong_turret
 	eprojectile = /obj/projectile/beam/disabler/swarmer/strong_turret
+
+/obj/machinery/porta_turret/swarmer/sniper/get_ru_names()
+	return list(
+		NOMINATIVE = "снайперская турель \"Свармеров\"",
+		GENITIVE = "снайперской турели \"Свармеров\"",
+		DATIVE = "снайперской турели \"Свармеров\"",
+		ACCUSATIVE = "снайперскую турель \"Свармеров\"",
+		INSTRUMENTAL = "снайперской турелью \"Свармеров\"",
+		PREPOSITIONAL = "онайперской турели \"Свармеров\""
+	)
 
 #undef TURRET_BUILD_LOOSEN
 #undef TURRET_BUILD_ANCHORED

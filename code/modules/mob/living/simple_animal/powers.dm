@@ -51,6 +51,9 @@
 	button_icon_state = "alien_hide"
 	layer_to_change_to = ABOVE_NORMAL_TURF_LAYER
 
+/datum/action/innate/hide/swarmer
+	button_icon_state = "swarmer_hide"
+
 /datum/action/innate/drop_jetpack
 	name = "Сбросить джетпак"
 	desc = "Позволяет избавиться от этой шумной штуки на спине."

@@ -395,6 +395,16 @@
 			to_chat(mob, span_swarmeritalic("<a href='byond://?src=[mob.UID()];follow=[UID()]'>(F)</a> [message]"))
 	add_say_logs(src, message, language = "SWARMER")
 
+/mob/living/simple_animal/hostile/swarmer/get_ru_names()
+	return list(
+		NOMINATIVE = "свармер",
+		GENITIVE = "свармера",
+		DATIVE = "свармеру",
+		ACCUSATIVE = "свармера",
+		INSTRUMENTAL = "свармером",
+		PREPOSITIONAL = "свармере"
+	)
+
 /// How many metallic resources swarmers get on integrating this atom
 /atom/movable/proc/integrate_amount()
 	return 0
@@ -441,6 +451,16 @@
 	origin_tech = "bluespace=4;materials=4;programming=7"
 	materials = list(MAT_METAL=10000, MAT_GLASS=4000)
 
+/obj/item/deactivated_swarmer/get_ru_names()
+	return list(
+		NOMINATIVE = "деактивированная оболочка свармера",
+		GENITIVE = "деактивированной оболочки свармера",
+		DATIVE = "деактивированной оболочке свармера",
+		ACCUSATIVE = "деактивированную оболочку свармера",
+		INSTRUMENTAL = "деактивированной оболочкой свармера",
+		PREPOSITIONAL = "деактивированной оболочке свармера"
+	)
+
 // Used in cases where no-one wanted to play as swarmer
 /obj/effect/mob_spawn/swarmer
 	name = "unactivated swarmer"
@@ -473,3 +493,13 @@
 /// Flavour var override
 /obj/effect/mob_spawn/swarmer/create(mob/plr, flavour = FALSE, name, prefs = FALSE, _mob_name = FALSE, _mob_gender = FALSE, _mob_species = FALSE)
 	return ..()
+
+/obj/effect/mob_spawn/swarmer/get_ru_names()
+	return list(
+		NOMINATIVE = "оболочка свармера",
+		GENITIVE = "оболочки свармера",
+		DATIVE = "оболочке свармера",
+		ACCUSATIVE = "оболочку свармера",
+		INSTRUMENTAL = "оболочкой свармера",
+		PREPOSITIONAL = "оболочке свармера"
+	)
