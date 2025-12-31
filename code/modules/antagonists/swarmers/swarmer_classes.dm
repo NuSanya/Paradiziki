@@ -301,7 +301,7 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 		return
 	target.Knockdown(knockdown_time)
 
-/// Reflects projectiles with a set chance
+// Reflects projectiles with a set chance
 /mob/living/simple_animal/hostile/swarmer/mega/bullet_act(obj/projectile/proj)
 	if(!proj.is_reflectable(REFLECTABILITY_ENERGY))
 		return ..()
@@ -328,15 +328,15 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 /mob/living/simple_animal/hostile/swarmer/mega/HasProximity(atom/movable/AM)
 	acp.handle_interloper(AM)
 
-/// Makes this swarmer one-shot most allowed things.
+// Stronger deconstructing
 /mob/living/simple_animal/hostile/swarmer/mega/disintegrate(atom/movable/target)
 	var/obj/effect/temp_visual/swarmer/disintegration/disintegrate_effect = new(get_turf(target))
 	disintegrate_effect.adjust_size(target)
-	target.ex_act(EXPLODE_DEVASTATE) // This is what actually damages structures on swarmer_act
+	target.ex_act(EXPLODE_HEAVY) // This is what actually damages structures on swarmer_act
 	do_attack_animation(target)
 	changeNext_move(CLICK_CD_MELEE)
 
-/// Grants achievement for, somehow, killing the mega swarmer with bare hands.
+// Grants achievement for, somehow, killing the mega swarmer with bare hands.
 /mob/living/simple_animal/hostile/swarmer/mega/attack_hand(mob/living/carbon/human/attacker)
 	. = ..()
 	if(. && is_dead() && attacker.client)

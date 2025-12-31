@@ -1,7 +1,7 @@
 /// Minimum amount of players required to start this event
-#define SWARMERS_MINPLAYERS_TRIGGER 0
+#define SWARMERS_MINPLAYERS_TRIGGER 30
 /// Amount of swarmers spawned
-#define SWARMERS_SPAWN_AMOUNT 1
+#define SWARMERS_SPAWN_AMOUNT 4
 
 /datum/event/swarmers
 	/// Type of swarmers being spawned
