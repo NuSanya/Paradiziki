@@ -219,8 +219,8 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 	move_resist = MOVE_FORCE_OVERPOWERING
 	pull_force = MOVE_FORCE_OVERPOWERING
 	dismantle_speed = FAST_SWARMER_DISMANTLE_DELAY
-	swarmer_class_info = "Вы - финальная боевая единица \"Свармеров\", оснащённая миниганом, встроенной ACP турелью, а также защитными пластинами.\n\
-		Ваша цель - окончательно захватить станцию под ваш контроль."
+	swarmer_class_info = "Вы — финальная боевая единица \"Свармеров\", оснащённая миниганом, встроенной ACP турелью, а также защитными пластинами.\n\
+		Ваша цель — окончательно захватить станцию под ваш контроль."
 	/// For how long we apply knockdown on attack
 	var/knockdown_time = 5 SECONDS
 	/// Reflection chance of projectiles
@@ -257,9 +257,10 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 
 	if(proj.damage_type == BRUTE || proj.damage_type == BURN)
 		adjustHealth(proj.damage * 0.5)
-	visible_message(span_danger("[capitalize(declent_ru(NOMINATIVE))] отражает [proj.declent_ru(ACCUSATIVE)]!"), \
-			span_userdanger("[capitalize(declent_ru(NOMINATIVE))] отражает [proj.declent_ru(ACCUSATIVE)]!"),\
-			projectile_message = TRUE)
+	visible_message(span_danger("[capitalize(declent_ru(NOMINATIVE))] отражает [proj.declent_ru(ACCUSATIVE)]!"),
+		span_userdanger("[capitalize(declent_ru(NOMINATIVE))] отражает [proj.declent_ru(ACCUSATIVE)]!"),
+		projectile_message = TRUE,
+	)
 	add_attack_logs(proj.firer, src, "hit by [proj.type] but got reflected")
 	proj.reflect_back(src)
 	return -1

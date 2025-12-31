@@ -417,12 +417,12 @@
 	pixel_y = target.pixel_y
 	pixel_z = target.pixel_z
 
-/obj/effect/temp_visual/swarmer/disintegration
-	icon_state = "disintegrate"
-
-/obj/effect/temp_visual/swarmer/disintegration/Initialize(mapload)
+/obj/effect/temp_visual/swarmer/Initialize(mapload)
 	. = ..()
 	playsound(loc, SFX_SPARKS, 100, TRUE)
+
+/obj/effect/temp_visual/swarmer/disintegration
+	icon_state = "disintegrate"
 
 /obj/effect/temp_visual/swarmer/dismantle
 	icon_state = "dismantle"
@@ -431,10 +431,6 @@
 /obj/effect/temp_visual/swarmer/integrate
 	icon_state = "integrate"
 	duration = 5
-
-/obj/effect/temp_visual/swarmer/integrate/Initialize(mapload)
-	. = ..()
-	playsound(loc, SFX_SPARKS, 100, TRUE)
 
 // Disabled swarmer shell
 /obj/item/deactivated_swarmer
