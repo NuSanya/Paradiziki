@@ -79,6 +79,12 @@
 	database_id = MEDAL_KERBEROS_MASTER
 	icon_state = "de_kerberos_2"
 
+/datum/award/achievement/misc/deep_draw
+	name = "Глубокая затяжка"
+	desc = "Затянуться вейпом на 60 секунд."
+	database_id = MEDAL_DEEP_DRAW
+	icon_state = "deep_draw"
+
 /* nuSanya -> after swarmer pr
 /datum/award/achievement/misc/mega_swarmer_punch
 	name = "Получи по лицу"
