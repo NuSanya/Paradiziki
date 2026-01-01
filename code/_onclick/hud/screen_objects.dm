@@ -125,9 +125,9 @@
 
 /// Swarmers have the same kind of intents humans do
 /atom/movable/screen/act_intent/swarmer/is_advanced_user(mob/user)
-	. = ..()
 	if(isswarmer(user))
 		return TRUE
+	return ..()
 
 /atom/movable/screen/act_intent/alien
 	icon = 'icons/mob/screen_alien.dmi'

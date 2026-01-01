@@ -192,8 +192,9 @@
 
 /datum/action/cooldown/swarmer/move_core/Activate()
 	. = ..()
-	var/obj/structure/swarmer/core/core = locate() in range(1, owner)
-	if(!core)
+	var/mob/living/simple_animal/hostile/swarmer/swarmer_owner = owner
+	var/obj/structure/swarmer/core/core = swarmer_owner.team?.swarmer_core
+	if(!core || !in_range(core, owner))
 		owner.balloon_alert(owner, "далеко от ядра!")
 		return
 

@@ -179,6 +179,8 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 		Оснащён следующими типами выстрелов: Обычный выстрел, двойной выстрел, сильный выстрел, саботажный выстрел.\n\
 		Способен строить баррикады.\n\
 		Чинится автоматически у ядра, становится быстрее у ядра."
+	/// What speed do we have if there is any swarmer structure nearby
+	var/increased_speed = 0
 
 /mob/living/simple_animal/hostile/swarmer/combat/Initialize(mapload)
 	. = ..()
@@ -192,8 +194,8 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 
 /// Increases speed if any swarmer structure is nearby
 /mob/living/simple_animal/hostile/swarmer/combat/process(seconds_per_tick)
-	for(var/obj/structure/swarmer/swarmer_str in view(src)) // If we have any swarmer structure nearby, increase the speed
-		set_varspeed(0)
+	if(locate(/obj/structure/swarmer) in range(7, src))
+		set_varspeed(increased_speed)
 		return
 	set_varspeed(initial(speed))
 
