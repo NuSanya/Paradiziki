@@ -1,3 +1,6 @@
+/// List that contains all swarmers mobs.
+GLOBAL_LIST_EMPTY(swarmers)
+
 /mob/living/simple_animal/hostile/swarmer
 	name = "Swarmer"
 	real_name = "Swarmer"
@@ -49,12 +52,12 @@
 
 /mob/living/simple_animal/hostile/swarmer/Initialize(mapload)
 	. = ..()
+	GLOB.swarmers += src
 	spark_system = new
 	spark_system.set_up(5, 0, src)
 	spark_system.attach(src)
 	add_language(LANGUAGE_HIVE_SWARMER)
 	updatename()
-	RegisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED, PROC_REF(on_core_destroy))
 	RegisterSignal(src, COMSIG_LIVING_UNARMED_ATTACK, PROC_REF(on_unarmed_attack))
 	for(var/datum/atom_hud/data/diagnostic/diag_hud in GLOB.huds)
 		diag_hud.add_atom_to_hud(src)
@@ -82,19 +85,12 @@
 	return ..()
 
 /mob/living/simple_animal/hostile/swarmer/Destroy()
+	GLOB.swarmers -= src
 	QDEL_NULL(spark_system)
-	UnregisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED)
 	UnregisterSignal(src, COMSIG_LIVING_UNARMED_ATTACK)
 	team = null
 	handle_mmi_on_destroy()
 	return ..()
-
-/// On core destroy, all swarmers related stuff gets deleted.
-/mob/living/simple_animal/hostile/swarmer/proc/on_core_destroy()
-	SIGNAL_HANDLER
-	explosion(get_turf(src), devastation_range = 0, heavy_impact_range = 0, light_impact_range = 2, cause = src)
-	if(!QDELETED(src))
-		qdel(src)
 
 /mob/living/simple_animal/hostile/swarmer/proc/updatename()
 	real_name = "[name] [rand(100,999)]-[pick("kappa","sigma","beta","omicron","iota","epsilon","omega","gamma","delta","tau","alpha")]"
@@ -478,9 +474,19 @@
 
 /obj/effect/mob_spawn/swarmer/Initialize(mapload)
 	. = ..()
+	// I want these to get destroyed immediately
+	RegisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED, PROC_REF(on_core_destroy))
 	var/area/A = get_area(src)
 	if(A)
 		notify_ghosts("Оболочка свамера была создана в [A.name].", 'sound/effects/bin_close.ogg', source = src, action = NOTIFY_ATTACK, flashwindow = FALSE)
+
+/obj/effect/mob_spawn/swarmer/Destroy(force)
+	UnregisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED)
+	return ..()
+
+/obj/effect/mob_spawn/swarmer/proc/on_core_destroy()
+	SIGNAL_HANDLER
+	qdel(src)
 
 /obj/effect/mob_spawn/swarmer/screwdriver_act(mob/user, obj/item/I)
 	. = TRUE

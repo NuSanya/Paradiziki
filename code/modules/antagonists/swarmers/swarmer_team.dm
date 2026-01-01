@@ -33,6 +33,8 @@
 
 /// How many metallic resources swarmers get on core init
 #define METALLIC_START_RESOURCES 150
+/// Delay between destroying swarmer mobs/structures on core destroy
+#define DESTROY_DELAY 0.25 SECONDS
 
 /datum/team/swarmer_team
 	name = "Свармеры"
@@ -105,6 +107,7 @@
 	swarmer_core = null
 	metallic_resources = 0
 	organic_resources = 0
+	INVOKE_ASYNC(src, PROC_REF(start_swarmers_destroying))
 
 /**
  * Signal proc sent on swarmer core integrity change
@@ -121,7 +124,7 @@
 	COOLDOWN_START(src, message_cooldown, 3 SECONDS)
 	var/area/core_area = get_area(swarmer_core)
 	var/locname = initial(core_area.name)
-	for(var/datum/mind/swarmer_mind in members)
+	for(var/datum/mind/swarmer_mind as anything in members)
 		var/mob/living/target = swarmer_mind?.current
 		if(!target)
 			continue
@@ -138,7 +141,7 @@
 	SIGNAL_HANDLER
 	var/area/core_area = get_area(swarmer_core)
 	var/locname = initial(core_area.name)
-	for(var/datum/mind/swarmer_mind in members)
+	for(var/datum/mind/swarmer_mind as anything in members)
 		var/mob/living/target = swarmer_mind?.current
 		if(!target)
 			continue
@@ -229,5 +232,29 @@
 		text += "<br><b>Свармеры не сумели создать Мега-Свармера! Экипаж остановил их до того, как они накопят достаточно ресурсов.</b>"
 	return text.Join("")
 
+/**
+ * Proc used to start swarmer destroying on core destruction
+ *
+ * Starts with mobs, and then starts destroying objects
+ * Exists to optimize mass destroying with effects
+ */
+/datum/team/swarmer_team/proc/start_swarmers_destroying()
+	if(length(GLOB.swarmers))
+		var/mob/swarmer = GLOB.swarmers[1]
+		explosion(swarmer, devastation_range = 0, heavy_impact_range = 0, light_impact_range = 2)
+		if(!QDELETED(swarmer))
+			qdel(swarmer)
+		addtimer(CALLBACK(src, PROC_REF(start_swarmers_destroying)), DESTROY_DELAY, TIMER_DELETE_ME)
+		return
+	destroy_swarmer_structures()
+
+/datum/team/swarmer_team/proc/destroy_swarmer_structures()
+	if(length(GLOB.swarmer_objects))
+		var/obj/swarmer_obj = GLOB.swarmer_objects[1]
+		explosion(swarmer_obj, devastation_range = 0, heavy_impact_range = 0, light_impact_range = 2)
+		if(!QDELETED(swarmer_obj))
+			qdel(swarmer_obj)
+		addtimer(CALLBACK(src, PROC_REF(destroy_swarmer_structures)), DESTROY_DELAY, TIMER_DELETE_ME)
 
 #undef METALLIC_START_RESOURCES
+#undef DESTROY_DELAY

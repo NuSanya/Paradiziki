@@ -20,22 +20,16 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	density = 1
 	/// Light range
 	var/lon_range = 1
+	/// Text shown on examine to swarmers
+	var/swarmer_examine
 
 /obj/structure/swarmer/Initialize(mapload)
 	. = ..()
 	GLOB.swarmer_objects += src
 	set_light(lon_range)
-	RegisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED, PROC_REF(on_core_destroy))
-
-/obj/structure/swarmer/proc/on_core_destroy()
-	SIGNAL_HANDLER
-	explosion(loc, devastation_range = 0, heavy_impact_range = 0, light_impact_range = 2, cause = src)
-	if(!QDELETED(src))
-		qdel(src)
 
 /obj/structure/swarmer/Destroy(force)
 	GLOB.swarmer_objects -= src
-	UnregisterSignal(SSdcs, COMSIG_GLOB_SWARMER_CORE_DESTROYED)
 	return ..()
 
 /obj/structure/swarmer/play_attack_sound(damage_amount, damage_type = BRUTE, damage_flag = 0)
@@ -116,16 +110,22 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	disintegrate_effect.adjust_size(src)
 	qdel(src)
 
-/// Allows for all swarmer structures to be shoot through with swarmer projectiles.
+// Allows for all swarmer structures to be shoot through with swarmer projectiles.
 /obj/structure/swarmer/CanAllowThrough(atom/movable/mover, border_dir)
 	. = ..()
 	if(is_swarmerprojectile(mover))
 		return TRUE
 
-/// All swarmer structures get damaged on emp_act.
+// All swarmer structures get damaged on emp_act.
 /obj/structure/swarmer/emp_act(severity)
 	..()
 	take_damage(SWARMER_EMP_DAMAGE)
+
+// Extra info shown to swarmers
+/obj/structure/swarmer/examine(mob/user)
+	. = ..()
+	if(swarmer_examine)
+		. += span_swarmer(swarmer_examine)
 
 /**
  * Swarmer trap
@@ -178,7 +178,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	light_range = MINIMUM_USEFUL_LIGHT_RANGE
 	max_integrity = 60
 
-/// Allows swarmers to pass barricades.
+// Allows swarmers to pass barricades.
 /obj/structure/swarmer/blockade/CanAllowThrough(atom/movable/mover, border_dir)
 	. = ..()
 	if(isswarmer(mover))
@@ -203,6 +203,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /obj/structure/swarmer/transport_hub
 	name = "swarmer hub"
 	desc = "Телепортер \"Свармеров\", позволяющий им телепортироваться к другим телепортерам."
+	swarmer_examine = "Можно использовать, нажав на телепортер в интенте \"Помощь\""
 	icon_state = "hub_enabled"
 	max_integrity = 100
 	/// Key name of our hub, created on init and changed after on spell cast
@@ -230,7 +231,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	enabled = !enabled
 	update_icon(UPDATE_ICON_STATE)
 
-/// Turns off the hub for 10 * severity seconds
+// Turns off the hub for 10 * severity seconds
 /obj/structure/swarmer/transport_hub/emp_act(severity)
 	..()
 	if(!enabled)
@@ -238,7 +239,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	toggle_enabled()
 	addtimer(CALLBACK(src, PROC_REF(toggle_enabled)), SWARMER_STRUCTURE_EMP_DURATION * severity, TIMER_DELETE_ME)
 
-/// Changes sprite based on if we are emped or unanchored
+// Changes sprite based on if we are emped or unanchored
 /obj/structure/swarmer/transport_hub/update_icon_state()
 	icon_state = (enabled && anchored) ? initial(icon_state) : "hub_disabled"
 
@@ -262,7 +263,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 
 	var/input_hub_key = tgui_input_list(swarmer, "Выберите хаб для телепорта.", "Выбор хаба", potential_hubs) //we know what key they picked
 	var/obj/structure/swarmer/transport_hub/actual_selected_hub = potential_hubs[input_hub_key] //what hub does that key correspond to?
-	if(!src || !Adjacent(swarmer) || QDELETED(src) || !actual_selected_hub)
+	if(!Adjacent(swarmer) || QDELETED(src) || !actual_selected_hub)
 		return
 
 	if(!do_after(swarmer, SWARMER_TELEPORT_DELAY(swarmer), src, max_interact_count = 1))
@@ -313,6 +314,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /obj/structure/swarmer/organic_processer
 	name = "swarmer organic processer"
 	desc = "Переработчик, позволяющий обрабатывать органику в ресурсы \"Свармеров\"."
+	swarmer_examine = "Обрабатывает овощи, реагенты. Не делает этого в открученном состоянии. Загрузка в эту машину происходит через атаку по данным предметам."
 	icon_state = "bio_processer"
 	max_integrity = 70
 	/// How many items we are currently processing
@@ -336,7 +338,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		AM.forceMove(loc)
 	return ..()
 
-/// Restarts the process timer after a while
+// Restarts the process timer after a while
 /obj/structure/swarmer/organic_processer/emp_act(severity)
 	..()
 	if(!currently_processing)
@@ -408,6 +410,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /obj/structure/swarmer/organic_analyzer
 	name = "swarmer organic analyzer"
 	desc = "Устройство \"Свармеров\", которое вырабатывает ресурсы, извлекая из живых существ некритически важные органы и части тела."
+	swarmer_examine = "Анализирует живых существ. Не делает этого в открученном состоянии. Загрузка в эту машину происходит через Ctrl + Click по существу свармером."
 	icon_state = "bio_analyzer"
 	max_integrity = 150
 	/// Current mob in src
@@ -436,7 +439,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	occupant = null
 	return ..()
 
-/// Restarts the analyze timer after a while
+// Restarts the analyze timer after a while
 /obj/structure/swarmer/organic_analyzer/emp_act(severity)
 	..()
 	if(!occupant)
@@ -448,7 +451,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	occupant.SetParalysis(new_delay + 1 SECONDS, TRUE) // Extra second just incase
 	occupant.SetSleeping(new_delay + 1 SECONDS) // Extra second just incase
 
-/// Updates icon state based on occupant
+// Updates icon state based on occupant
 /obj/structure/swarmer/organic_analyzer/update_icon_state()
 	icon_state = occupant ? "[initial(icon_state)]_mob" : initial(icon_state)
 
@@ -613,6 +616,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /obj/structure/swarmer/repair_station
 	name = "swarmer repair station"
 	desc = "Ремонтная станция \"Свармеров\"."
+	swarmer_examine = "Войти в ремонтную станцию можно с помощью нажатия на него в интенте \"Помощь\"."
 	icon_state = "repair_station"
 	max_integrity = 100
 	/// Current swarmer in src
@@ -628,7 +632,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		STOP_PROCESSING(SSobj, src)
 	return ..()
 
-/// Just kicks the swarmer out of the repair station on strong emp.
+// Just kicks the swarmer out of the repair station on strong emp.
 /obj/structure/swarmer/repair_station/emp_act(severity)
 	..()
 	if(!occupant)
@@ -637,11 +641,11 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		return
 	go_out()
 
-/// Updates icon state based on occupant var
+// Updates icon state based on occupant var
 /obj/structure/swarmer/repair_station/update_icon_state()
 	icon_state = occupant ? "[initial(icon_state)]_a" : initial(icon_state)
 
-/// Updates overlays based on occupant
+// Updates overlays based on occupant
 /obj/structure/swarmer/repair_station/update_overlays()
 	. = ..()
 	if(!occupant)
@@ -651,6 +655,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	. += swarmer_image
 	. += repair_image
 
+// Main enter proc
 /obj/structure/swarmer/repair_station/swarmer_help_act(mob/living/simple_animal/hostile/swarmer/swarmer)
 	. = ..()
 	if(!.)
@@ -715,6 +720,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /obj/structure/swarmer/resource_storage
 	name = "swarmer resource storage"
 	desc = "Хранилище ресурсов \"Свармеров\", позволяющее собирать больше материалов с объектов."
+	swarmer_examine = "Увеличивает количество ресурсов, полученного с ручного собирания."
 	icon_state = "metal_storage"
 	max_integrity = 100
 	/// Team that we send signals to
@@ -750,6 +756,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /obj/structure/swarmer/acp_turret
 	name = "swarmer ACP turret"
 	desc = "Стационарная установка \"Свармеров\", которая способна оглушать и влиять на магнитное поле целей."
+	swarmer_examine = "Бьёт всех по области, нанося урон стамине и останавливая метаболизацию реагентов."
 	icon_state = "turret_acp"
 	max_integrity = 200
 	/// Overlay set on targets if we hit them
@@ -783,7 +790,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		STOP_PROCESSING(SSobj, src)
 	return ..()
 
-/// Restarts the cooldown. Doesn't increase the cooldown.
+// Restarts the cooldown. Doesn't increase the cooldown.
 /obj/structure/swarmer/acp_turret/emp_act(severity)
 	..()
 	COOLDOWN_START(src, cooldown, cooldown_after_strike)
@@ -802,7 +809,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		START_PROCESSING(SSobj, src)
 
 
-/// Handles checking if targets are in range and calls the attack
+// Handles checking if targets are in range and calls the attack
 /obj/structure/swarmer/acp_turret/process()
 	if(!length(processing_targets))
 		return PROCESS_KILL
@@ -851,7 +858,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 		PREPOSITIONAL = "стационарной турели \"Свармеров\""
 	)
 
-/// ACP strike effect
+// ACP strike effect
 /obj/effect/temp_visual/acp_stomp
 	icon = 'icons/effects/64x64.dmi'
 	icon_state = "swarmer_acp"

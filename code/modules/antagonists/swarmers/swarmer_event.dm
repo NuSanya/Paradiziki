@@ -91,7 +91,7 @@
 	new /obj/structure/swarmer/core(pod_turf)
 
 	for(var/i in 1 to SWARMERS_SPAWN_AMOUNT)
-		var/turf/swarmer_turf = get_step(pod_turf, GLOB.alldirs)
+		var/turf/swarmer_turf = get_step(pod_turf, pick(GLOB.alldirs))
 		var/mob/dead/observer/candidate = pick_n_take(candidates)
 		var/mob/living/simple_animal/hostile/swarmer/swarmer = new spawn_type(swarmer_turf)
 		swarmer.possess_by_player(candidate.key)

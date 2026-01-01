@@ -1236,9 +1236,7 @@ GLOBAL_LIST_EMPTY(turret_icons)
 
 /// Swarmers can access the control panel
 /obj/machinery/porta_turret/swarmer/isLocked(mob/user)
-	if(isswarmer(user))
-		return TRUE
-	return FALSE
+	return isswarmer(user)
 
 /// No one except swarmers should be able to access the control panel
 /obj/machinery/porta_turret/swarmer/allowed(mob/M)
