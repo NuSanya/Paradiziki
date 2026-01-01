@@ -124,9 +124,8 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 
 /// All swarmer structures get damaged on emp_act.
 /obj/structure/swarmer/emp_act(severity)
-	SHOULD_CALL_PARENT(TRUE)
-	take_damage(SWARMER_EMP_DAMAGE)
 	..()
+	take_damage(SWARMER_EMP_DAMAGE)
 
 /**
  * Swarmer trap
@@ -234,9 +233,10 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 /// Turns off the hub for 10 * severity seconds
 /obj/structure/swarmer/transport_hub/emp_act(severity)
 	..()
-	enabled = FALSE
-	addtimer(CALLBACK(src, PROC_REF(toggle_enabled)), SWARMER_STRUCTURE_EMP_DURATION * severity, TIMER_UNIQUE | TIMER_OVERRIDE)
-	update_icon(UPDATE_ICON_STATE)
+	if(!enabled)
+		return
+	toggle_enabled()
+	addtimer(CALLBACK(src, PROC_REF(toggle_enabled)), SWARMER_STRUCTURE_EMP_DURATION * severity, TIMER_DELETE_ME)
 
 /// Changes sprite based on if we are emped or unanchored
 /obj/structure/swarmer/transport_hub/update_icon_state()
@@ -513,6 +513,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	if(ismachineperson(occupant))
 		return adjust_swarmer_metallic_resources(SWARMER_ANALYZE_MACHINE_GAIN * modifier)
 	if(iscarbon(occupant))
+		modifier = occupant.mind ? 1 : 0.3 // Much less from carbons with no mind
 		return adjust_swarmer_organic_resources(SWARMER_ANALYZE_CARBON_GAIN * modifier)
 	if(ishostile(occupant))
 		return adjust_swarmer_organic_resources(SWARMER_ANALYZE_HOSTILE_GAIN * modifier)

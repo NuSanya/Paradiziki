@@ -2975,6 +2975,7 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/effect/decal/cleanable/dirt,
 /obj/effect/decal/warning_stripes/yellow/hollow,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plasteel,
 /area/storage/secure)
 "aAc" = (
@@ -5928,6 +5929,7 @@
 	},
 /area/engineering/mechanic_workshop/hangar)
 "aTB" = (
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -74201,6 +74203,7 @@
 "mxx" = (
 /obj/structure/chair/office/dark,
 /obj/effect/decal/remains/human,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/wood{
 	icon_state = "wood-broken"
 	},
@@ -80330,6 +80333,7 @@
 	dir = 4
 	},
 /obj/effect/spawner/lootdrop/maintenance,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plating,
 /area/maintenance/asmaint4)
 "nQR" = (
@@ -80797,6 +80801,7 @@
 /area/crew_quarters/theatre)
 "nVa" = (
 /obj/effect/spawner/random_spawners/rodent,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/wood,
 /area/crew_quarters/theatre)
 "nVr" = (
@@ -81225,6 +81230,10 @@
 	},
 /turf/simulated/floor/plating,
 /area/maintenance/asmaint2)
+"obA" = (
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/engine,
+/area/toxins/explab)
 "obB" = (
 /obj/machinery/light/small,
 /obj/machinery/alarm{
@@ -96583,6 +96592,7 @@
 /obj/effect/turf_decal/siding/wood{
 	dir = 1
 	},
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/carpet/blue,
 /area/crew_quarters/trading)
 "rwM" = (
@@ -98371,6 +98381,10 @@
 	icon_state = "dark"
 	},
 /area/chapel/office)
+"rRR" = (
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/plasteel,
+/area/maintenance/bar)
 "rRS" = (
 /obj/machinery/firealarm{
 	dir = 1;
@@ -115517,6 +115531,10 @@
 	},
 /turf/simulated/floor/plating,
 /area/crew_quarters/trading)
+"vOi" = (
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/plating,
+/area/maintenance/starboard)
 "vOC" = (
 /obj/machinery/conveyor/inverted{
 	dir = 10;
@@ -118284,6 +118302,7 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/table/wood/fancy/black,
 /obj/item/deck/cards,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/carpet/royalblack,
 /area/maintenance/asmaint3)
 "wvd" = (
@@ -157508,7 +157527,7 @@ frh
 qUe
 ddi
 hwj
-tHr
+obA
 tHr
 tHr
 fXQ
@@ -169757,7 +169776,7 @@ aTY
 bvT
 bFH
 bBK
-sjs
+rRR
 bFU
 aBI
 uCO
@@ -179620,7 +179639,7 @@ foa
 nop
 qEC
 oip
-yfp
+vOi
 rOm
 ukA
 vbJ

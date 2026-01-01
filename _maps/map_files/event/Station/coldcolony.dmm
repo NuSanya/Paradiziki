@@ -7867,6 +7867,11 @@
 	},
 /turf/simulated/floor/plating/asteroid/snow/planet,
 /area/ruin/unpowered/coldcolony_outside)
+"cPa" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/plating,
+/area/coldcolony/malta/research/test_chamber)
 "cPo" = (
 /obj/item/twohanded/required/kirbyplants,
 /turf/simulated/floor/plasteel,
@@ -24671,6 +24676,7 @@
 /area/coldcolony/malta/medical/virology)
 "jdA" = (
 /obj/effect/spawner/random_spawners/rodent,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/wood{
 	icon_state = "fancy-wood-cherry"
 	},
@@ -26175,6 +26181,7 @@
 	dir = 5
 	},
 /obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plasteel,
 /area/coldcolony/malta/maintenance/garden)
 "jCC" = (
@@ -30541,6 +30548,7 @@
 	dir = 4;
 	target_pressure = 303.325
 	},
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plating,
 /area/coldcolony/malta/maintenance/cargo)
 "lgB" = (
@@ -58737,6 +58745,7 @@
 "vxK" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/effect/decal/ants,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plating,
 /area/coldcolony/malta/maintenance/kitchen)
 "vxT" = (
@@ -60009,6 +60018,7 @@
 /obj/item/shard{
 	icon_state = "small"
 	},
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plasteel{
 	icon_state = "tranquillite"
 	},
@@ -60611,6 +60621,11 @@
 	},
 /turf/simulated/floor/plasteel/white,
 /area/coldcolony/malta/medical/surgery/west)
+"wgt" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/plating,
+/area/coldcolony/malta/maintenance/bridge)
 "wgy" = (
 /obj/machinery/alarm{
 	pixel_y = 22
@@ -104707,7 +104722,7 @@ sBl
 pGn
 iBA
 iBA
-uhH
+cPa
 uhH
 iBA
 pwt
@@ -126484,7 +126499,7 @@ bVe
 icb
 woV
 gZt
-dOU
+wgt
 fUd
 gZt
 gZt

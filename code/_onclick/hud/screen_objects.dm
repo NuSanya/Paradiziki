@@ -127,7 +127,7 @@
 /atom/movable/screen/act_intent/swarmer/is_advanced_user(mob/user)
 	if(isswarmer(user))
 		return TRUE
-	return ..()
+	return FALSE
 
 /atom/movable/screen/act_intent/alien
 	icon = 'icons/mob/screen_alien.dmi'

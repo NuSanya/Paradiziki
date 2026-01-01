@@ -476,23 +476,21 @@ GLOBAL_LIST_EMPTY(turret_icons)
 		take_damage(Proj.damage)
 
 /obj/machinery/porta_turret/emp_act(severity)
-	if(enabled && emp_vulnerable)
-		//if the turret is on, the EMP no matter how severe disables the turret for a while
-		//and scrambles its settings, with a slight chance of having an emag effect
-		check_arrest = prob(50)
-		check_records = prob(50)
-		check_weapons = prob(50)
-		check_access = prob(20)	// check_access is a pretty big deal, so it's least likely to get turned on
-		check_anomalies = prob(50)
-		if(prob(5))
-			emagged = TRUE
+	..()
+	if(!enabled || !emp_vulnerable)
+		return
 
-		enabled=0
-		spawn(rand(60, 600))
-			if(!enabled)
-				enabled = TRUE
-
-	return ..()
+	//if the turret is on, the EMP no matter how severe disables the turret for a while
+	//and scrambles its settings, with a slight chance of having an emag effect
+	check_arrest = prob(50)
+	check_records = prob(50)
+	check_weapons = prob(50)
+	check_access = prob(20)	// check_access is a pretty big deal, so it's least likely to get turned on
+	check_anomalies = prob(50)
+	if(prob(5))
+		emagged = TRUE
+	enabled = FALSE
+	addtimer(VARSET_CALLBACK(src, enabled, TRUE), rand(6 SECONDS, 12 SECONDS), TIMER_DELETE_ME)
 
 /obj/machinery/porta_turret/ex_act(severity, target)
 	switch(severity)
@@ -1140,6 +1138,7 @@ GLOBAL_LIST_EMPTY(turret_icons)
 	use_power = NO_POWER_USE
 	has_cover = FALSE
 	raised = TRUE
+	emp_vulnerable = FALSE // Damage and turning off is overkill
 	density = TRUE
 	scan_range = 9
 	shot_delay = 1 SECONDS
@@ -1255,6 +1254,10 @@ GLOBAL_LIST_EMPTY(turret_icons)
 
 /obj/machinery/porta_turret/swarmer/assess_perp(mob/living/carbon/human/perp)
 	return 10 // Swarmer turrets shoot everything not in their faction
+
+/obj/machinery/porta_turret/swarmer/emp_act(severity)
+	..()
+	take_damage(SWARMER_EMP_DAMAGE)
 
 /obj/machinery/porta_turret/swarmer/get_ru_names()
 	return list(

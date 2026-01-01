@@ -194,8 +194,8 @@
 	. = ..()
 	var/mob/living/simple_animal/hostile/swarmer/swarmer_owner = owner
 	var/obj/structure/swarmer/core/core = swarmer_owner.team?.swarmer_core
-	if(!core || !in_range(core, owner))
-		owner.balloon_alert(owner, "далеко от ядра!")
+	if(!core || !in_range(core, swarmer_owner))
+		owner.balloon_alert(swarmer_owner, "далеко от ядра!")
 		return
 
 	var/list/potential_hubs = get_hub_list()

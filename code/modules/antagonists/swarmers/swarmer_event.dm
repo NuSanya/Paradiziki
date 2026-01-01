@@ -1,7 +1,7 @@
 /// Minimum amount of players required to start this event
-#define SWARMERS_MINPLAYERS_TRIGGER 30
+#define SWARMERS_MINPLAYERS_TRIGGER 0
 /// Amount of swarmers spawned
-#define SWARMERS_SPAWN_AMOUNT 4
+#define SWARMERS_SPAWN_AMOUNT 1
 
 /datum/event/swarmers
 	/// Type of swarmers being spawned
@@ -46,16 +46,43 @@
 /// Creates a pod, registers needed signals and sends it to the station.
 /datum/event/swarmers/proc/initialize_pod()
 	pod = new
+	RegisterSignal(pod, COMSIG_SUPPLYPOD_LANDED, PROC_REF(on_pod_landing))
 	RegisterSignal(pod, COMSIG_SUPPLYPOD_OPENED, PROC_REF(on_pod_open))
 	RegisterSignal(pod, COMSIG_QDELETING, PROC_REF(on_pod_qdel))
 
-	var/turf/target_turf = pick(GLOB.xeno_spawn) // nuSanya change later
+	var/turf/target_turf = pick(GLOB.swarmer_spawn)
 	new /obj/effect/pod_landingzone(target_turf, pod)
 	notify_ghosts(
 		title = "Запущена капсула",
 		message = "На станцию запущена капсула Свармеров.",
 		source = pod,
 	)
+
+/// Changes safe to change walls and removes dense objects nearby
+/datum/event/swarmers/proc/on_pod_landing()
+	SIGNAL_HANDLER
+	var/turf/pod_turf = get_turf(pod)
+	for(var/atom in range(1, pod_turf))
+		if(iswallturf(atom)) // Changing wall turfs to floors
+			var/turf/simulated/wall/wall = atom
+			if(!check_safe_to_remove(wall))
+				continue
+			wall.ChangeTurf(/turf/simulated/floor/plating)
+		if(isobj(atom)) // Destroying dense objects
+			if(atom == pod)
+				continue
+			var/obj/obj = atom
+			if(!obj.density)
+				continue
+			if(!check_safe_to_remove(obj))
+				continue
+			qdel(obj)
+		if(isliving(atom)) // Knocking off mobs
+			var/mob/living/mob = atom
+			mob.adjustStaminaLoss(MAX_STAMINA_LOSS, forced = TRUE)
+			var/throw_direction = get_dir(mob, pod_turf)
+			var/throw_target = get_edge_target_turf(pod, throw_direction)
+			mob.throw_at(throw_target, 5, 20)
 
 /// Spawns the core and event swarmers nearby.
 /datum/event/swarmers/proc/on_pod_open()
@@ -74,8 +101,15 @@
 /// Cleans up signals and stuff
 /datum/event/swarmers/proc/on_pod_qdel()
 	SIGNAL_HANDLER
-	UnregisterSignal(pod, list(COMSIG_SUPPLYPOD_OPENED, COMSIG_QDELETING))
+	UnregisterSignal(pod, list(COMSIG_SUPPLYPOD_LANDED, COMSIG_SUPPLYPOD_OPENED, COMSIG_QDELETING))
 	pod = null
+
+/// Used to check on landing if there are any space turfs nearby an atom
+/datum/event/swarmers/proc/check_safe_to_remove(atom/target)
+	for(var/turf/turf in range(1, target))
+		if(isspaceturf(turf))
+			return FALSE
+	return TRUE
 
 #undef SWARMERS_MINPLAYERS_TRIGGER
 #undef SWARMERS_SPAWN_AMOUNT

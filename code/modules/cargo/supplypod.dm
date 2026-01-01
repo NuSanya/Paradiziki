@@ -267,7 +267,7 @@
 /obj/structure/closet/supplypod/swarmer
 	style = /datum/pod_style/swarmer
 	bluespace = TRUE
-	delays = list(POD_TRANSIT = 3 SECONDS, POD_FALLING = 5 SECONDS, POD_OPENING = 3 SECONDS, POD_LEAVING = 0 SECONDS)
+	delays = list(POD_TRANSIT = 0 SECONDS, POD_FALLING = 6 SECONDS, POD_OPENING = 3 SECONDS, POD_LEAVING = 0 SECONDS)
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 	specialised = TRUE
 
@@ -433,9 +433,9 @@
 	var/list/B = explosionSize //Mostly because B is more readable than explosionSize :p
 	resistance_flags = initial(resistance_flags)
 	set_density(TRUE) //Density is originally false so the pod doesn't block anything while it's still falling through the air
-	AddComponent(/datum/component/pellet_cloud, projectile_type=shrapnel_type, magnitude=shrapnel_magnitude)
 	if(effectShrapnel)
-		SEND_SIGNAL(src, COMSIG_SUPPLYPOD_LANDED)
+		AddComponent(/datum/component/pellet_cloud, projectile_type=shrapnel_type, magnitude=shrapnel_magnitude)
+	SEND_SIGNAL(src, COMSIG_SUPPLYPOD_LANDED)
 	for(var/mob/living/target_living in turf_underneath)
 		if(iscarbon(target_living)) //If effectLimb is true (which means we pop limbs off when we hit people):
 			if(effectLimb && !effectOrgans && ishuman(target_living))

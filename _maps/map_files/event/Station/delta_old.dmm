@@ -8795,6 +8795,7 @@
 	force = 20;
 	name = "Легендарная монтировка"
 	},
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plasteel{
 	dir = 6;
 	icon_state = "neutral"
@@ -24197,6 +24198,7 @@
 "cNA" = (
 /obj/structure/chair/office/dark,
 /obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plating,
 /area/maintenance/library)
 "cNB" = (
@@ -59754,6 +59756,11 @@
 /obj/machinery/portable_atmospherics/pump,
 /turf/simulated/floor/plasteel,
 /area/toxins/storage)
+"jwm" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/plasteel,
+/area/maintenance/engrooms)
 "jwn" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /turf/simulated/floor/plasteel{
@@ -77015,6 +77022,7 @@
 "oiT" = (
 /mob/living/simple_animal/mouse/brown,
 /obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plating,
 /area/maintenance/bar)
 "ojd" = (
@@ -103145,6 +103153,11 @@
 	icon_state = "darkred"
 	},
 /area/security/securearmory)
+"vdT" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/plating,
+/area/maintenance/fsmaint)
 "vdX" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
@@ -103609,6 +103622,7 @@
 /turf/simulated/floor/plating,
 /area/security/prisonershuttle)
 "vkS" = (
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plasteel{
 	icon_state = "white"
 	},
@@ -145698,7 +145712,7 @@ cCt
 cCt
 cjn
 cmm
-bQU
+jwm
 egA
 ceP
 qKv
@@ -164301,7 +164315,7 @@ sNa
 hLL
 hpG
 ubV
-xci
+vdT
 fmV
 xLH
 vVr

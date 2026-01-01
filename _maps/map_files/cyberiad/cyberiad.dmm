@@ -5545,6 +5545,7 @@
 /area/security/permabrig)
 "auZ" = (
 /obj/structure/chair/stool,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plating,
 /area/maintenance/fsmaint)
 "ava" = (
@@ -11861,6 +11862,7 @@
 /turf/simulated/floor/plasteel,
 /area/hallway/secondary/entry)
 "aSg" = (
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plasteel{
 	icon_state = "purplefull"
 	},
@@ -19414,6 +19416,7 @@
 /obj/structure/table/wood/fancy/royalblack,
 /obj/effect/decal/cleanable/dust,
 /obj/item/trash/candle,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/wood/fancy/oak,
 /area/maintenance/livingcomplex)
 "bvR" = (
@@ -63770,6 +63773,7 @@
 /obj/structure/chair/wood/wings{
 	dir = 8
 	},
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/wood{
 	icon_state = "wood-broken7"
 	},
@@ -68116,6 +68120,10 @@
 /obj/structure/cable,
 /turf/simulated/floor/wood,
 /area/crew_quarters/mrchangs)
+"noh" = (
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/plating,
+/area/maintenance/asmaint2)
 "non" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/item/mounted/frame/door_control{
@@ -70353,6 +70361,7 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/item/reagent_containers/food/snacks/grown/banana,
 /obj/effect/spawner/random_spawners/rodent,
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plasteel{
 	icon_state = "redyellowfull"
 	},
@@ -83788,13 +83797,13 @@
 	},
 /area/security/medbay)
 "ufh" = (
-/obj/structure/grille,
 /obj/structure/cable{
 	icon_state = "2-8"
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 6
 	},
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plating,
 /area/maintenance/trading)
 "ufx" = (
@@ -87032,6 +87041,11 @@
 	icon_state = "whitebluecorner"
 	},
 /area/medical/medbay2)
+"vCi" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/spawner/swarmer,
+/turf/simulated/floor/plating,
+/area/maintenance/asmaint)
 "vCx" = (
 /obj/machinery/computer/atmos_alert,
 /turf/simulated/floor/plasteel{
@@ -87886,6 +87900,7 @@
 /obj/item/stack/rods{
 	amount = 2
 	},
+/obj/effect/landmark/spawner/swarmer,
 /turf/simulated/floor/plating,
 /area/maintenance/fpmaint)
 "vVn" = (
@@ -133274,7 +133289,7 @@ oTo
 chf
 chf
 wkv
-cyJ
+vCi
 cyJ
 ixv
 chf
@@ -144078,7 +144093,7 @@ rcc
 xGL
 cuQ
 mLx
-bGG
+noh
 bGG
 oOW
 bRn
