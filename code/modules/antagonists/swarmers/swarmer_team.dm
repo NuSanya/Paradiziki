@@ -246,15 +246,16 @@
 			qdel(swarmer)
 		addtimer(CALLBACK(src, PROC_REF(start_swarmers_destroying)), DESTROY_DELAY, TIMER_DELETE_ME)
 		return
-	destroy_swarmer_structures()
+	destroy_swarmer_objects()
 
-/datum/team/swarmer_team/proc/destroy_swarmer_structures()
+/// Destroys swarmer objects one-by-one with a delay
+/datum/team/swarmer_team/proc/destroy_swarmer_objects()
 	if(length(GLOB.swarmer_objects))
 		var/obj/swarmer_obj = GLOB.swarmer_objects[1]
 		explosion(swarmer_obj, devastation_range = 0, heavy_impact_range = 0, light_impact_range = 2)
 		if(!QDELETED(swarmer_obj))
 			qdel(swarmer_obj)
-		addtimer(CALLBACK(src, PROC_REF(destroy_swarmer_structures)), DESTROY_DELAY, TIMER_DELETE_ME)
+		addtimer(CALLBACK(src, PROC_REF(destroy_swarmer_objects)), DESTROY_DELAY, TIMER_DELETE_ME)
 
 #undef METALLIC_START_RESOURCES
 #undef DESTROY_DELAY
