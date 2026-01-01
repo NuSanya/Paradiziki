@@ -724,16 +724,18 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	icon_state = "metal_storage"
 	max_integrity = 100
 	/// Team that we send signals to
-	var/static/datum/team/swarmer_team/team
+	var/datum/team/swarmer_team/team
 
 /obj/structure/swarmer/resource_storage/Initialize(mapload)
 	. = ..()
+	team = GLOB.antagonist_teams[/datum/team/swarmer_team]
 	if(!team)
-		team = GLOB.antagonist_teams[/datum/team/swarmer_team]
+		team = new
 	SEND_SIGNAL(team, COMSIG_SWARMER_STORAGE_INITIALIZED)
 
 /obj/structure/swarmer/resource_storage/Destroy(force)
 	SEND_SIGNAL(team, COMSIG_SWARMER_STORAGE_DESTROYED)
+	team = null
 	return ..()
 
 /obj/structure/swarmer/resource_storage/get_ru_names()

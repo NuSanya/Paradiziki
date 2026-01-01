@@ -34,7 +34,7 @@
 /// How many metallic resources swarmers get on core init
 #define METALLIC_START_RESOURCES 150
 /// Delay between destroying swarmer mobs/structures on core destroy
-#define DESTROY_DELAY 0.25 SECONDS
+#define DESTROY_DELAY 0.1 SECONDS
 
 /datum/team/swarmer_team
 	name = "Свармеры"
@@ -102,6 +102,8 @@
  */
 /datum/team/swarmer_team/proc/on_core_destroy(datum/source)
 	SIGNAL_HANDLER
+	if(!swarmer_core) // Happens if someone shitspawned a second core with an existing core
+		return
 	UnregisterSignal(swarmer_core, COMSIG_OBJ_INTEGRITY_CHANGED)
 	UnregisterSignal(swarmer_core, COMSIG_MOVABLE_MOVED)
 	swarmer_core = null

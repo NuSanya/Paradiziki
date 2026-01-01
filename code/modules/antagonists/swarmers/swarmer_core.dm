@@ -45,8 +45,8 @@
 	team = GLOB.antagonist_teams[/datum/team/swarmer_team]
 	if(!team)
 		team = new // Create team if there isn't one
-	if(team.swarmer_core) // This will delete all swarmer related atoms (including all cores)
-		qdel(src, TRUE)
+	if(team.swarmer_core) // This would only happen on shitspawn
+		qdel(team.swarmer_core) // Will cause a chain reaction and delete src as well
 		return
 	SEND_SIGNAL(team, COMSIG_SWARMER_CORE_INITIALIZED, src)
 	for(var/ddir in GLOB.alldirs)
