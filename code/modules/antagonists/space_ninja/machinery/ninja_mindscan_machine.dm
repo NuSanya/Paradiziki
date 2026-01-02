@@ -3,7 +3,7 @@
  * Поиск + похищение и в конце концов изучение разума жертвы
  * Изначально ниндзя не знает кто жертва, но знает примерные отделы где она работает
  * Он должен похищать людей на свой шаттл и привозить к устройству
- * Устройство их сканирует и если человек тот - цель выполнена
+ * Устройство их сканирует и если человек тот — цель выполнена
  * Если не тот. Цель не выполнена и мы вписываем человека в список просканированных
  * В конечном итоге либо ниндзя найдет цель, либо цель станет выполнена после сканирования n-ого кол-ва жертв
  *
@@ -119,7 +119,6 @@
 	else
 		to_chat(user, span_notice("You stop putting [dropped_mob] into the [src]."))
 
-
 /obj/machinery/ninja_mindscan_machine/proc/scan_occupant()
 	if(!occupant)
 		return
@@ -140,7 +139,7 @@
 	sleep(50)
 	atom_say("[rand(51, 99)]%")
 	sleep(30)
-	atom_say("Сканирование разума - Задача завершена!")
+	atom_say("Сканирование разума — Задача завершена!")
 	objective.scanned_occupants.Add("[occupant.mind]")
 	if(objective.target == occupant.mind || length(objective.scanned_occupants) >= objective.scans_to_win)
 		objective.completed = TRUE

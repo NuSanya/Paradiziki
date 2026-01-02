@@ -46,7 +46,6 @@
 				var/hsrc_info = datum_info_line(hsrc) || "[hsrc]"
 				stack_trace("Got \\ref-based src in topic from [src] for [hsrc_info], should be UID: [href]")
 
-
 	// asset_cache
 	var/asset_cache_job
 	if(href_list["asset_cache_confirm_arrival"])
@@ -112,7 +111,6 @@
 			return
 		cmd_admin_discord_pm()
 		return
-
 
 	//Logs all hrefs
 	if(config && CONFIG_GET(flag/log_hrefs))
@@ -192,12 +190,12 @@
 
 /client/proc/handle_spam_prevention(message, mute_type, throttle = 0)
 	if(throttle)
-		if((last_message_time + throttle > world.time) && !check_rights(R_ADMIN, 0))
+		if((last_message_time + throttle > world.time) && !check_rights(R_ADMIN, FALSE))
 			var/wait_time = round(((last_message_time + throttle) - world.time) / 10, 1)
-			to_chat(src, span_danger("Вы слишком быстро отправляете сообщения. Пожалуйста, подождите [wait_time] секунд[declension_ru(wait_time, "у", "ы", "")] перед отправкой нового сообщения."), confidential=TRUE)
+			to_chat(src, span_danger("Вы слишком быстро отправляете сообщения. Пожалуйста, подождите [wait_time] секунд[DECL_SEC_MIN(wait_time)] перед отправкой нового сообщения."), confidential=TRUE)
 			return 1
 		last_message_time = world.time
-	if(CONFIG_GET(flag/automute_on) && !check_rights(R_ADMIN, 0) && last_message == message)
+	if(CONFIG_GET(flag/automute_on) && !check_rights(R_ADMIN, FALSE) && last_message == message)
 		last_message_count++
 		if(SEND_SIGNAL(mob, COMSIG_MOB_AUTOMUTE_CHECK, src, last_message, mute_type) & WAIVE_AUTOMUTE_CHECK)
 			return FALSE
@@ -220,16 +218,12 @@
 		return FALSE
 	return TRUE
 
-
 	///////////
 	//CONNECT//
 	///////////
 /client/New(TopicData)
 	var/tdata = TopicData //save this for later use
 	TopicData = null //Prevent calls to client.Topic from connect
-
-	if(byond_version >= 516)
-		winset(src, null, list("browser-options" = "find,refresh,byondstorage"))
 
 	stat_panel = new(src, "statbrowser")
 	stat_panel.subscribe(src, PROC_REF(on_stat_panel_message))
@@ -244,8 +238,10 @@
 
 	if(connection != "seeker") //Invalid connection type.
 		return null
+
 	if(byond_version < MIN_CLIENT_VERSION) // Too out of date to play at all. Unfortunately, we can't send them a message here.
 		version_blocked = TRUE
+
 	if(byond_build < CONFIG_GET(number/minimum_client_build))
 		version_blocked = TRUE
 
@@ -259,6 +255,20 @@
 	to_chat(src, span_warning("Если вы видите чёрный экран, это означает, что процесс загрузки ещё продолжается. Пожалуйста, подождите немного, пока не появится начальный экран."), confidential=TRUE)
 
 	GLOB.directory[ckey] = src
+
+	if(GLOB.persistent_clients_by_ckey[ckey])
+		persistent_client = GLOB.persistent_clients_by_ckey[ckey]
+		persistent_client.byond_build = byond_build
+		persistent_client.byond_version = byond_version
+	else
+		persistent_client = new(ckey)
+		persistent_client.byond_build = byond_build
+		persistent_client.byond_version = byond_version
+
+	if(byond_version >= 516)
+		winset(src, null, list("browser-options" = "+find"))
+		winset(src, null, list("browser-options" = "+refresh"))
+
 	//Admin Authorisation
 	// Automatically makes localhost connection an admin
 	if(!CONFIG_GET(flag/disable_localhost_admin))
@@ -395,6 +405,8 @@
 	for(var/mob/M in GLOB.player_list)
 		if(M.client)
 			playercount += 1
+	spawn(10 SECONDS)
+		load_donations()
 
 	// Update the state of the panic bunker based on current playercount
 	var/threshold = CONFIG_GET(number/panic_bunker_threshold)
@@ -406,6 +418,44 @@
 	if((playercount < threshold) && (GLOB.panic_bunker_enabled == TRUE))
 		GLOB.panic_bunker_enabled = FALSE
 		message_admins("Panic bunker has been automatically disabled due to playercount dropping below [threshold]")
+
+/client/proc/load_donations()
+	UNTIL(SSdonations.initialized)
+
+	if(!SSdbcore.IsConnected())
+		return
+
+	tgui_panel.window.send_message("donations/load_data", list(
+		"month_donations" = SSdonations.month_donations,
+		"target_donation" = SSdonations.target_donation,
+		"tts_target_donation" = SSdonations.tts_target_donation,
+		"donations_text" = SSdonations.donations_text,
+		"boosty_url" = SSdonations.boosty_url,
+		"kofi_url" = SSdonations.kofi_url,
+		"discord_url"= SSdonations.discord_url,
+	))
+	check_donator_achivements()
+
+/client/proc/check_donator_achivements()
+	var/count = SSdonations.get_donations_count(ckey)
+	var/amount = SSdonations.get_donations_amount(ckey)
+
+	if(!count)
+		return
+
+	if(count >= 0)
+		give_award(/datum/award/achievement/donations/first_time, mob)
+
+	if(count >= PERMANENT_SPONSOR_COUNT)
+		give_award(/datum/award/achievement/donations/permanent_sponsor, mob)
+
+	if(amount >= BRONZE_LEVEL)
+		give_award(/datum/award/achievement/donations/bronze_sponsor, mob)
+
+	if(amount < PLATINUM_LEVEL)
+		return
+
+	give_award(/datum/award/achievement/donations/platinum_sponsor, mob)
 
 /client/proc/is_connecting_from_localhost()
 	var/localhost_addresses = list("127.0.0.1", "::1", "0.0.0.0") // Adresses
@@ -435,6 +485,8 @@
 	GLOB.directory -= ckey
 	GLOB.clients -= src
 
+	persistent_client?.client = null
+
 	#ifdef MULTIINSTANCE
 	INVOKE_ASYNC(SSinstancing, TYPE_PROC_REF(/datum/controller/subsystem/instancing, update_playercache)) // Clear us out
 	#endif
@@ -442,7 +494,6 @@
 	if(movingmob)
 		LAZYREMOVE(movingmob.client_mobs_in_contents, mob)
 		movingmob = null
-
 
 	SSambience.remove_ambience_client(src)
 	SSmouse_entered.hovers -= src
@@ -457,6 +508,8 @@
 	Master.UpdateTickRate()
 	..() //Even though we're going to be hard deleted there are still some things that want to know the destroy is happening
 	return QDEL_HINT_HARDDEL_NOW
+
+#define REDIS_ANNOUNCER_NAME "Смотритель"
 
 /client/proc/announce_join()
 	if(!holder)
@@ -514,16 +567,17 @@
 		data["message"] = msg
 		SSredis.publish("byond.msay", json_encode(data))
 
+#undef REDIS_ANNOUNCER_NAME
 
 /client/proc/donator_check()
 	set waitfor = FALSE // This needs to run async because any sleep() inside /client/New() breaks stuff badly
-	if(IsGuestKey(key))
+	if(is_guest_key(key))
 		return
 
 	if(!SSdbcore.IsConnected())
 		return
 
-	if(check_rights(R_ADMIN, 0, mob)) // Yes, the mob is required, regardless of other examples in this file, it won't work otherwise
+	if(check_rights(R_ADMIN, FALSE, mob)) // Yes, the mob is required, regardless of other examples in this file, it won't work otherwise
 		donator_level = DONATOR_LEVEL_MAX
 		donor_loadout_points()
 		return
@@ -579,10 +633,9 @@
 	browser.open(FALSE)
 	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(qdel), src), 20)
 
-
 /client/proc/log_client_to_db(connectiontopic)
 	set waitfor = FALSE // This needs to run async because any sleep() inside /client/New() breaks stuff badly
-	if(IsGuestKey(key))
+	if(is_guest_key(key))
 		return
 
 	if(!SSdbcore.IsConnected())
@@ -638,17 +691,14 @@
 		if(check_randomizer(connectiontopic))
 			return
 
-
 	//Log all the alts
 	if(length(related_accounts_cid))
 		log_admin("[key_name(src)] alts:[jointext(related_accounts_cid, " - ")]")
-
 
 	var/watchreason = check_watchlist(ckey)
 	if(watchreason)
 		message_admins(span_red("<b>Notice: </b></font><font color='#EB4E00'>[key_name_admin(src)] is on the watchlist and has just connected - Reason: [watchreason]"))
 		SSdiscord.send2discord_simple_noadmins("**\[Watchlist]** [key_name(src)] is on the watchlist and has just connected - Reason: [watchreason]")
-
 
 	//Just the standard check to see if it's actually a number
 	if(sql_id)
@@ -777,7 +827,6 @@
 		else
 			message_admins(span_adminnotice("IPIntel: [key_name_admin(src)] on IP [address] is likely to be using a Proxy/VPN. [detailsurl]"))
 
-
 /client/proc/check_forum_link()
 	if(!CONFIG_GET(string/forum_link_url) || !prefs || prefs.fuid)
 		return
@@ -817,7 +866,7 @@
 /client/proc/link_forum_account(fromban)
 	if(!CONFIG_GET(string/forum_link_url))
 		return
-	if(IsGuestKey(key))
+	if(is_guest_key(key))
 		to_chat(src, "Guest keys cannot be linked.", confidential=TRUE)
 		return
 	if(prefs?.fuid)
@@ -1013,7 +1062,6 @@
 		addtimer(CALLBACK(src, TYPE_PROC_REF(/client, preload_vox)), 1 MINUTES)
 		#endif
 
-
 #if(PRELOAD_RSC == 0)
 /client/proc/preload_vox()
 	for(var/name in GLOB.vox_sounds)
@@ -1021,7 +1069,6 @@
 		Export("##action=load_rsc", file)
 		stoplag()
 #endif
-
 
 //For debugging purposes
 /client/proc/list_all_languages()
@@ -1035,10 +1082,8 @@
 /client/proc/colour_transition(list/colour_to = null, time = 10) //Call this with no parameters to reset to default.
 	animate(src, color = colour_to, time = time, easing = SINE_EASING)
 
-
 /client/proc/on_varedit()
 	datum_flags |= DF_VAR_EDITED
-
 
 /client/Click(atom/object, atom/location, control, params)
 	if(click_intercept_time)
@@ -1099,8 +1144,9 @@
 	if(!QDELETED(object) && TRY_QUEUE_VERB(VERB_CALLBACK(object, TYPE_PROC_REF(/atom, _Click), location, control, params), VERB_HIGH_PRIORITY_QUEUE_THRESHOLD, SSinput, control))
 		return
 
-	..()
+	SEND_SIGNAL(src, COMSIG_CLIENT_CLICK, object, location, control, params, usr)
 
+	..()
 
 /client/proc/generate_clickcatcher()
 	if(!void)
@@ -1137,9 +1183,18 @@
 
 #undef SSD_WARNING_TIMER
 
+/// Attempts to make the client orbit the given object, for administrative purposes.
+/// If they are not an observer, will try to aghost them.
+/client/proc/admin_follow(atom/movable/target)
+	if(!isobserver(mob))
+		SSadmin_verbs.dynamic_invoke_verb(usr, /datum/admin_verb/admin_ghost)
+
+	var/mob/dead/observer/observer = mob
+	observer.ManualFollow(target)
+
 /client/verb/toggle_fullscreen()
 	set name = "Полный экран"
-	set category = STATPANEL_OOC
+	set category = VERB_CATEGORY_OOC
 
 	fullscreen = !fullscreen
 
@@ -1158,7 +1213,6 @@
 		winset(usr, "mainwindow", "on-size=fitviewport")
 
 	fit_viewport()
-
 
 /**
  * Manually clears any held keys, in case due to lag or other undefined behavior a key gets stuck.
@@ -1188,7 +1242,7 @@
 /client/verb/fit_viewport()
 	set name = "Подгонка области видимости"
 	set desc = "Fit the size of the map window to match the viewport."
-	set category = STATPANEL_SPECIALVERBS
+	set category = VERB_CATEGORY_SPECIALVERBS
 
 	// Fetch aspect ratio
 	var/list/view_size = getviewsize(view)
@@ -1207,7 +1261,6 @@
 	// If we don't get our expected 2 outputs, let's give some useful error info.
 	if(length(map_size) != 2)
 		CRASH("map_size of incorrect length --- map_size var: [map_size] --- map_size length: [length(map_size)]")
-
 
 	var/height = text2num(map_size[2])
 	var/desired_width = round(height * aspect_ratio)
@@ -1258,7 +1311,7 @@
 /client/verb/fix_title_screen()
 	set name = "Починить меню лобби"
 	set desc = "Lobbyscreen broke? Press this."
-	set category = STATPANEL_SPECIALVERBS
+	set category = VERB_CATEGORY_SPECIALVERBS
 
 	if(istype(mob, /mob/new_player))
 		SStitle.show_title_screen_to(src)
@@ -1271,12 +1324,12 @@
 
 /client/verb/link_discord_account()
 	set name = "Привязка Discord"
-	set category = STATPANEL_SPECIALVERBS
+	set category = VERB_CATEGORY_SPECIALVERBS
 	set desc = "Привязать аккаунт Discord для удобного просмотра игровой статистики на нашем Discord-сервере."
 
 	if(!CONFIG_GET(string/discordurl))
 		return
-	if(IsGuestKey(key))
+	if(is_guest_key(key))
 		to_chat(usr, "Гостевой аккаунт не может быть связан.", confidential=TRUE)
 		return
 	if(prefs)
@@ -1369,7 +1422,6 @@
 		log_debug("Failed to retrieve data from byond.com for [ckey]. Connection failed.")
 		return null
 
-
 /**
  * Sets the clients BYOND date up properly
  *
@@ -1444,7 +1496,6 @@
 	popup.open(FALSE)
 	to_chat(src, span_userdanger("Ваш клиент BYOND (версия: [byond_version].[byond_build]) устарел. Это может вызвать лаги. Мы крайне рекомендуем скачать последнюю версию с <a href='https://www.byond.com/download/'>byond.com</a> Прежде чем играть. Также можете обновиться через приложение BYOND."), confidential=TRUE)
 
-
 /client/proc/update_ambience_pref()
 	if(prefs.sound & SOUND_AMBIENCE)
 		if(SSambience.ambience_listening_clients[src] > world.time)
@@ -1504,7 +1555,6 @@
 	qdel(query)
 	// If we are here, they have not accepted, and need to read it
 	return FALSE
-
 
 /// Returns the biggest number from client.view so we can do easier maths
 /client/proc/maxview()
@@ -1589,7 +1639,6 @@
 
 	editor.ui_interact(mob)
 
-
 /client/proc/try_add_reagent(atom/target)
 	if(!target.reagents)
 		var/amount = tgui_input_number(usr, "Укажите размер хранилища реагентов для [target]", "Размер хранилища", 50)
@@ -1617,7 +1666,6 @@
 			target.reagents.add_reagent(chosen_id, amount)
 			log_and_message_admins("has added [amount] units of [chosen_id] to \the [target]")
 
-
 /client/proc/acquire_dpi()
 	set waitfor = FALSE
 
@@ -1632,13 +1680,21 @@
 	if(byond_version >= 516)
 		return
 
-	var/choice = alert(src, "Внимание - Ваша версия BYOND: [byond_version].[byond_build]. Скоро минимальная требуемая версия для SS1984 Paradise будет 516, и 515 и ниже больше не будут работать.\
+	var/choice = alert(src, "Внимание — Ваша версия BYOND: [byond_version].[byond_build]. Скоро минимальная требуемая версия для SS1984 Paradise будет 516, и 515 и ниже больше не будут работать.\
 	ТГУИ уже не поддерживает Internet Explorer, а следовательно на 515 и ниже будет работать некорректно. \
 	Обновитесь, чтобы избежать проблем в будущем.", " Предупреждение о версии BYOND", "Обновиться сейчас", "Игнорировать")
 	if(choice != "Обновиться сейчас")
 		return
 
 	src << link("https://secure.byond.com/download/")
+
+///Redirect proc that makes it easier to call the unlock achievement proc. Achievement type is the typepath to the award, user is the mob getting the award, and value is an optional variable used for leaderboard value increments
+/client/proc/give_award(achievement_type, mob/user, value = 1)
+	return persistent_client.achievements.unlock(achievement_type, user, value)
+
+///Redirect proc that makes it easier to get the status of an achievement. Achievement type is the typepath to the award.
+/client/proc/get_award_status(achievement_type, mob/user, value = 1)
+	return persistent_client.achievements.get_achievement_status(achievement_type)
 
 #undef LIMITER_SIZE
 #undef CURRENT_SECOND

@@ -64,11 +64,15 @@
 	slime.set_nutrition(slime.get_max_nutrition())
 
 	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за слайма из атмосферной аномалии?", ROLE_SENTIENT, FALSE, 100, source = slime, role_cleanname = "pyroclastic anomaly slime")
+	
+	if(QDELETED(slime))
+		return
+	
 	if(!LAZYLEN(candidates))
 		return
 
 	var/mob/dead/observer/chosen = pick(candidates)
-	slime.key = chosen.key
+	slime.possess_by_player(chosen.key)
 	slime.mind.special_role = SPECIAL_ROLE_PYROCLASTIC_SLIME
 	add_game_logs("was made into a slime by pyroclastic anomaly at [AREACOORD(turf)].", slime)
 
@@ -93,7 +97,7 @@
 		DATIVE = "малой атмосферной аномалии", \
 		ACCUSATIVE = "малую ​​атмосферную аномалию", \
 		INSTRUMENTAL = "малой ​атмосферной аномалией", \
-		PREPOSITIONAL = "малой ​​атмосферной аномалии"
+		PREPOSITIONAL = "малой ​​атмосферной аномалии",
 	)
 
 /obj/effect/anomaly/atmospheric/tier2
@@ -119,7 +123,7 @@
 		DATIVE = "атмосферной аномалии", \
 		ACCUSATIVE = "​​атмосферную аномалию", \
 		INSTRUMENTAL = "​атмосферной аномалией", \
-		PREPOSITIONAL = "​​атмосферной аномалии"
+		PREPOSITIONAL = "​​атмосферной аномалии",
 	)
 
 /obj/effect/anomaly/atmospheric/tier3
@@ -144,7 +148,7 @@
 		DATIVE = "большой атмосферной аномалии", \
 		ACCUSATIVE = "большую ​​атмосферную аномалию", \
 		INSTRUMENTAL = "большой ​атмосферной аномалией", \
-		PREPOSITIONAL = "большой ​​атмосферной аномалии"
+		PREPOSITIONAL = "большой ​​атмосферной аномалии",
 	)
 
 /obj/effect/anomaly/atmospheric/tier3/New()
@@ -165,7 +169,6 @@
 		paper.fire_act(null, 1000, 1000)
 
 	. = ..()
-
 
 //		TIER 4 ANOMALY | ADMIN SPAWN ONLY!
 
@@ -194,7 +197,7 @@
 		DATIVE = "колоссальной атмосферной аномалии", \
 		ACCUSATIVE = "колосальную ​​атмосферную аномалию", \
 		INSTRUMENTAL = "колоссальной ​атмосферной аномалией", \
-		PREPOSITIONAL = "колоссальной ​атмосферной аномалии"
+		PREPOSITIONAL = "колоссальной ​атмосферной аномалии",
 	)
 
 /obj/effect/anomaly/atmospheric/tier4/do_move(dir)

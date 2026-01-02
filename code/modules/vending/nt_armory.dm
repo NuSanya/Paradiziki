@@ -11,7 +11,7 @@
 	desc = "Автомат-помощник по выдаче боеприпасов."
 	slogan_list = list(
 		"Возьм+и поб+ольше патр+онов!",
-		"Не забыв+ай, снаряж+аться – пол+езно!",
+		"Не забыв+ай, снаряж+аться — пол+езно!",
 		"Бжж-Бзз-з!",
 		"Обезоп+асить, Удерж+ать, Сохран+ить!",
 		"Сто+ять, сняряд+ись на зад+ание!"
@@ -27,7 +27,7 @@
 	deny_overlay = "nta_deny"
 	vend_overlay_time = 3 SECONDS
 	req_access = list(ACCESS_SECURITY)
-	
+
 	products = list(
 		/obj/item/grenade/flashbang = 4,
 		/obj/item/flash = 5,
@@ -74,7 +74,7 @@
 		DATIVE = "торговому автомату NT Ammunition",
 		ACCUSATIVE = "торговый автомат NT Ammunition",
 		INSTRUMENTAL = "торговым автоматом NT Ammunition",
-		PREPOSITIONAL = "торговом автомате NT Ammunition"
+		PREPOSITIONAL = "торговом автомате NT Ammunition",
 	)
 
 /obj/machinery/vending/nta/ertarmory
@@ -105,13 +105,12 @@
 
 	underlays += emissive_appearance(icon, "nta_lightmask", src)
 
-
 /obj/machinery/vending/nta/ertarmory/blue
 	name = "NT ERT Medium Gear & Ammunition"
 	desc = "Автомат-помощник по выдаче снаряжения среднего класса."
 	slogan_list = list(
 		"Круш+и череп+а враг+ов Нанотр+ейзен!",
-		"Не забыв+ай, спас+ать – пол+езно!",
+		"Не забыв+ай, спас+ать — пол+езно!",
 		"Бжж-Бзз-з!",
 		"Обезоп+асить, Удерж+ать, Сохран+ить!",
 		"Сто+ять, сняряд+ись на зад+ание!"
@@ -127,6 +126,7 @@
 		/obj/item/gun/projectile/automatic/lasercarbine = 3,
 		/obj/item/ammo_box/magazine/laser = 6,
 		/obj/item/gun_module/muzzle/suppressor = 4,
+		/obj/item/gun_module/muzzle/suppressor/shotgun = 4,
 		/obj/item/ammo_box/speedloader/shotgun = 4,
 		/obj/item/gun/projectile/automatic/sfg = 3,
 		/obj/item/ammo_box/magazine/sfg9mm = 6,
@@ -146,7 +146,7 @@
 		DATIVE = "торговому автомату NT ERT Medium Gear & Ammunition",
 		ACCUSATIVE = "торговый автомат NT ERT Medium Gear & Ammunition",
 		INSTRUMENTAL = "торговым автоматом NT ERT Medium Gear & Ammunition",
-		PREPOSITIONAL = "торговом автомате NT ERT Medium Gear & Ammunition"
+		PREPOSITIONAL = "торговом автомате NT ERT Medium Gear & Ammunition",
 	)
 
 /obj/machinery/vending/nta/ertarmory/red
@@ -154,7 +154,7 @@
 	desc = "Автомат-помощник по выдаче снаряжения тяжелого класса."
 	slogan_list = list(
 		"Круш+и череп+а враг+ов Нанотр+ейзен!",
-		"Не забыв+ай, спас+ать – пол+езно!",
+		"Не забыв+ай, спас+ать — пол+езно!",
 		"Бжж-Бзз-з!",
 		"Обезоп+асить, Удерж+ать, Сохран+ить!",
 		"Сто+ять, сняряд+ись на зад+ание!"
@@ -190,7 +190,7 @@
 		DATIVE = "торговому автомату NT ERT Heavy Gear & Ammunition",
 		ACCUSATIVE = "торговый автомат NT ERT Heavy Gear & Ammunition",
 		INSTRUMENTAL = "торговым автоматом NT ERT Heavy Gear & Ammunition",
-		PREPOSITIONAL = "торговом автомате NT ERT Heavy Gear & Ammunition"
+		PREPOSITIONAL = "торговом автомате NT ERT Heavy Gear & Ammunition",
 	)
 
 /obj/machinery/vending/nta/ertarmory/green
@@ -198,7 +198,7 @@
 	desc = "Автомат-помощник по выдаче снаряжения лёгкого класса."
 	slogan_list = list(
 		"Круш+и череп+а враг+ов Нанотр+ейзен!",
-		"Не забыв+ай, спас+ать – пол+езно!",
+		"Не забыв+ай, спас+ать — пол+езно!",
 		"Бжж-Бзз-з!",
 		"Обезоп+асить, Удерж+ать, Сохран+ить!",
 		"Сто+ять, сняряд+ись на зад+ание!"
@@ -237,7 +237,7 @@
 		DATIVE = "торговому автомату NT ERT Light Gear & Ammunition",
 		ACCUSATIVE = "торговый автомат NT ERT Light Gear & Ammunition",
 		INSTRUMENTAL = "торговым автоматом NT ERT Light Gear & Ammunition",
-		PREPOSITIONAL = "торговом автомате NT ERT Light Gear & Ammunition"
+		PREPOSITIONAL = "торговом автомате NT ERT Light Gear & Ammunition",
 	)
 
 /obj/machinery/vending/nta/ertarmory/green/cc_jail
@@ -272,7 +272,7 @@
 		DATIVE = "торговому автомату NT CentComm prison guards' Gear & Ammunition",
 		ACCUSATIVE = "торговый автомат NT CentComm prison guards' Gear & Ammunition",
 		INSTRUMENTAL = "торговым автоматом NT CentComm prison guards' Gear & Ammunition",
-		PREPOSITIONAL = "торговом автомате NT CentComm prison guards' Gear & Ammunition"
+		PREPOSITIONAL = "торговом автомате NT CentComm prison guards' Gear & Ammunition",
 	)
 
 /obj/machinery/vending/nta/ertarmory/yellow
@@ -280,7 +280,7 @@
 	desc = "Автомат с оборудованием для ОБР — помогает людям осуществить их желание УМЕРЕТЬ."
 	slogan_list = list(
 		"Круш+и череп+а ВСЕХ!",
-		"Не забыв+ай, УБИВ+АТЬ – пол+езно!",
+		"Не забыв+ай, УБИВ+АТЬ — пол+езно!",
 		"УБИВ+АТЬ! УБИВ+АТЬ!! УБИВ+АТЬ!!!",
 		"УБИВ+АТЬ, Удерж+ать, УБИВ+АТЬ!",
 		"Сто+ять, сняряд+ись на УБИВ+АТЬ!",
@@ -317,7 +317,7 @@
 		DATIVE = "торговому автомату NT ERT Death Wish Gear & Ammunition",
 		ACCUSATIVE = "торговый автомат NT ERT Death Wish Gear & Ammunition",
 		INSTRUMENTAL = "торговым автоматом NT ERT Death Wish Gear & Ammunition",
-		PREPOSITIONAL = "торговом автомате NT ERT Death Wish Gear & Ammunition"
+		PREPOSITIONAL = "торговом автомате NT ERT Death Wish Gear & Ammunition",
 	)
 
 /obj/machinery/vending/nta/ertarmory/medical
@@ -325,7 +325,7 @@
 	desc = "Автомат с медицинским оборудованием ОБР."
 	slogan_list = list(
 		"В+ылечи всех р+аненых!",
-		"Не забыв+ай, лечи+ть – пол+езно!",
+		"Не забыв+ай, лечи+ть — пол+езно!",
 		"Бжж-Бзз-з!",
 		"Перевяз+ать, В+ылечить, В+ыписать!",
 		"Сто+ять, сняряд+ись медикам+ентами на зад+ание!"
@@ -341,6 +341,7 @@
 		/obj/item/reagent_containers/iv_bag/bloodsynthetic/nitrogenis = 2,
 		/obj/item/storage/belt/medical/surgery/loaded = 2,
 		/obj/item/storage/belt/medical/response_team = 3,
+		/obj/item/handheld_defibrillator/advanced = 2,
 		/obj/item/storage/pill_bottle/ert = 4,
 		/obj/item/reagent_containers/food/pill/mannitol = 10,
 		/obj/item/reagent_containers/food/pill/salbutamol = 10,
@@ -366,7 +367,7 @@
 		DATIVE = "торговому автомату NT ERT Medical Gear",
 		ACCUSATIVE = "торговый автомат NT ERT Medical Gear",
 		INSTRUMENTAL = "торговым автоматом NT ERT Medical Gear",
-		PREPOSITIONAL = "торговом автомате NT ERT Medical Gear"
+		PREPOSITIONAL = "торговом автомате NT ERT Medical Gear",
 	)
 
 /obj/machinery/vending/nta/ertarmory/engineer
@@ -374,7 +375,7 @@
 	desc = "Автомат с инженерным оборудованием ОБР."
 	slogan_list = list(
 		"Почини всё поломанное!",
-		"Не забыв+ай, чин+ить – пол+езно!",
+		"Не забыв+ай, чин+ить — пол+езно!",
 		"Бжж-Бзз-з!",
 		"Почин+ить, Завар+ить, Восстанов+ить!",
 		"Сто+ять, сняряд+ись на поч+инку объ+екта!"
@@ -409,7 +410,7 @@
 		DATIVE = "торговому автомату NT ERT Engineer Gear",
 		ACCUSATIVE = "торговый автомат NT ERT Engineer Gear",
 		INSTRUMENTAL = "торговым автоматом NT ERT Engineer Gear",
-		PREPOSITIONAL = "торговом автомате NT ERT Engineer Gear"
+		PREPOSITIONAL = "торговом автомате NT ERT Engineer Gear",
 	)
 
 /obj/machinery/vending/nta/ertarmory/janitor
@@ -417,7 +418,7 @@
 	desc = "Автомат с уборочным оборудованием ОБР."
 	slogan_list = list(
 		"В+ымой всё заг+аженное!",
-		"Не забыв+ай, ч+истить – пол+езно!",
+		"Не забыв+ай, ч+истить — пол+езно!",
 		"Бжж-Бзз-з!",
 		"Пом+ыть, Постир+ать, Оттер+еть!",
 		"Сто+ять, сняряд+ись на уб+орку!"
@@ -452,7 +453,7 @@
 		DATIVE = "торговому автомату NT ERT Janitor Gear",
 		ACCUSATIVE = "торговый автомат NT ERT Janitor Gear",
 		INSTRUMENTAL = "торговым автоматом NT ERT Janitor Gear",
-		PREPOSITIONAL = "торговом автомате NT ERT Janitor Gear"
+		PREPOSITIONAL = "торговом автомате NT ERT Janitor Gear",
 	)
 
 #undef FLICK_NONE

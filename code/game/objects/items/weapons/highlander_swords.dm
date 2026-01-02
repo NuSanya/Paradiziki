@@ -5,10 +5,10 @@
 /datum/martial_art/highlander
 	name = "Highlander Style"
 	deflection_chance = 100
+	can_deflect = TRUE
 	weight = 100
 	no_guns = TRUE
 	no_guns_message = "Вы никогда не опуститесь таааак низко, чтобы пользоваться оружием ПОДЛЕЦОВ!"
-
 
 //Highlander Claymore
 //	Grants the wielder the Highlander Style Martial Art

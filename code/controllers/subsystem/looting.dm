@@ -21,7 +21,6 @@ SUBSYSTEM_DEF(looting)
 	msg = "P:[length(backlog)]"
 	return ..()
 
-
 /datum/controller/subsystem/looting/fire(resumed)
 	if(!length(backlog))
 		return

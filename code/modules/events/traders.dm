@@ -67,7 +67,7 @@ GLOBAL_LIST_INIT(unused_trade_stations, list("sol"))
 			if(C)
 				GLOB.respawnable_list -= C
 				var/mob/living/carbon/human/M = new /mob/living/carbon/human(picked_loc)
-				M.ckey = C.ckey // must be before equipOutfit, or that will runtime due to lack of mind
+				M.possess_by_player(C.ckey) // must be before equipOutfit, or that will runtime due to lack of mind
 				M.equipOutfit(/datum/outfit/admin/sol_trader)
 				M.dna.species.after_equip_job(null, M)
 				M.mind.objectives += trader_objectives
@@ -90,7 +90,7 @@ GLOBAL_LIST_INIT(unused_trade_stations, list("sol"))
 
 /datum/event/traders/proc/greet_trader(mob/living/carbon/human/M)
 	var/list/messages = list()
-	messages.Add(span_boldnotice("Вы - торговец!"))
+	messages.Add(span_boldnotice("Вы — торговец!"))
 	messages.Add(span_notice("В данный момент вы находитесь на [get_area(M)]."))
 	messages.Add(span_notice("Вам предстоит торговать со станцией [station_name()]."))
 	messages.Add(M.mind.prepare_announce_objectives())

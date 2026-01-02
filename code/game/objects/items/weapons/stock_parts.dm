@@ -3,8 +3,11 @@
 /obj/item/storage/part_replacer
 	name = "Rapid Part Exchange Device"
 	desc = "Special mechanical module made to store, sort, and apply standard machine parts."
+	icon = 'icons/obj/storage/boxes.dmi'
 	icon_state = "RPED"
-	item_state = "RPED"
+	righthand_file = 'icons/mob/inhands/storage_righthand.dmi'
+	lefthand_file = 'icons/mob/inhands/storage_lefthand.dmi'
+	item_state = "rped"
 	w_class = WEIGHT_CLASS_HUGE
 	can_hold = list(/obj/item/stock_parts)
 	storage_slots = 50
@@ -19,7 +22,6 @@
 	var/alt_sound = null
 	usesound = 'sound/items/rped.ogg'
 
-
 /obj/item/storage/part_replacer/afterattack(obj/machinery/M, mob/user, flag, params)
 	if(!flag && works_from_distance && istype(M))
 		// Make sure its in range
@@ -32,12 +34,11 @@
 			playsound(src, 'sound/machines/synth_no.ogg', 15, TRUE)
 			to_chat(user, span_notice("ERROR: [M] is out of [src]'s range!"))
 
-
 /obj/item/storage/part_replacer/bluespace
 	name = "bluespace rapid part exchange device"
 	desc = "A version of the RPED that allows for replacement of parts and scanning from a distance, along with higher capacity for parts."
 	icon_state = "BS_RPED"
-	item_state = "BS_RPED"
+	item_state = "bs_rped"
 	w_class = WEIGHT_CLASS_NORMAL
 	storage_slots = 400
 	max_combined_w_class = 800
@@ -102,13 +103,12 @@
 	pickup_sound = 'sound/items/handling/pickup/component_pickup.ogg'
 	drop_sound = 'sound/items/handling/drop/component_drop.ogg'
 
-/obj/item/stock_parts/New()
-	..()
-	src.pixel_x = rand(-5.0, 5)
-	src.pixel_y = rand(-5.0, 5)
+/obj/item/stock_parts/Initialize(mapload)
+	. = ..()
+	pixel_x = base_pixel_x + rand(-5, 5)
+	pixel_y = base_pixel_y + rand(-5, 5)
 
 //Rank 1
-
 /obj/item/stock_parts/capacitor
 	name = "capacitor"
 	desc = "A basic capacitor used in the construction of a variety of devices."

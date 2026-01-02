@@ -195,14 +195,9 @@
 
 	qdel(log_query)
 
-//TODO remove with legacy admin system
-/client/proc/edit_admin_permissions()
-	set category = STATPANEL_ADMIN_ADMIN
-	set name = "Permissions Panel"
-	set desc = "Edit admin permissions"
-	if(!check_rights(R_PERMISSIONS))
-		return
-	usr.client.holder.edit_admin_permissions()
+// TODO: remove with legacy admin system
+ADMIN_VERB(edit_admin_permissions_legacy, R_PERMISSIONS, "Permissions Panel (Legacy)", "Edit admin permissions.", ADMIN_CATEGORY_MAIN)
+	user.holder.edit_admin_permissions()
 
 /datum/admins/proc/edit_admin_permissions()
 	if(!check_rights(R_PERMISSIONS))
@@ -232,8 +227,6 @@ td, th {
 	margin: 5px;
 	text-align:center;
 }
-
-
 
 </style>
 <div id='main'>
@@ -365,9 +358,8 @@ td, th {
 		var/removed_bits = D.rights & ~new_value
 		D.rights = new_value
 		edit_admin_permissions()
-		message_admins("[key_name_admin(usr)] переключил флаги админу [adm_ckey]: [add_bits? " ВКЛ - [rights2text(add_bits, " ")]" : ""][removed_bits? " ВЫКЛ - [rights2text(removed_bits, " ")]":""]")
-		log_admin("[key_name(usr)] переключил флаги админу [adm_ckey]: [add_bits? " ВКЛ - [rights2text(add_bits, " ")]" : ""][removed_bits? " ВЫКЛ - [rights2text(removed_bits, " ")]":""]")
+		message_admins("[key_name_admin(usr)] переключил флаги админу [adm_ckey]: [add_bits? " ВКЛ — [rights2text(add_bits, " ")]" : ""][removed_bits? " ВЫКЛ — [rights2text(removed_bits, " ")]":""]")
+		log_admin("[key_name(usr)] переключил флаги админу [adm_ckey]: [add_bits? " ВКЛ — [rights2text(add_bits, " ")]" : ""][removed_bits? " ВЫКЛ — [rights2text(removed_bits, " ")]":""]")
 		admin_permission_modification(adm_ckey, new_value )
-
 
 	edit_admin_permissions()
