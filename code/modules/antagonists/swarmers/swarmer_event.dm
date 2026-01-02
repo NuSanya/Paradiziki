@@ -1,7 +1,7 @@
 /// Minimum amount of players required to start this event
-#define SWARMERS_MINPLAYERS_TRIGGER 0
+#define SWARMERS_MINPLAYERS_TRIGGER 30
 /// Amount of swarmers spawned
-#define SWARMERS_SPAWN_AMOUNT 1
+#define SWARMERS_SPAWN_AMOUNT 4
 
 /datum/event/swarmers
 	/// Type of swarmers being spawned
@@ -35,7 +35,7 @@
  */
 /datum/event/swarmers/proc/create_swarmers()
 	var/mob/living/simple_animal/hostile/swarmer/swarmer_type = spawn_type // for source variable
-	candidates = SSghost_spawns.poll_candidates("Вы хотите занять роль Свармеров?", ROLE_SWARMER, TRUE, 5 SECONDS, source = swarmer_type)
+	candidates = SSghost_spawns.poll_candidates("Вы хотите занять роль Свармеров?", ROLE_SWARMER, TRUE, 30 SECONDS, source = swarmer_type)
 	if(length(candidates) < SWARMERS_SPAWN_AMOUNT)
 		message_admins("Warning: not enough players volunteered to be swarmers. Only [length(candidates)] out of [SWARMERS_SPAWN_AMOUNT]!")
 		return FALSE

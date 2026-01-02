@@ -30,6 +30,7 @@ GLOBAL_LIST_EMPTY(swarmers)
 	light_color = LIGHT_COLOR_CYAN
 	light_range = 3
 	light_on = FALSE
+	lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_VISIBLE
 	hud_type = /datum/hud/swarmer
 	atmos_requirements = list("min_oxy" = 0, "max_oxy" = 0, "min_tox" = 0, "max_tox" = 0, "min_co2" = 0, "max_co2" = 0, "min_n2" = 0, "max_n2" = 0)
 	unsuitable_atmos_damage = 0
@@ -222,7 +223,7 @@ GLOBAL_LIST_EMPTY(swarmers)
 	if(!container.reagents?.total_volume) // Checks if there is any reagent in the container
 		container.swarmer_act(src)
 		return
-	send_organic_processer_signal(container, SWARMER_ORGANIC_ITEM_PROCESS_DELAY)
+	send_organic_processer_signal(container, SWARMER_SEND_ORGANIC_DELAY)
 
 /**
  * Proc for organic processing.

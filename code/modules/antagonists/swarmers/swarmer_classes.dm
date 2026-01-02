@@ -201,12 +201,12 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 
 /mob/living/simple_animal/hostile/swarmer/combat/get_ru_names()
 	return list(
-		NOMINATIVE = "боевой свармер",
-		GENITIVE = "боевого свармера",
-		DATIVE = "боевому свармеру",
-		ACCUSATIVE = "боевого свармера",
-		INSTRUMENTAL = "боевым свармером",
-		PREPOSITIONAL = "боевом свармере",
+		NOMINATIVE = "свармер — боец",
+		GENITIVE = "свармер — бойца",
+		DATIVE = "свармер — бойцу",
+		ACCUSATIVE = "свармер — бойца",
+		INSTRUMENTAL = "свармер — бойцом",
+		PREPOSITIONAL = "свармер — бойце",
 	)
 
 /**
@@ -240,12 +240,12 @@ GLOBAL_LIST_INIT(swarmer_actions_by_type, list(
 
 /mob/living/simple_animal/hostile/swarmer/builder/get_ru_names()
 	return list(
-		NOMINATIVE = "строительный свармер",
-		GENITIVE = "строительного свармера",
-		DATIVE = "строительному свармеру",
-		ACCUSATIVE = "строительного свармера",
-		INSTRUMENTAL = "строительным свармером",
-		PREPOSITIONAL = "строительном свармере",
+		NOMINATIVE = "свармер — строитель",
+		GENITIVE = "свармер — строителя",
+		DATIVE = "свармер — строителю",
+		ACCUSATIVE = "свармер — строителя",
+		INSTRUMENTAL = "свармер — строителем",
+		PREPOSITIONAL = "свармер — строителе",
 	)
 
 /**

@@ -90,7 +90,7 @@
 /// How long does it take to process one organic item in organic processer
 #define SWARMER_ORGANIC_ITEM_PROCESS_DELAY 10 SECONDS
 /// How many organic resources we gain on item processing
-#define SWARMER_ORGANIC_ITEM_PROCESS_GAIN (rand(2, 5))
+#define SWARMER_ORGANIC_ITEM_PROCESS_GAIN (rand(5, 10))
 
 // === ORGANIC ANALYZER ===
 /// How much time does it take for an organic analyzer to finish (non-carbon mobs take less time)
