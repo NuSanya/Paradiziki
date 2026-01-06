@@ -410,3 +410,5 @@
 
 /// Block reagent metabolization for mob
 #define TRAIT_BLOCK_METABOLIZE "block_metabolize"
+
+#define TRAIT_PRESSURE_VISION "pressure_vision"
