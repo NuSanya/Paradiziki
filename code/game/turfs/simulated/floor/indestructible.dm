@@ -329,6 +329,7 @@
 /turf/simulated/floor/indestructible/bingle
 	name = "Bingle pit"
 	desc = "Покрытие ямы бинглов."
+	gender = FEMALE
 	icon = 'icons/turf/floors/bingle.dmi'
 	icon_state = "carpet_orange-0"
 	footstep = FOOTSTEP_MEAT

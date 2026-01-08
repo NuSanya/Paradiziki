@@ -21,7 +21,7 @@
 
 	lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE
 
-	attacktext = "бинглует"
+	attacktext = "бьёт"
 	attack_sound = 'sound/effects/blobattack.ogg'
 	butcher_results = null
 
@@ -46,6 +46,16 @@
 	var/reagent_max = 30
 	/// The range of the smoke on death
 	var/smoke_range = 2
+
+/mob/living/simple_animal/hostile/bingle/get_ru_names()
+	return list(
+		NOMINATIVE = "бингл",
+		GENITIVE = "бингла",
+		DATIVE = "бинглу",
+		ACCUSATIVE = "бингла",
+		INSTRUMENTAL = "бинглом",
+		PREPOSITIONAL = "бингле"
+	)
 
 /mob/living/simple_animal/hostile/bingle/ComponentInitialize()
 	AddComponent( \
@@ -133,20 +143,10 @@
 	if(!(mind.has_antag_datum(/datum/antagonist/bingle)))
 		mind.add_antag_datum(/datum/antagonist/bingle, /datum/team/bingles)
 
-/mob/living/simple_animal/hostile/bingle/get_ru_names()
-	return list(
-		NOMINATIVE = "бингл",
-		GENITIVE = "бингла",
-		DATIVE = "бинглу",
-		ACCUSATIVE = "бингла",
-		INSTRUMENTAL = "бинглом",
-		PREPOSITIONAL = "бингле"
-	)
-
 /mob/living/simple_animal/hostile/bingle/lord
 	name = "bingle lord"
 	real_name = "bingle lord"
-	desc = "Тёмно-фиолетовое существо, чем-то напоминающее гориллу. Этот выглядит больше остальных..."
+	desc = "Крупное тёмно-фиолетовое существо, чем-то напоминающее гориллу. Крупнее и агрессивнее своих сородичей."
 	icon = 'icons/mob/bingle/binglelord.dmi'
 	icon_state = "binglelord"
 	icon_living = "binglelord"
@@ -167,6 +167,16 @@
 
 	stamina_damage = 80
 
+/mob/living/simple_animal/hostile/bingle/lord/get_ru_names()
+	return list(
+		NOMINATIVE = "лорд бинглов",
+		GENITIVE = "лорда бинглов",
+		DATIVE = "лорду бинглов",
+		ACCUSATIVE = "лорда бинглов",
+		INSTRUMENTAL = "лордом бинглов",
+		PREPOSITIONAL = "лорде бинглов"
+	)
+
 /mob/living/simple_animal/hostile/bingle/lord/Initialize(mapload)
 	. = ..()
 	var/datum/action/cooldown/bingle/create_hole/hole_action = new
@@ -184,13 +194,3 @@
 /// Proc used to get a chem list for smoke on death
 /mob/living/simple_animal/hostile/bingle/lord/get_death_chem_list()
 	return GLOB.blocked_chems
-
-/mob/living/simple_animal/hostile/bingle/lord/get_ru_names()
-	return list(
-		NOMINATIVE = "лорд бинглов",
-		GENITIVE = "лорда бинглов",
-		DATIVE = "лорду бинглов",
-		ACCUSATIVE = "лорда бинглов",
-		INSTRUMENTAL = "лордом бинглов",
-		PREPOSITIONAL = "лорде бинглов"
-	)

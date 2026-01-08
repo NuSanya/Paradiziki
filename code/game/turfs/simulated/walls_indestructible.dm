@@ -251,7 +251,8 @@
 
 /turf/simulated/wall/indestructible/bingle
 	name = "Bingle Pit wall"
-	desc = "Оно... синее. Это всё, что приходит вам в голову. Невозможно сломать."
+	desc = "Оно... синее. Это всё, что приходит вам в голову. Вы не уверены, что это вообще можно разрушаить."
+	gender = FEMALE
 	icon = 'icons/turf/walls/bingle.dmi'
 	icon_state = "wall-0"
 	smooth = SMOOTH_BITMASK

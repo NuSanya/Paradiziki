@@ -25,6 +25,7 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_hole
 	name = "bingle pit"
 	desc = "Всепоглощающая бездна бесконечных ужасов... и бинглов."
+	gender = FEMALE
 	armor = list(MELEE=20, BULLET=20, LASER=75, ENERGY=75, BOMB=75, BIO=100, RAD=100, FIRE=50, ACID=80)
 	max_integrity = 500
 	icon = 'icons/mob/bingle/binglepit.dmi'
@@ -55,6 +56,17 @@ GLOBAL_LIST(bingle_mobs)
 	var/announcement_made = FALSE
 	/// Have we evolved our current bingles or not
 	var/bingles_evolved
+
+
+/obj/structure/bingle_hole/get_ru_names()
+	return list(
+		NOMINATIVE = "яма бинглов",
+		GENITIVE = "ямы бинглов",
+		DATIVE = "яме бинглов",
+		ACCUSATIVE = "яму бинглов",
+		INSTRUMENTAL = "ямой бинглов",
+		PREPOSITIONAL = "яме бинглов"
+	)
 
 /obj/structure/bingle_hole/Initialize(mapload)
 	..()
@@ -95,8 +107,8 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_hole/examine(mob/user)
 	. = ..()
 	if(isbingle(user))
-		. += span_alert("В яме находится [item_value_consumed] предмет[declension_ru(item_value_consumed, "", "а", "ов")]!")
-		. += span_notice("Существа могут упасть в яму только если в ней будет минимум [GROWTH_VALUE] предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
+		. += span_alert("Внутри находится <b>[item_value_consumed]</b> предмет[DECL_CREDIT(item_value_consumed)]!")
+		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[GROWTH_VALUE]</b> предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
 
 /obj/structure/bingle_hole/CanAStarPass(to_dir, datum/can_pass_info/pass_info)
 	if(!pass_info.is_living)
@@ -115,6 +127,7 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_hole/attack_animal(mob/living/simple_animal/user)
 	if(isbingle(user))
 		to_chat(user, span_warning("Вы отказываетесь ломать ваше святилище!"))
+		user.balloon_alert(user, "атака невозможна!")
 		return TRUE
 	return ..()
 
@@ -390,7 +403,9 @@ GLOBAL_LIST(bingle_mobs)
 					item_value_consumed++
 				if(!announcement_made)
 					GLOB.major_announcement.announce(
-						message = "Обнаружено массовое нашествие Бинглов на [station_name()]. Действие космического закона и стандартных рабочих процедур приостановлено. Всему экипажу надлежит защитить станцию от неминуемого уничтожения.",
+						message = "Обнаружено массовое нашествие Бинглов на [station_name()]. \
+								   Действие Космического Закона и Стандартных Рабочих Процедур приостановлено. \
+								   Всему экипажу надлежит защитить станцию от неминуемого уничтожения.",
 						new_title = ANNOUNCE_BIOHAZARD_RU,
 						new_sound = 'sound/effects/siren-spooky.ogg'
 					)
@@ -398,17 +413,6 @@ GLOBAL_LIST(bingle_mobs)
 	current_pit_size = new_size
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
 	max_integrity += INTEGRITY_INCREASE_VALUE
-
-/obj/structure/bingle_hole/get_ru_names()
-	return list(
-		NOMINATIVE = "яма бинглов",
-		GENITIVE = "ямы бинглов",
-		DATIVE = "яме бинглов",
-		ACCUSATIVE = "яму бинглов",
-		INSTRUMENTAL = "ямой бинглов",
-		PREPOSITIONAL = "яме бинглов"
-	)
-
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
@@ -418,6 +422,16 @@ GLOBAL_LIST(bingle_mobs)
 	anchored = TRUE
 	mouse_opacity = MOUSE_OPACITY_OPAQUE
 	var/obj/structure/bingle_hole/parent_pit
+
+/obj/structure/bingle_pit_overlay/get_ru_names()
+	return list(
+		NOMINATIVE = "яма бинглов",
+		GENITIVE = "ямы бинглов",
+		DATIVE = "яме бинглов",
+		ACCUSATIVE = "яму бинглов",
+		INSTRUMENTAL = "ямой бинглов",
+		PREPOSITIONAL = "яме бинглов"
+	)
 
 /obj/structure/bingle_pit_overlay/Initialize(mapload, obj/structure/bingle_hole/parent_pit)
 	. = ..()
@@ -461,6 +475,7 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_pit_overlay/attack_animal(mob/living/simple_animal/user)
 	if(isbingle(user))
 		to_chat(user, span_warning("Вы отказываетесь ломать ваше святилище!"))
+		user.balloon_alert(user, "атака невозможна!")
 		return TRUE
 	if(parent_pit)
 		return parent_pit.attack_animal(user)
@@ -484,10 +499,10 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_pit_overlay/examine(mob/user)
 	. = ..()
 	if(parent_pit && isbingle(user))
-		. += span_alert("В яме находится [parent_pit.item_value_consumed] предмет[declension_ru(parent_pit.item_value_consumed, "", "а", "ов")]!")
-		. += span_notice("Существа могут упасть в яму только если в ней будет минимум [GROWTH_VALUE] предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
+		. += span_alert("Внутри находится <b>[item_value_consumed]</b> предмет[DECL_CREDIT(item_value_consumed)]!")
+		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[GROWTH_VALUE]</b> предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
 
-// Update the spawn proc to ensure proper tracking
+/// Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()
 	var/image/poll_source = image('icons/mob/bingle/bingles.dmi', "bingle")
 	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Бингла?", ROLE_BINGLE, TRUE, poll_time = 10 SECONDS, source = poll_source)
@@ -522,18 +537,8 @@ GLOBAL_LIST(bingle_mobs)
 	if(length(eligible_turfs))
 		return pick(eligible_turfs)
 
-/obj/structure/bingle_pit_overlay/get_ru_names()
-	return list(
-		NOMINATIVE = "яма бинглов",
-		GENITIVE = "ямы бинглов",
-		DATIVE = "яме бинглов",
-		ACCUSATIVE = "яму бинглов",
-		INSTRUMENTAL = "ямой бинглов",
-		PREPOSITIONAL = "яме бинглов"
-	)
-
 /area/misc/bingle_pit
-	name = "Bingle Pit"
+	name = "Яма Бинглов"
 	area_flags = UNIQUE_AREA
 	has_gravity = TRUE
 	requires_power = FALSE

@@ -12,7 +12,7 @@
 
 /datum/action/cooldown/bingle/create_hole
 	name = "Create Bingle Pit"
-	desc = "Создаёт один раз яму."
+	desc = "Единожды создаёт яму."
 	button_icon_state = "binglepit"
 	/// How long does it take to create a hole
 	var/creation_time = 5 SECONDS
@@ -24,7 +24,7 @@
 	var/mob/living/user = owner
 	var/turf/our_turf = get_turf(user)
 	if(isspaceturf(our_turf))
-		user.balloon_alert(user, "тут космос!")
+		user.balloon_alert(user, "невозможно в космосе!")
 		return
 	if(!is_station_level(our_turf.z))
 		user.balloon_alert(user, "вне станции!")
@@ -33,9 +33,9 @@
 		user.balloon_alert(user, "нет места!")
 		return
 	if(!do_after(user, creation_time, user, max_interact_count = 1, cancel_on_max = TRUE))
-		user.balloon_alert(user, "сбито!")
+		user.balloon_alert(user, "прервано!")
 		return
-	user.balloon_alert(user, "успех!")
+	user.balloon_alert(user, "яма создана")
 	INVOKE_ASYNC(src, PROC_REF(spawn_hole), our_turf)
 	qdel(src)
 
