@@ -499,7 +499,7 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_pit_overlay/examine(mob/user)
 	. = ..()
 	if(parent_pit && isbingle(user))
-		. += span_alert("Внутри находится <b>[item_value_consumed]</b> предмет[DECL_CREDIT(item_value_consumed)]!")
+		. += span_alert("Внутри находится <b>[parent_pit.item_value_consumed]</b> предмет[DECL_CREDIT(parent_pit.item_value_consumed)]!")
 		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[GROWTH_VALUE]</b> предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
 
 /// Update the spawn proc to ensure proper tracking
