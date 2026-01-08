@@ -1,45 +1,39 @@
-/datum/event/spawn_bingle
-	startWhen = 3
+/// Minimum amount of players required to start this event
+#define BINGLES_MINPLAYERS_TRIGGER 40
 
-	var/key_of_bingle
-	var/mob/living/simple_animal/hostile/bingle/lord/bingle_lord = /mob/living/simple_animal/hostile/bingle/lord
+/datum/event/bingles
 
+/datum/event/bingles/start()
+	// It is necessary to wrap this to avoid the event triggering repeatedly.
+	INVOKE_ASYNC(src, PROC_REF(wrapped_start))
 
-/datum/event/spawn_bingle/proc/get_bingle()
-	var/list/candidates = SSghost_spawns.poll_candidates("Вы хотите занять роль [initial(bingle_lord.name)]?", ROLE_BINGLE, TRUE, source = bingle_lord)
+/datum/event/bingles/proc/wrapped_start()
+	// Reroll event if not enough players
+	var/player_count = num_station_players()
+	if(player_count < BINGLES_MINPLAYERS_TRIGGER)
+		log_and_message_admins("Random event attempted to spawn bingles, but there were only [player_count]/[BINGLES_MINPLAYERS_TRIGGER] players.")
+		var/datum/event_container/EC = SSevents.event_containers[EVENT_LEVEL_MODERATE]
+		EC.next_event_time = world.time + 1 MINUTES
+		return kill()
+
+	var/successSpawn = create_bingle_lord()
+	if(!successSpawn)
+		log_and_message_admins("Warning: Could not spawn any mobs for event Bingles")
+		return kill()
+
+/datum/event/bingles/proc/create_bingle_lord()
+	var/mob/living/simple_animal/hostile/bingle/lord/spawn_bingle = /mob/living/simple_animal/hostile/bingle/lord
+	var/list/candidates = SSghost_spawns.poll_candidates("Вы хотите занять роль Лорда Бинглов?", ROLE_BINGLE, TRUE, 30 SECONDS, source = spawn_bingle)
 	if(!length(candidates))
-		kill()
-		return
+		message_admins("Warning: No player volunteered to be a bingle lord!")
+		return FALSE
 
-	var/mob/candidate = pick(candidates)
-	key_of_bingle = candidate.key
+	var/mob/candidate = pick_n_take(candidates)
+	var/turf/spawn_loc = pick(GLOB.xeno_spawn)
+	spawn_bingle = new(spawn_loc)
+	spawn_bingle.possess_by_player(candidate.key)
+	spawn_bingle.add_datum_if_not_exist()
+	log_and_message_admins("[spawn_bingle.key] has been made into a [spawn_bingle] by an event.")
+	return TRUE
 
-	if(!key_of_bingle)
-		kill()
-		return
-
-	var/datum/mind/player_mind = new /datum/mind(key_of_bingle)
-	player_mind.active = TRUE
-	var/turf/spawn_loc = get_spawn_loc(player_mind.current)
-	var/mob/living/simple_animal/hostile/bingle/lord/new_bingle_lord = new bingle_lord(spawn_loc)
-	player_mind.transfer_to(new_bingle_lord)
-	player_mind.assigned_role = ROLE_BINGLE
-	player_mind.special_role = SPECIAL_ROLE_BINGLE_LORD
-	message_admins("[key_name_admin(new_bingle_lord)] has been made into a [new_bingle_lord.name] by an event.")
-	log_game("[key_name_admin(new_bingle_lord)] was spawned as a [new_bingle_lord.name] by an event.")
-
-
-/datum/event/spawn_bingle/proc/get_spawn_loc(mob/player)
-	RETURN_TYPE(/turf)
-	var/list/spawn_locs = list()
-	spawn_locs += GLOB.xeno_spawn
-	if(!spawn_locs) //If we can't find a good place, just spawn at the player's location
-		spawn_locs += get_turf(player)
-	if(!spawn_locs) //If we can't find THAT, then give up
-		kill()
-		return
-	return pick(spawn_locs)
-
-
-/datum/event/spawn_bingle/start()
-	INVOKE_ASYNC(src, PROC_REF(get_bingle))
+#undef BINGLES_MINPLAYERS_TRIGGER

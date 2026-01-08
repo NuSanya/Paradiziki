@@ -1745,8 +1745,8 @@ GLOBAL_LIST_EMPTY(admin_objective_list)
 /datum/objective/bingle
 	needs_target = FALSE
 	antag_menu_name = "Защищайте и наращивайте вашу яму."
-	explanation_text = "Тащите в яму всё, что попадётся под ноги. Яма должна вырасти до размера 40 на 40."
+	explanation_text = "Тащите в яму всё, что попадётся под ноги."
 	var/obj/structure/bingle_hole/pit_check
 
 /datum/objective/bingle/check_completion()
-	return pit_check.current_pit_size >= 40
+	return pit_check.current_pit_size >= pit_check.max_pit_size

@@ -335,3 +335,13 @@
 	barefootstep = FOOTSTEP_MEAT
 	clawfootstep = FOOTSTEP_MEAT
 	heavyfootstep = FOOTSTEP_MEAT
+
+/turf/simulated/floor/indestructible/bingle/get_ru_names()
+	return list(
+		NOMINATIVE = "яма бинглов",
+		GENITIVE = "ямы бинглов",
+		DATIVE = "яме бинглов",
+		ACCUSATIVE = "яму бинглов",
+		INSTRUMENTAL = "ямой бинглов",
+		PREPOSITIONAL = "яме бинглов",
+	)

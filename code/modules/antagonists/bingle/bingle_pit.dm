@@ -17,6 +17,9 @@
 /// Maximum of what we can get healed by items
 #define ITEM_HEAL_MAXIMUM 25
 
+/// Limit of value gained from stack items
+#define STACK_GAIN_LIMIT 50
+
 GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_hole
@@ -43,7 +46,7 @@ GLOBAL_LIST(bingle_mobs)
 	/// We store the component in order to increase it's range later
 	var/datum/component/aura_healing/aura_healing
 	/// Antag team datum used for evolving bingles
-	var/static/datum/team/bingles/bingle_team
+	var/datum/team/bingles/bingle_team
 	/// Typecache of things that won't be swallowed by the pit.
 	var/static/list/swallow_blacklist
 	/// Cooldown for taking bomb damage - basically a cheat solution to handle it taking damage for each tile from one bomb.
@@ -62,6 +65,8 @@ GLOBAL_LIST(bingle_mobs)
 			/obj/projectile,
 			/obj/structure/bingle_hole,
 			/obj/structure/bingle_pit_overlay,
+			/obj/item/stack/spacechips,
+			/obj/item/stack/spacecash,
 		))
 	aura_healing = AddComponent(/datum/component/aura_healing, range = 3, simple_heal = 5, limit_to_trait = TRAIT_HEALS_FROM_BINGLE_HOLES, healing_color = COLOR_BLUE_LIGHT)
 	SSbingle_pit.add_bingle_hole(src)
@@ -84,6 +89,7 @@ GLOBAL_LIST(bingle_mobs)
 	for(var/mob/living/simple_animal/hostile/bingle/bingle as anything in GLOB.bingle_mobs)
 		bingle?.gib()
 	QDEL_LIST(pit_overlays)
+	bingle_team = null
 	return ..()
 
 /obj/structure/bingle_hole/examine(mob/user)
@@ -128,8 +134,8 @@ GLOBAL_LIST(bingle_mobs)
 		if(QDELETED(thing))
 			continue
 
-		var/obj/structure/bingle_pit_overlay/pit_overlay = pick(pit_overlays)
-		var/turf/target_turf = get_turf(pit_overlay) ? get_turf(pit_overlay) : get_turf(src)
+		var/obj/structure/spit_from = length(pit_overlays) ? pick(pit_overlays) : src
+		var/turf/target_turf = get_turf(spit_from) ? get_turf(spit_from) : get_turf(src)
 		if(!target_turf)
 			return
 
@@ -203,8 +209,7 @@ GLOBAL_LIST(bingle_mobs)
 		return LIVING_VALUE
 	else if(isstack(thing))
 		var/obj/item/stack/stack = thing
-		return stack.amount
-
+		return min(stack.amount, STACK_GAIN_LIMIT)
 	return 1
 
 /obj/structure/bingle_hole/proc/swallow_obj(obj/thing)
@@ -541,3 +546,4 @@ GLOBAL_LIST(bingle_mobs)
 #undef LIVING_VALUE
 #undef LIVING_HEAL_MULTIPLIER
 #undef ITEM_HEAL_MAXIMUM
+#undef STACK_GAIN_LIMIT

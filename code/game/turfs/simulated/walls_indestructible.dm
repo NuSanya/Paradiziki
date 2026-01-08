@@ -255,3 +255,13 @@
 	icon = 'icons/turf/walls/bingle.dmi'
 	icon_state = "wall-0"
 	smooth = SMOOTH_BITMASK
+
+/turf/simulated/wall/indestructible/bingle/get_ru_names()
+	return list(
+		NOMINATIVE = "яма бинглов",
+		GENITIVE = "ямы бинглов",
+		DATIVE = "яме бинглов",
+		ACCUSATIVE = "яму бинглов",
+		INSTRUMENTAL = "ямой бинглов",
+		PREPOSITIONAL = "яме бинглов",
+	)
