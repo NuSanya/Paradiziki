@@ -16,8 +16,6 @@
 	button_icon_state = "binglepit"
 	/// How long does it take to create a hole
 	var/creation_time = 5 SECONDS
-	/// The hole that we are creating
-	var/obj/structure/bingle_hole/hole
 
 /datum/action/cooldown/bingle/create_hole/Activate()
 	. = ..()
@@ -37,7 +35,7 @@
 		return
 	user.balloon_alert(user, "яма создана")
 	INVOKE_ASYNC(src, PROC_REF(spawn_hole), our_turf)
-	qdel(src)
+	Remove(owner)
 
 /// Used to check if we have any dense turfs nearby
 /datum/action/cooldown/bingle/create_hole/proc/check_hole_spawn(turf/selected_turf)
@@ -47,8 +45,8 @@
 	return TRUE
 
 /// Proc used to spawn the hole itself
-/datum/action/cooldown/bingle/create_hole/proc/spawn_hole(turf/selected_turf)
-	var/datum/antagonist/bingle/bingle_datum = owner.mind?.has_antag_datum(/datum/antagonist/bingle)
+/datum/action/cooldown/bingle/create_hole/proc/spawn_hole(turf/selected_turf, mob/living/creator)
+	var/datum/antagonist/bingle/bingle_datum = creator.mind?.has_antag_datum(/datum/antagonist/bingle)
 	if(!bingle_datum)
 		return
 
@@ -60,6 +58,3 @@
 	var/datum/team/bingles/bingle_team = bingle_datum.get_team()
 	bingle_team.pit_check = hole
 	bingle_datum.give_objectives()
-	// Register the team in the pit
-	hole.bingle_team = bingle_datum.get_team()
-	qdel(src)

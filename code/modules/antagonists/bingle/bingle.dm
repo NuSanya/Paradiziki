@@ -16,8 +16,8 @@
 
 	obj_damage = 50
 	environment_smash = ENVIRONMENT_SMASH_WALLS
-	melee_damage_lower = 5
-	melee_damage_upper = 5
+	melee_damage_lower = 1
+	melee_damage_upper = 1
 
 	lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE
 
@@ -77,13 +77,13 @@
 
 /mob/living/simple_animal/hostile/bingle/Initialize(mapload)
 	. = ..()
-	LAZYADD(GLOB.bingle_mobs, src)
+	GLOB.bingle_mobs += src
 	RegisterSignal(src, COMSIG_BINGLE_EVOLVE, PROC_REF(evolve))
 	RegisterSignal(src, COMSIG_LIVING_DEATH, PROC_REF(on_death))
 	add_traits(bingle_traits, INNATE_TRAIT)
 
 /mob/living/simple_animal/hostile/bingle/Destroy()
-	LAZYREMOVE(GLOB.bingle_mobs, src)
+	GLOB.bingle_mobs -= src
 	UnregisterSignal(src, COMSIG_BINGLE_EVOLVE)
 	UnregisterSignal(src, COMSIG_LIVING_DEATH)
 	remove_traits(bingle_traits, INNATE_TRAIT)
@@ -99,11 +99,9 @@
 
 /mob/living/simple_animal/hostile/bingle/proc/evolve()
 	icon_state = "bingle_armored"
-	maxHealth = 200
-	health = 200
+	maxHealth = 150
+	health = 150
 	obj_damage = 100
-	melee_damage_lower = 15
-	melee_damage_upper = 15
 	armour_penetration = 10
 	evolved = TRUE
 
@@ -113,10 +111,10 @@
 		return
 	if(!isliving(target))
 		return
-
 	var/mob/living/living = target
-	living.apply_effects(stutter = 10 SECONDS, confused = 5 SECONDS, stamina = stamina_damage)
-	SEND_SIGNAL(living, COMSIG_LIVING_MINOR_SHOCK)
+	if(issilicon(living) || isanimal(living))
+		living.apply_damage(stamina_damage, BRUTE)
+	living.apply_effects(stutter = 10 SECONDS, confused = 2 SECONDS, stamina = stamina_damage)
 
 /mob/living/simple_animal/hostile/bingle/proc/on_death()
 	SIGNAL_HANDLER
@@ -156,8 +154,6 @@
 	health = 200
 
 	environment_smash = ENVIRONMENT_SMASH_RWALLS
-	melee_damage_lower = 10
-	melee_damage_upper = 15
 
 	reagents_amount_min = 10
 	reagents_amount_max = 15
@@ -165,7 +161,7 @@
 	reagent_max = 75
 	smoke_range = 7
 
-	stamina_damage = 80
+	stamina_damage = 60
 
 /mob/living/simple_animal/hostile/bingle/lord/get_ru_names()
 	return list(
@@ -187,9 +183,6 @@
 	maxHealth = 300
 	health = 300
 	obj_damage = 100
-	melee_damage_lower = 15
-	melee_damage_upper = 20
-	armour_penetration = 20
 
 /// Proc used to get a chem list for smoke on death
 /mob/living/simple_animal/hostile/bingle/lord/get_death_chem_list()
