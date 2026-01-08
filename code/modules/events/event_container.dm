@@ -228,7 +228,7 @@ GLOBAL_LIST_EMPTY(event_last_fired)
 		new /datum/event_meta(EVENT_LEVEL_MODERATE, "Ядерный оперативник",		/datum/event/lone_operative,			40,		list(ASSIGNMENT_SECURITY = 10), is_one_shot = TRUE),
 		new /datum/event_meta(EVENT_LEVEL_MODERATE, "Дрейфующий Контрактник",	/datum/event/drifting_contractor,		60,		list(ASSIGNMENT_SECURITY = 10)),
 		new /datum/event_meta(EVENT_LEVEL_MODERATE, "Торговцы",					/datum/event/traders,					85,		is_one_shot = TRUE),
-		new /datum/event_meta(EVENT_LEVEL_MODERATE, "Бинглы",					/datum/event/bingles,				50,		is_one_shot = TRUE),
+		new /datum/event_meta(EVENT_LEVEL_MODERATE, "Бинглы",					/datum/event/bingles,					0,		is_one_shot = TRUE),
 	)
 
 /datum/event_container/major
