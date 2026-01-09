@@ -6,7 +6,7 @@
 	button_icon = 'icons/mob/bingle/binglepit.dmi'
 
 /datum/action/cooldown/bingle/IsAvailable(feedback = FALSE)
-	if(!isbingle(owner))
+	if(!is_binglelord(owner))
 		return FALSE
 	return ..()
 
@@ -34,8 +34,8 @@
 		user.balloon_alert(user, "прервано!")
 		return
 	user.balloon_alert(user, "яма создана")
-	INVOKE_ASYNC(src, PROC_REF(spawn_hole), our_turf)
-	Remove(owner)
+	Remove(owner) // First we remove, then spawn the hole. Could do it async, but pretty sure it makes it more laggy
+	spawn_hole(our_turf, user)
 
 /// Used to check if we have any dense turfs nearby
 /datum/action/cooldown/bingle/create_hole/proc/check_hole_spawn(turf/selected_turf)
@@ -44,17 +44,14 @@
 			return FALSE
 	return TRUE
 
-/// Proc used to spawn the hole itself
-/datum/action/cooldown/bingle/create_hole/proc/spawn_hole(turf/selected_turf, mob/living/creator)
-	var/datum/antagonist/bingle/bingle_datum = creator.mind?.has_antag_datum(/datum/antagonist/bingle)
-	if(!bingle_datum)
-		return
-
-	var/obj/structure/bingle_hole/hole = new(selected_turf)
-	// Complete the bingle lord objective
-	var/datum/objective/bingle_lord/lord_obj = bingle_datum.objectives[1]
-	lord_obj.completed = TRUE
-	// Register the pit in the team, give the second obj to the bingle lord
-	var/datum/team/bingles/bingle_team = bingle_datum.get_team()
-	bingle_team.pit_check = hole
-	bingle_datum.give_objectives()
+/// Spawns the hole and adds the owner to that's hole bingles_by_hole global list
+/datum/action/cooldown/bingle/create_hole/proc/spawn_hole(turf/target_turf, mob/living/simple_animal/hostile/bingle/bingle)
+	// Complete the bingle lord objective first
+	var/datum/antagonist/bingle/lord/lord_datum = bingle.mind.has_antag_datum(/datum/antagonist/bingle/lord)
+	var/datum/objective/bingle_lord/lord_obj = locate() in lord_datum.objectives
+	lord_obj?.completed = TRUE
+	// Now spawn the hole
+	var/obj/structure/bingle_hole/hole = new(target_turf)
+	// Add the one who spawned the hole to the assoc list
+	LAZYADDASSOCLIST(GLOB.bingles_by_hole, hole.UID(), bingle)
+	bingle.spawn_hole = hole // So that they get removed from the list on death

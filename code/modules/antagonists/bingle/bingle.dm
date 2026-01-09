@@ -1,3 +1,8 @@
+/// By how much do we multiply maxHealth variable on evolve
+#define BINGLE_EVOLVE_HEALTH_MULTIPLIER 1.5
+/// By how much do we multiply obj_damage variable on evolve
+#define BINGLE_EVOLVE_OBJ_DAMAGE_MULTIPLIER 2
+
 /mob/living/simple_animal/hostile/bingle
 	name = "bingle"
 	real_name = "bingle"
@@ -10,8 +15,8 @@
 
 	pass_flags = PASSTABLE
 
-	maxHealth = 100
-	health = 100
+	maxHealth = 75
+	health = 75
 	pressure_resistance = 100
 
 	obj_damage = 50
@@ -24,17 +29,16 @@
 	attacktext = "бьёт"
 	attack_sound = 'sound/effects/blobattack.ogg'
 	butcher_results = null
+	/// What hole we appeared from (or connected to)
+	var/obj/structure/bingle_hole/spawn_hole
 
 	/// Flag to check if we are already evolved or not
 	var/evolved = FALSE
-
-	/// Static list of all traits used by bingles
-	var/static/list/bingle_traits = list(
-		TRAIT_HEALS_FROM_BINGLE_HOLES,
-	)
+	/// What icon state we get on evolving
+	var/evolved_icon_state = "bingle_armored"
 
 	/// Additional stamina damage on attack
-	var/stamina_damage = 50
+	var/stamina_damage = 33
 
 	/// The minimum amount of reagents used on death
 	var/reagents_amount_min = 3
@@ -46,6 +50,12 @@
 	var/reagent_max = 30
 	/// The range of the smoke on death
 	var/smoke_range = 2
+
+	/// Static list of all traits used by bingles
+	var/static/list/bingle_traits = list(
+		TRAIT_HEALS_FROM_BINGLE_HOLES,
+		TRAIT_NEGATES_GRAVITY,
+	)
 
 /mob/living/simple_animal/hostile/bingle/get_ru_names()
 	return list(
@@ -75,35 +85,36 @@
 		visual_effect_icon = ATTACK_EFFECT_BITE
 	..()
 
-/mob/living/simple_animal/hostile/bingle/Initialize(mapload)
+/mob/living/simple_animal/hostile/bingle/Initialize(mapload, obj/structure/bingle_hole/hole)
 	. = ..()
-	GLOB.bingle_mobs += src
+	if(hole)
+		spawn_hole = hole
+		LAZYADDASSOCLIST(GLOB.bingles_by_hole, spawn_hole.UID(), src)
 	RegisterSignal(src, COMSIG_BINGLE_EVOLVE, PROC_REF(evolve))
 	RegisterSignal(src, COMSIG_LIVING_DEATH, PROC_REF(on_death))
 	add_traits(bingle_traits, INNATE_TRAIT)
 
 /mob/living/simple_animal/hostile/bingle/Destroy()
-	GLOB.bingle_mobs -= src
+	if(spawn_hole)
+		LAZYREMOVEASSOC(GLOB.bingles_by_hole, spawn_hole.UID(), src)
+		spawn_hole = null
 	UnregisterSignal(src, COMSIG_BINGLE_EVOLVE)
 	UnregisterSignal(src, COMSIG_LIVING_DEATH)
 	remove_traits(bingle_traits, INNATE_TRAIT)
 	return ..()
 
-/mob/living/simple_animal/hostile/bingle/Life(seconds_between_ticks, times_fired)
-	. = ..()
-	update_icon()
+/mob/living/simple_animal/hostile/bingle/update_icon_state()
+	icon_state = evolved ? evolved_icon_state : icon_state // We can't really unevolve
 
 /mob/living/simple_animal/hostile/bingle/proc/on_evolve()
 	SIGNAL_HANDLER
 	evolve()
 
 /mob/living/simple_animal/hostile/bingle/proc/evolve()
-	icon_state = "bingle_armored"
-	maxHealth = 150
-	health = 150
-	obj_damage = 100
-	armour_penetration = 10
 	evolved = TRUE
+	maxHealth *= BINGLE_EVOLVE_HEALTH_MULTIPLIER
+	obj_damage *= BINGLE_EVOLVE_OBJ_DAMAGE_MULTIPLIER
+	update_icon(UPDATE_ICON_STATE)
 
 /mob/living/simple_animal/hostile/bingle/AttackingTarget()
 	. = ..()
@@ -149,6 +160,7 @@
 	icon_state = "binglelord"
 	icon_living = "binglelord"
 	icon_dead = "binglelord"
+	evolved_icon_state = "binglelord_armored"
 
 	maxHealth = 200
 	health = 200
@@ -163,6 +175,18 @@
 
 	stamina_damage = 60
 
+/mob/living/simple_animal/hostile/bingle/lord/Initialize(mapload)
+	. = ..()
+	var/datum/action/cooldown/bingle/create_hole/hole_action = new
+	hole_action.Grant(src)
+
+/mob/living/simple_animal/hostile/bingle/lord/get_death_chem_list()
+	return GLOB.liver_toxins + GLOB.borer_reagents
+
+/mob/living/simple_animal/hostile/bingle/add_datum_if_not_exist()
+	if(!(mind.has_antag_datum(/datum/antagonist/bingle/lord)))
+		mind.add_antag_datum(/datum/antagonist/bingle/lord, /datum/team/bingles)
+
 /mob/living/simple_animal/hostile/bingle/lord/get_ru_names()
 	return list(
 		NOMINATIVE = "лорд бинглов",
@@ -173,17 +197,5 @@
 		PREPOSITIONAL = "лорде бинглов"
 	)
 
-/mob/living/simple_animal/hostile/bingle/lord/Initialize(mapload)
-	. = ..()
-	var/datum/action/cooldown/bingle/create_hole/hole_action = new
-	hole_action.Grant(src)
-
-/mob/living/simple_animal/hostile/bingle/lord/evolve()
-	icon_state = "binglelord_armored"
-	maxHealth = 300
-	health = 300
-	obj_damage = 100
-
-/// Proc used to get a chem list for smoke on death
-/mob/living/simple_animal/hostile/bingle/lord/get_death_chem_list()
-	return GLOB.blocked_chems
+#undef BINGLE_EVOLVE_HEALTH_MULTIPLIER
+#undef BINGLE_EVOLVE_OBJ_DAMAGE_MULTIPLIER

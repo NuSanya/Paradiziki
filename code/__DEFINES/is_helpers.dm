@@ -66,6 +66,8 @@
 
 #define isbingle(A) (istype(A, /mob/living/simple_animal/hostile/bingle))
 
+#define is_binglelord(A) (istype(A, /mob/living/simple_animal/hostile/bingle/lord))
+
 // Objects
 #define isobj(A) (istype(A, /obj)) //override the byond proc because it returns true on children of /atom/movable that aren't objs
 

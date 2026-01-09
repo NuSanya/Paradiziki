@@ -1746,7 +1746,13 @@ GLOBAL_LIST_EMPTY(admin_objective_list)
 	needs_target = FALSE
 	antag_menu_name = "Защищайте и наращивайте вашу яму."
 	explanation_text = "Тащите в яму всё, что попадётся под ноги."
-	var/obj/structure/bingle_hole/pit_check
 
+// If there is any hole with max-size, then the goal is completed
 /datum/objective/bingle/check_completion()
-	return pit_check.current_pit_size >= pit_check.max_pit_size
+	if(!team)
+		return FALSE
+	var/datum/team/bingles/bingle_team = team
+	for(var/obj/structure/bingle_hole/hole as anything in bingle_team.bingle_holes)
+		if(hole.current_pit_size >= hole.max_pit_size)
+			return TRUE
+	return FALSE

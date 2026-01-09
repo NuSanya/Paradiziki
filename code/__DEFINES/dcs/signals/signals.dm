@@ -867,8 +867,10 @@
 /// Source: /mob/living/simple_animal/handle_environment(datum/gas_mixture/environment)
 #define COMSIG_ANIMAL_HANDLE_ENVIRONMENT "animal_handle_environment"
 
-/// from /mob/living/simple_animal/hostile/bingle, called on evolve
+/// Sent to bingles to evolve
 #define COMSIG_BINGLE_EVOLVE "bingle_evolve"
+/// Sent to all bingles to evolve
+#define COMSIG_MASS_BINGLE_EVOLVE "mass_bingle_evolve"
 
 // /obj signals
 

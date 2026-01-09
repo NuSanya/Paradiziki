@@ -118,3 +118,6 @@
 
 /// Sent from /datum/powernet/remove_cable()
 #define COMSIG_UPDATE_TWOHANDED_DAMAGE "update_twohanded_damage"
+
+/// Sent from /obj/structure/bingle_hole to /datum/team/bingles
+#define COMSIG_BINGLE_HOLE_INITIALIZED "bingle_hole_initialized"

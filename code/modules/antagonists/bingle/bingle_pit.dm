@@ -10,9 +10,11 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	)
 ))
 
-/// Trait used to ensure that things don't get animated as falling in multiple times
-#define TRAIT_FALLING_INTO_BINGLE_HOLE "falling_into_bingle_pit"
+/// Assoc list in format Key(hole UID) - List(mobs)
+GLOBAL_LIST_EMPTY(bingles_by_hole)
 
+/// At what size do we announce to the station about bingles
+#define ANNOUNCEMENT_SIZE_REQ 3
 /// By how much do we increase the health of the bingle pit on growth
 #define INTEGRITY_INCREASE_VALUE 25
 /// How often based on item_value_consumed do we grow the pit
@@ -23,14 +25,10 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 #define BINGLE_EVOLVE_VALUE 500
 /// How much do we gain from living beings
 #define LIVING_VALUE 10
-
 /// How much the pit should heal from LIVING_VALUE multiplied by this
 #define LIVING_HEAL_MULTIPLIER 2.5
-
 /// Limit of value gained from stack items
 #define STACK_GAIN_LIMIT 50
-
-GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_hole
 	name = "bingle pit"
@@ -56,7 +54,7 @@ GLOBAL_LIST(bingle_mobs)
 	var/max_pit_size = 40
 	/// We store the component in order to increase it's range later
 	var/datum/component/aura_healing/aura_healing
-	/// Antag team datum used for evolving bingles
+	/// Antag team datum used for sending signals to
 	var/datum/team/bingles/bingle_team
 	/// Connect loc element
 	var/static/list/loc_connections = list(
@@ -69,6 +67,8 @@ GLOBAL_LIST(bingle_mobs)
 	var/announcement_made = FALSE
 	/// Have we evolved our current bingles or not
 	var/bingles_evolved
+	/// Have we grown to the max size or not
+	var/max_pit_size_achieved = FALSE
 
 /obj/structure/bingle_hole/get_ru_names()
 	return list(
@@ -85,6 +85,7 @@ GLOBAL_LIST(bingle_mobs)
 	bingle_team = GLOB.antagonist_teams[/datum/team/bingles]
 	if(!bingle_team)
 		bingle_team = new
+	SEND_SIGNAL(bingle_team, COMSIG_BINGLE_HOLE_INITIALIZED, src)
 	START_PROCESSING(SSbingle_pit, src)
 	AddElement(/datum/element/connect_loc, loc_connections)
 	return INITIALIZE_HINT_LATELOAD
@@ -100,18 +101,15 @@ GLOBAL_LIST(bingle_mobs)
 	)
 
 /obj/structure/bingle_hole/LateInitialize()
-	SSmapping.lazy_load_template(LAZY_TEMPLATE_KEY_BINGLE_PIT)
+	SSmapping.lazy_load_template(LAZY_TEMPLATE_KEY_BINGLE_PIT, TRUE) // Separate insides for different holes
 	log_game("Bingle Pit Template loaded.")
 
 /obj/structure/bingle_hole/Destroy()
 	QDEL_NULL(aura_healing)
 	QDEL_LIST(pit_overlays)
 	STOP_PROCESSING(SSbingle_pit, src)
-	eject_contents()
+	INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(eject_bingle_pit_contents), get_turf(src), current_pit_size / 2)
 	bingle_team = null
-	// Gib all bingles in the world on pit destruction
-	for(var/mob/living/simple_animal/hostile/bingle/bingle as anything in GLOB.bingle_mobs)
-		bingle?.gib()
 	return ..()
 
 /obj/structure/bingle_hole/examine(mob/user)
@@ -142,6 +140,7 @@ GLOBAL_LIST(bingle_mobs)
 	return ..()
 
 /obj/structure/bingle_hole/ex_act(severity)
+	severity = min(severity, EXPLODE_HEAVY)
 	if(!COOLDOWN_FINISHED(src, bomb_cooldown))
 		return FALSE
 	COOLDOWN_START(src, bomb_cooldown, 2 SECONDS)
@@ -150,23 +149,6 @@ GLOBAL_LIST(bingle_mobs)
 /obj/structure/bingle_hole/proc/on_entered(datum/source, atom/movable/arrived)
 	SIGNAL_HANDLER
 	swallow(arrived) // swallow does all the needed checks
-
-/obj/structure/bingle_hole/proc/eject_contents()
-	var/area/bingle_pit = GLOB.areas_by_type[/area/misc/bingle_pit]
-	for(var/atom/movable/thing in bingle_pit?.contents)
-		if(QDELETED(thing))
-			continue
-
-		var/obj/structure/spit_from = length(pit_overlays) ? pick(pit_overlays) : src
-		var/turf/target_turf = get_turf(spit_from) ? get_turf(spit_from) : get_turf(src)
-		if(!target_turf)
-			return
-
-		thing.forceMove(target_turf)
-		var/dir = pick(GLOB.alldirs)
-		var/turf/edge = get_edge_target_turf(src, dir)
-		if(ismob(thing) || isobj(thing))
-			thing.throw_at(edge, rand(1, 5), rand(1, 5))
 
 /obj/structure/bingle_hole/process(seconds_per_tick)
 	// Only spawn a new bingle for each BINGLE_SPAWN_VALUE item value milestone, and only once per milestone
@@ -193,12 +175,7 @@ GLOBAL_LIST(bingle_mobs)
 		return
 
 	bingles_evolved = TRUE
-	for(var/datum/mind/bingle_mind as anything in bingle_team.members)
-		var/mob/living/simple_animal/hostile/bingle/bong = bingle_mind.current
-		if(bong?.evolved)
-			continue
-
-		SEND_SIGNAL(bong, COMSIG_BINGLE_EVOLVE)
+	SEND_SIGNAL(bingle_team, COMSIG_MASS_BINGLE_EVOLVE, src)
 
 /obj/structure/bingle_hole/proc/swallow_mob(mob/living/victim)
 	if(!isliving(victim))
@@ -421,6 +398,29 @@ GLOBAL_LIST(bingle_mobs)
 	current_pit_size = new_size
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
 	max_integrity += INTEGRITY_INCREASE_VALUE
+	INVOKE_ASYNC(src, PROC_REF(do_things_based_on_size))
+
+/**
+ * Proc called in grow_pit() to do following things:
+ *
+ * Announce to the station if size requirement is set about bingles,
+ * Endround if max size is reached.
+ */
+/obj/structure/bingle_hole/proc/do_things_based_on_size()
+	if(current_pit_size < ANNOUNCEMENT_SIZE_REQ)
+		return
+	if(!announcement_made)
+		announcement_made = TRUE
+		GLOB.major_announcement.announce(
+			message = "Обнаружено массовое нашествие Бинглов на [station_name()]. \
+					Действие Космического Закона и Стандартных Рабочих Процедур приостановлено. \
+					Всему экипажу надлежит защитить станцию от неминуемого уничтожения.",
+			new_title = ANNOUNCE_BIOHAZARD_RU,
+			new_sound = 'sound/effects/siren-spooky.ogg'
+		)
+		addtimer(CALLBACK(SSsecurity_level, TYPE_PROC_REF(/datum/controller/subsystem/security_level, set_level), SEC_LEVEL_GAMMA), 5 SECONDS)
+		return
+	// nuSanya add roundend stuff
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
@@ -443,6 +443,10 @@ GLOBAL_LIST(bingle_mobs)
 
 /obj/structure/bingle_pit_overlay/Initialize(mapload, obj/structure/bingle_hole/parent_pit)
 	. = ..()
+	if(!parent_pit)
+		stack_trace("Bingle pit overlay created without parent pit.")
+		qdel(src)
+		return
 	var/static/list/loc_connections = list(
 		COMSIG_ATOM_ENTERED = PROC_REF(on_entered),
 		COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON = PROC_REF(on_entered),
@@ -463,14 +467,13 @@ GLOBAL_LIST(bingle_mobs)
 	if(!QDELETED(src))
 		parent_pit.on_entered(source, arrived)
 
-/obj/structure/bingle_pit_overlay/ex_act(severity, target)
-	return parent_pit.ex_act(severity, target)
+/obj/structure/bingle_pit_overlay/ex_act(severity)
+	return parent_pit.ex_act(severity)
 
 /obj/structure/bingle_pit_overlay/attackby(obj/item/W, mob/user, params)
 	if(parent_pit)
 		user.do_attack_animation(src) // hacky but well
-		parent_pit.attackby(W, user)
-		return
+		return parent_pit.attackby(W, user, params)
 
 	return ..()
 
@@ -523,7 +526,7 @@ GLOBAL_LIST(bingle_mobs)
 	if(isnull(spawn_loc))
 		return
 
-	var/mob/living/simple_animal/hostile/bingle/bingle = new(spawn_loc)
+	var/mob/living/simple_animal/hostile/bingle/bingle = new(spawn_loc, src)
 	bingle.possess_by_player(candidate.key)
 	bingle.add_datum_if_not_exist()
 	if(item_value_consumed >= BINGLE_EVOLVE_VALUE)
@@ -546,7 +549,27 @@ GLOBAL_LIST(bingle_mobs)
 	has_gravity = TRUE
 	requires_power = FALSE
 
-#undef TRAIT_FALLING_INTO_BINGLE_HOLE
+/**
+ * Proc used to eject everything from inside from bingle hole
+ *
+ * Range can be specified to spread out objects (to lessen client render lag)
+ */
+/proc/eject_bingle_pit_contents(turf/target_turf, range = 1)
+	if(!target_turf)
+		return
+	var/area/bingle_pit = GLOB.areas_by_type[/area/misc/bingle_pit]
+	var/list/turfs_in_range = RANGE_TURFS(range, target_turf)
+	for(var/atom/movable/thing in bingle_pit?.contents)
+		if(QDELETED(thing))
+			continue
+		var/turf/eject_to = pick(turfs_in_range)
+		thing.forceMove(eject_to)
+		var/dir = pick(GLOB.alldirs)
+		var/turf/edge = get_edge_target_turf(target_turf, dir)
+		thing.throw_at(edge, rand(1, 5), rand(1, 5))
+		CHECK_TICK
+
+#undef ANNOUNCEMENT_SIZE_REQ
 #undef INTEGRITY_INCREASE_VALUE
 #undef GROWTH_VALUE
 #undef BINGLE_SPAWN_VALUE
