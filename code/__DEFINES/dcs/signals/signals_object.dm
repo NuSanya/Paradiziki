@@ -121,3 +121,6 @@
 
 /// Sent from /obj/structure/bingle_hole to /datum/team/bingles
 #define COMSIG_BINGLE_HOLE_INITIALIZED "bingle_hole_initialized"
+
+/// Sent from /obj/structure/bingle_hole to /datum/team/bingles
+#define COMSIG_BINGLE_HOLE_GROW "bingle_hole_grow"

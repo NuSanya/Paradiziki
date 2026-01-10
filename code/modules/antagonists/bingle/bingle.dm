@@ -1,8 +1,3 @@
-/// By how much do we multiply maxHealth variable on evolve
-#define BINGLE_EVOLVE_HEALTH_MULTIPLIER 1.5
-/// By how much do we multiply obj_damage variable on evolve
-#define BINGLE_EVOLVE_OBJ_DAMAGE_MULTIPLIER 2
-
 /mob/living/simple_animal/hostile/bingle
 	name = "bingle"
 	real_name = "bingle"
@@ -196,6 +191,3 @@
 		INSTRUMENTAL = "лордом бинглов",
 		PREPOSITIONAL = "лорде бинглов"
 	)
-
-#undef BINGLE_EVOLVE_HEALTH_MULTIPLIER
-#undef BINGLE_EVOLVE_OBJ_DAMAGE_MULTIPLIER

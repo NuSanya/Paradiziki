@@ -10,26 +10,6 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	)
 ))
 
-/// Assoc list in format Key(hole UID) - List(mobs)
-GLOBAL_LIST_EMPTY(bingles_by_hole)
-
-/// At what size do we announce to the station about bingles
-#define ANNOUNCEMENT_SIZE_REQ 3
-/// By how much do we increase the health of the bingle pit on growth
-#define INTEGRITY_INCREASE_VALUE 25
-/// How often based on item_value_consumed do we grow the pit
-#define GROWTH_VALUE 100
-/// How often based on item_value_consumed do we spawn a bingle
-#define BINGLE_SPAWN_VALUE 50
-/// At what item_value_consumed do bingles become evolved
-#define BINGLE_EVOLVE_VALUE 500
-/// How much do we gain from living beings
-#define LIVING_VALUE 10
-/// How much the pit should heal from LIVING_VALUE multiplied by this
-#define LIVING_HEAL_MULTIPLIER 2.5
-/// Limit of value gained from stack items
-#define STACK_GAIN_LIMIT 50
-
 /obj/structure/bingle_hole
 	name = "bingle pit"
 	desc = "Всепоглощающая бездна бесконечных ужасов... и бинглов."
@@ -42,6 +22,8 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 	light_range = 5
 	anchored = TRUE
 	layer = PROJECTILE_HIT_THRESHHOLD_LAYER
+	/// The bingle pit turf reservation. Used for getting things in and out
+	var/datum/turf_reservation/pit_reservation
 	/// Values of all consumed items combined
 	var/item_value_consumed = 0
 	/// Current pit size (1x1, 2x2, etc.)
@@ -50,8 +32,6 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 	var/list/pit_overlays = list()
 	/// Used to compare current and last item values for bingle spawning in processing
 	var/last_bingle_spawn_value = 0
-	/// The max size of the pit
-	var/max_pit_size = 40
 	/// We store the component in order to increase it's range later
 	var/datum/component/aura_healing/aura_healing
 	/// Antag team datum used for sending signals to
@@ -63,12 +43,8 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 	)
 	/// Cooldown for taking bomb damage - basically a cheat solution to handle it taking damage for each tile from one bomb.
 	COOLDOWN_DECLARE(bomb_cooldown)
-	/// Have we made an announcement about biohazard or not
-	var/announcement_made = FALSE
 	/// Have we evolved our current bingles or not
 	var/bingles_evolved
-	/// Have we grown to the max size or not
-	var/max_pit_size_achieved = FALSE
 
 /obj/structure/bingle_hole/get_ru_names()
 	return list(
@@ -101,22 +77,23 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 	)
 
 /obj/structure/bingle_hole/LateInitialize()
-	SSmapping.lazy_load_template(LAZY_TEMPLATE_KEY_BINGLE_PIT, TRUE) // Separate insides for different holes
+	pit_reservation = SSmapping.lazy_load_template(LAZY_TEMPLATE_KEY_BINGLE_PIT, TRUE) // Separate insides for different holes
 	log_game("Bingle Pit Template loaded.")
 
 /obj/structure/bingle_hole/Destroy()
 	QDEL_NULL(aura_healing)
 	QDEL_LIST(pit_overlays)
 	STOP_PROCESSING(SSbingle_pit, src)
-	INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(eject_bingle_pit_contents), get_turf(src), current_pit_size / 2)
+	INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(eject_bingle_pit_contents), get_turf(src), current_pit_size, pit_reservation)
 	bingle_team = null
+	pit_reservation = null
 	return ..()
 
 /obj/structure/bingle_hole/examine(mob/user)
 	. = ..()
 	if(isbingle(user))
 		. += span_alert("Внутри находится <b>[item_value_consumed]</b> предмет[DECL_CREDIT(item_value_consumed)]!")
-		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[GROWTH_VALUE]</b> предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
+		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[BINGLE_PIT_GROW_VALUE]</b> предмет[declension_ru(BINGLE_PIT_GROW_VALUE, "", "а", "ов")]!")
 
 /obj/structure/bingle_hole/CanAStarPass(to_dir, datum/can_pass_info/pass_info)
 	if(!pass_info.is_living)
@@ -161,9 +138,9 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 		last_bingle_spawn_value = target_bingle_count * BINGLE_SPAWN_VALUE
 		INVOKE_ASYNC(src, PROC_REF(spawn_bingle_from_ghost))
 
-	// Pit grows every GROWTH_VALUE item value - calculate target size
-	var/desired_pit_size = 1 + round(item_value_consumed / GROWTH_VALUE)
-	desired_pit_size = min(desired_pit_size, max_pit_size)
+	// Pit grows every BINGLE_PIT_GROW_VALUE item value - calculate target size
+	var/desired_pit_size = 1 + round(item_value_consumed / BINGLE_PIT_GROW_VALUE)
+	desired_pit_size = min(desired_pit_size, BINGLE_PIT_SIZE_GOAL)
 
 	if(desired_pit_size > current_pit_size)
 		grow_pit(desired_pit_size)
@@ -190,14 +167,14 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 		if(victim.movement_type & (FLYING | FLOATING))
 			return FALSE
 
-	if(item_value_consumed < GROWTH_VALUE)
+	if(item_value_consumed < BINGLE_PIT_GROW_VALUE)
 		var/turf/target = get_edge_target_turf(src, pick(GLOB.alldirs))
 		victim.throw_at(target, rand(1, 5), rand(1, 5))
 		to_chat(victim, span_warning("Вы не пролезаете в яму!"))
 		return FALSE
 	victim.add_traits(list(TRAIT_FALLING_INTO_BINGLE_HOLE, TRAIT_NO_TRANSFORM), UNIQUE_TRAIT_SOURCE(src))
 	item_value_consumed += get_item_value(victim)
-	repair_damage(LIVING_HEAL_MULTIPLIER * LIVING_VALUE)
+	repair_damage(BINGLE_PIT_LIVING_HEAL_MULTIPLIER * BINGLE_PIT_LIVING_VALUE)
 	// Only animate if we're actually swallowing
 	animate_falling_into_pit(victim)
 	// Delay the actual movement to let animation play
@@ -206,10 +183,10 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 
 /obj/structure/bingle_hole/proc/get_item_value(thing)
 	if(isliving(thing))
-		return LIVING_VALUE
+		return BINGLE_PIT_LIVING_VALUE
 	else if(isstack(thing))
 		var/obj/item/stack/stack = thing
-		return min(stack.amount, STACK_GAIN_LIMIT)
+		return min(stack.amount, BINGLE_PIT_STACK_GAIN_LIMIT)
 	return 1
 
 /obj/structure/bingle_hole/proc/swallow_obj(obj/thing)
@@ -315,8 +292,6 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 		qdel(swallowed_obj)
 
 /obj/structure/bingle_hole/proc/grow_pit(new_size)
-	if(new_size > max_pit_size)
-		new_size = max_pit_size
 	if(current_pit_size >= new_size)
 		return
 	var/turf/origin = get_turf(src)
@@ -385,42 +360,11 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 				// Remove wall turf itself, if present
 				if(iswallturf(T))
 					T.dismantle_wall(TRUE)
-					item_value_consumed++
-				if(!announcement_made)
-					GLOB.major_announcement.announce(
-						message = "Обнаружено массовое нашествие Бинглов на [station_name()]. \
-								Действие Космического Закона и Стандартных Рабочих Процедур приостановлено. \
-								Всему экипажу надлежит защитить станцию от неминуемого уничтожения.",
-						new_title = ANNOUNCE_BIOHAZARD_RU,
-						new_sound = 'sound/effects/siren-spooky.ogg'
-					)
-					announcement_made = TRUE
+	SEND_SIGNAL(src, COMSIG_BINGLE_HOLE_GROW, current_pit_size, new_size)
 	current_pit_size = new_size
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
-	max_integrity += INTEGRITY_INCREASE_VALUE
-	INVOKE_ASYNC(src, PROC_REF(do_things_based_on_size))
-
-/**
- * Proc called in grow_pit() to do following things:
- *
- * Announce to the station if size requirement is set about bingles,
- * Endround if max size is reached.
- */
-/obj/structure/bingle_hole/proc/do_things_based_on_size()
-	if(current_pit_size < ANNOUNCEMENT_SIZE_REQ)
-		return
-	if(!announcement_made)
-		announcement_made = TRUE
-		GLOB.major_announcement.announce(
-			message = "Обнаружено массовое нашествие Бинглов на [station_name()]. \
-					Действие Космического Закона и Стандартных Рабочих Процедур приостановлено. \
-					Всему экипажу надлежит защитить станцию от неминуемого уничтожения.",
-			new_title = ANNOUNCE_BIOHAZARD_RU,
-			new_sound = 'sound/effects/siren-spooky.ogg'
-		)
-		addtimer(CALLBACK(SSsecurity_level, TYPE_PROC_REF(/datum/controller/subsystem/security_level, set_level), SEC_LEVEL_GAMMA), 5 SECONDS)
-		return
-	// nuSanya add roundend stuff
+	max_integrity += BINGLE_PIT_GROW_INTEGRITY_INCREASE
+	repair_damage(BINGLE_PIT_GROW_INTEGRITY_INCREASE)
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
@@ -511,7 +455,7 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 	. = ..()
 	if(parent_pit && isbingle(user))
 		. += span_alert("Внутри находится <b>[parent_pit.item_value_consumed]</b> предмет[DECL_CREDIT(parent_pit.item_value_consumed)]!")
-		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[GROWTH_VALUE]</b> предмет[declension_ru(GROWTH_VALUE, "", "а", "ов")]!")
+		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[BINGLE_PIT_GROW_VALUE]</b> предмет[declension_ru(BINGLE_PIT_GROW_VALUE, "", "а", "ов")]!")
 
 /// Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()
@@ -537,7 +481,8 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 
 /obj/structure/bingle_hole/proc/get_random_bingle_pit_turf()
 	var/list/eligible_turfs = list()
-	for(var/turf/simulated/floor/floor in get_area_turfs(/area/misc/bingle_pit))
+	// We dont use area since there are separate locations for separate holes. Instead, we check reservation turfs saved from template loading
+	for(var/turf/simulated/floor/indestructible/bingle/floor in pit_reservation?.reserved_turfs)
 		if(!floor.is_blocked_turf())
 			eligible_turfs += floor
 	if(length(eligible_turfs))
@@ -554,26 +499,18 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
  *
  * Range can be specified to spread out objects (to lessen client render lag)
  */
-/proc/eject_bingle_pit_contents(turf/target_turf, range = 1)
+/proc/eject_bingle_pit_contents(turf/target_turf, range = 1, datum/turf_reservation/pit_reservation)
 	if(!target_turf)
 		return
-	var/area/bingle_pit = GLOB.areas_by_type[/area/misc/bingle_pit]
 	var/list/turfs_in_range = RANGE_TURFS(range, target_turf)
-	for(var/atom/movable/thing in bingle_pit?.contents)
-		if(QDELETED(thing))
-			continue
-		var/turf/eject_to = pick(turfs_in_range)
-		thing.forceMove(eject_to)
-		var/dir = pick(GLOB.alldirs)
-		var/turf/edge = get_edge_target_turf(target_turf, dir)
-		thing.throw_at(edge, rand(1, 5), rand(1, 5))
-		CHECK_TICK
-
-#undef ANNOUNCEMENT_SIZE_REQ
-#undef INTEGRITY_INCREASE_VALUE
-#undef GROWTH_VALUE
-#undef BINGLE_SPAWN_VALUE
-#undef BINGLE_EVOLVE_VALUE
-#undef LIVING_VALUE
-#undef LIVING_HEAL_MULTIPLIER
-#undef STACK_GAIN_LIMIT
+	// We dont use area since there are separate locations for separate holes. Instead, we check reservation turfs saved from template loading
+	for(var/turf/turf as anything in pit_reservation?.reserved_turfs)
+		for(var/atom/movable/thing in turf)
+			if(QDELETED(thing))
+				continue
+			var/turf/eject_to = pick(turfs_in_range)
+			thing.forceMove(eject_to)
+			var/dir = pick(GLOB.alldirs)
+			var/turf/edge = get_edge_target_turf(target_turf, dir)
+			thing.throw_at(edge, rand(1, 5), rand(1, 5))
+			CHECK_TICK

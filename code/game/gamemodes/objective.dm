@@ -1752,7 +1752,4 @@ GLOBAL_LIST_EMPTY(admin_objective_list)
 	if(!team)
 		return FALSE
 	var/datum/team/bingles/bingle_team = team
-	for(var/obj/structure/bingle_hole/hole as anything in bingle_team.bingle_holes)
-		if(hole.current_pit_size >= hole.max_pit_size)
-			return TRUE
-	return FALSE
+	return bingle_team.max_size_achieved

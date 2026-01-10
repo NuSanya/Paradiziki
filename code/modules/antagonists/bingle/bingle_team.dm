@@ -6,6 +6,14 @@
 	var/list/bingle_holes = list()
 	/// Main bingle objective. Given to all bingles.
 	var/datum/objective/bingle/main_objective
+	/// Have we made an announcement about bingles if pit got too large?
+	var/made_announcement = FALSE
+	/// Have we sent nuclear codes if the pit got even larger
+	var/sent_nuclear_codes = FALSE
+	/// Have we gotten a hole with max size reached?
+	var/max_size_achieved = FALSE
+	/// Timerid of roundend countdown
+	var/timerid
 
 /datum/team/bingles/New(list/starting_members)
 	..()
@@ -19,13 +27,14 @@
 	UnregisterSignal(src, COMSIG_MASS_BINGLE_EVOLVE)
 	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
 		UnregisterSignal(hole, COMSIG_QDELETING)
+		UnregisterSignal(hole, COMSIG_BINGLE_HOLE_GROW)
 	QDEL_NULL(main_objective)
 	bingle_holes = null
 	return ..()
 
 /datum/team/bingles/declare_completion()
 	var/list/text = list()
-	if(main_objective.completed)
+	if(max_size_achieved)
 		text += span_fontsize3("<br><br><b>Победа \"Бинглов\"!</b>")
 		text += "<br><b>Бинглы смогли вырастить яму до такого размера, что она поглотила станцию!</b>"
 	else
@@ -38,6 +47,7 @@
 	SIGNAL_HANDLER
 	bingle_holes += hole
 	RegisterSignal(hole, COMSIG_QDELETING, PROC_REF(on_hole_destroy))
+	RegisterSignal(hole, COMSIG_BINGLE_HOLE_GROW, PROC_REF(on_hole_grow))
 
 /**
  * Signal proc called on hole destroy
@@ -49,11 +59,52 @@
 	SIGNAL_HANDLER
 	bingle_holes -= source
 	UnregisterSignal(source, COMSIG_QDELETING)
-	// Shouldn't be laggy, so far as tested
-	if(!LAZYACCESS(GLOB.bingles_by_hole, source.UID()))
+	UnregisterSignal(source, COMSIG_BINGLE_HOLE_GROW)
+	gib_related_bingles(source)
+	INVOKE_ASYNC(src, PROC_REF(handle_roundend_destroy))
+	INVOKE_ASYNC(src, PROC_REF(try_remove_gamma))
+
+/// Proc used to gib all bingles connected to a hole given as an argument
+/datum/team/bingles/proc/gib_related_bingles(obj/structure/bingle_hole/hole)
+	if(!LAZYACCESS(GLOB.bingles_by_hole, hole.UID()))
 		return
-	for(var/mob/living/simple_animal/hostile/bingle/bingle as anything in GLOB.bingles_by_hole[source.UID()])
+	for(var/mob/living/simple_animal/hostile/bingle/bingle as anything in GLOB.bingles_by_hole[hole.UID()])
 		bingle?.gib()
+	GLOB.bingles_by_hole -= hole.UID()
+
+/// Proc used to stop the roundend timer if there are no more max size holes present
+/datum/team/bingles/proc/handle_roundend_destroy()
+	if(!max_size_achieved)
+		return
+	// If we find any hole with a size bigger than rounend requirement, then we dont stop the timer.
+	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
+		if(hole.current_pit_size >= BINGLE_PIT_SIZE_GOAL)
+			return
+	deltimer(timerid)
+	GLOB.major_announcement.announce(
+		message = "Яма критического размера на [station_name()] уничтожена. \
+				В случае, если код не будет снижен, то на станции существуют ещё ямы. \
+				Рекомендуется вызов шаттла.",
+		new_title = ANNOUNCE_CCPARANORMAL_RU,
+	)
+	max_size_achieved = FALSE
+
+/// Proc used to lower gamma code if it was caused by any bingle holes
+/datum/team/bingles/proc/try_remove_gamma()
+	if(!made_announcement)
+		return
+	// If we find any hole with a size bigger than announce requirement, then we dont lower code.
+	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
+		if(hole.current_pit_size >= ANNOUNCE_BINGLE_PIT_SIZE)
+			return
+	GLOB.major_announcement.announce(
+		message = "Замечено снижение паранормальной активности на [station_name()]. \
+				Действие Космического Закона и Стандартных Рабочих Процедур возвращается в норму. \
+				Экипажу следует удостовериться в безопасности станции.",
+		new_title = ANNOUNCE_CCPARANORMAL_RU,
+	)
+	SSsecurity_level.set_level(SEC_LEVEL_RED)
+	made_announcement = FALSE
 
 /// Signal proc that sends evolve signal to all bingles related to the hole
 /datum/team/bingles/proc/on_hole_evolve(datum/source, obj/structure/bingle_hole/hole)
@@ -64,3 +115,96 @@
 		if(!bingle || bingle.evolved)
 			continue
 		SEND_SIGNAL(bingle, COMSIG_BINGLE_EVOLVE)
+
+/**
+ * Signal proc called on hole grow
+ *
+ * Does following things:
+ * Announce to the station and set gamma code if requirements are met;
+ * Send nuclear codes if requirements are met;
+ * End the round if requirements are met.
+ */
+/datum/team/bingles/proc/on_hole_grow(obj/structure/bingle_hole/source, old_size, new_size)
+	if(new_size < ANNOUNCE_BINGLE_PIT_SIZE)
+		return
+	if(!made_announcement)
+		made_announcement = TRUE
+		INVOKE_ASYNC(src, PROC_REF(make_announcement), source)
+
+	if(new_size < NUCLEAR_CODE_BINGLE_PIT_SIZE)
+		return
+	if(!sent_nuclear_codes)
+		sent_nuclear_codes = TRUE
+		INVOKE_ASYNC(src, PROC_REF(send_nuclear_codes))
+
+	if(new_size < BINGLE_PIT_SIZE_GOAL)
+		return
+	if(!max_size_achieved)
+		max_size_achieved = TRUE
+		INVOKE_ASYNC(src, PROC_REF(start_bingle_win), source)
+
+/// Proc to announce to the station about bingles and raise code to gamma
+/datum/team/bingles/proc/make_announcement(obj/structure/bingle_hole/hole)
+	GLOB.major_announcement.announce(
+		message = "Обнаружено массовое нашествие Бинглов на [station_name()]. \
+				Действие Космического Закона и Стандартных Рабочих Процедур приостановлено. \
+				Всему экипажу надлежит защитить станцию от неминуемого уничтожения.",
+		new_title = ANNOUNCE_BIOHAZARD_RU,
+		new_sound = 'sound/effects/siren-spooky.ogg',
+	)
+	// A bit hacky, but saves my sanity by having it stop and delete itself on hole destroy, if we didn't have 5 seconds pass.
+	hole.addtimer(CALLBACK(SSsecurity_level, TYPE_PROC_REF(/datum/controller/subsystem/security_level, set_level), SEC_LEVEL_GAMMA), 5 SECONDS, TIMER_STOPPABLE | TIMER_DELETE_ME)
+
+/// Proc to send nuclear codes to the station
+/datum/team/bingles/proc/send_nuclear_codes()
+	var/intercepttext = ""
+	var/interceptname = ""
+	var/nukecode = GLOB.nuke_codes[/obj/machinery/nuclearbomb]
+	interceptname = "Ядерные коды от боеголовки [command_name()]"
+	intercepttext += span_fontsize3("<b>Постановление Nanotrasen</b>: Биологическая угроза.<hr>")
+	intercepttext += "Для [station_name()] была издана директива 7-12.<br>"
+	intercepttext += "Биологическая угроза вышла из-под контроля и скоро поглотит станцию.<br>"
+	intercepttext += "Вам приказано следующее:<br>"
+	intercepttext += " 1. Защищать диск ядерной аутентификации.<br>"
+	intercepttext += " 2. Взорвать ядерную боеголовку, находящуюся в хранилище станции.<br>"
+	intercepttext += "Код ядерной аутентификации: [nukecode]<br>"
+	intercepttext += "Конец сообщения."
+
+	SSticker?.mode?.special_directive(intercepttext, interceptname)
+	GLOB.major_announcement.announce(
+		message = "Угроза вышла из под контроля. Коды от ядерной боеголовки загружены и распечатаны на всех консолях связи. Слава НТ!",
+		new_title = ANNOUNCE_CCPARANORMAL_RU,
+		new_sound = 'sound/AI/commandreport.ogg'
+	)
+
+/**
+ * Proc to start bingle win.
+ *
+ * Starts a timer, after which lays the cinematic,
+ * sends an announce and ends the game.
+ */
+/datum/team/bingles/proc/start_bingle_win(obj/structure/bingle_hole/hole)
+	GLOB.major_announcement.announce(
+		message = "Яма Бинглов доросла до критических размеров. Уничтожение станции неизбежно. \
+			До момента, когда яма поглотит станцию целиком, остаётся [BINGLE_PIT_WIN_DELAY / 10] секунд[declension_ru(BINGLE_PIT_WIN_DELAY, "а", "ы", "")]. \
+			Уничтожьте яму любой ценой!",
+		new_title = "Отчёт об объекте [station_name()].",
+		new_sound = 'sound/AI/commandreport.ogg'
+	)
+	timerid = addtimer(CALLBACK(src, TYPE_PROC_REF(/datum/team/bingles, bingle_win)), BINGLE_PIT_WIN_DELAY, TIMER_STOPPABLE | TIMER_DELETE_ME)
+
+/**
+ * Proc called to end the round (and win)
+ *
+ * Makes all holes indestructible and calls the cinematic.
+ */
+/datum/team/bingles/proc/bingle_win()
+	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
+		hole.resistance_flags |= INDESTRUCTIBLE // We already won, no you can't break the hole while the cinematic plays
+	//play_cinematic(/datum/cinematic/nuke, world)
+	GLOB.major_announcement.announce(
+		message = "Объект потерян. Причина: распространение биологической угрозы Бинглов. Взведение устройства самоуничтожения персоналом или внешними силами в данный момент не представляется возможным из-за высокого уровня заражения. Активация протоколов изоляции.",
+		new_title = "Отчёт об объекте [station_name()].",
+		new_sound = 'sound/AI/commandreport.ogg'
+	)
+	SSticker.mode.end_game()

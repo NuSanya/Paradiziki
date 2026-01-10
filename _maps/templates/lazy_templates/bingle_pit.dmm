@@ -2,22 +2,54 @@
 "a" = (
 /turf/cordon,
 /area/space)
+"d" = (
+/obj/structure/inflatable/door,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
+"h" = (
+/obj/structure/toilet/golden_toilet,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
+"i" = (
+/obj/machinery/hydroponics/soil,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
+"l" = (
+/obj/effect/area_lighting_helper/max_alpha_blue,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
+"t" = (
+/obj/item/deck/cards/syndicate,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
 "u" = (
 /obj/item/trash/sosjerky,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
+"v" = (
+/mob/living/simple_animal/pet/gondola,
 /turf/simulated/floor/indestructible/bingle,
 /area/misc/bingle_pit)
 "D" = (
 /turf/simulated/wall/indestructible/bingle,
 /area/misc/bingle_pit)
 "H" = (
-/obj/effect/area_lighting_helper,
+/obj/effect/decal/remains/human,
 /turf/simulated/floor/indestructible/bingle,
 /area/misc/bingle_pit)
 "L" = (
 /turf/simulated/floor/indestructible/bingle,
 /area/misc/bingle_pit)
+"M" = (
+/obj/item/seeds/wheat,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
+"R" = (
+/obj/item/card/id/captains_spare,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
 "T" = (
-/obj/item/storage/backpack/duffel/medical,
+/obj/structure/table,
 /turf/simulated/floor/indestructible/bingle,
 /area/misc/bingle_pit)
 "U" = (
@@ -27,8 +59,12 @@
 /obj/effect/mob_spawn/human/skeleton,
 /turf/simulated/floor/indestructible/bingle,
 /area/misc/bingle_pit)
+"Y" = (
+/obj/machinery/gameboard,
+/turf/simulated/floor/indestructible/bingle,
+/area/misc/bingle_pit)
 "Z" = (
-/obj/machinery/optable,
+/obj/item/storage/toolbox/surgery/ashwalker,
 /turf/simulated/floor/indestructible/bingle,
 /area/misc/bingle_pit)
 
@@ -213,8 +249,8 @@ L
 L
 L
 L
-L
-L
+i
+i
 D
 U
 U
@@ -241,7 +277,7 @@ U
 U
 D
 D
-L
+v
 L
 L
 L
@@ -293,7 +329,7 @@ L
 D
 D
 L
-L
+M
 L
 D
 D
@@ -306,7 +342,7 @@ L
 L
 L
 L
-L
+v
 D
 U
 a
@@ -318,7 +354,7 @@ a
 U
 D
 L
-L
+h
 D
 L
 L
@@ -343,7 +379,7 @@ L
 L
 L
 L
-L
+H
 L
 L
 L
@@ -398,6 +434,7 @@ a
 U
 D
 L
+d
 L
 L
 L
@@ -411,8 +448,7 @@ L
 L
 L
 L
-L
-L
+H
 L
 L
 L
@@ -455,10 +491,10 @@ L
 L
 L
 L
+M
 L
 L
 L
-V
 L
 L
 L
@@ -481,7 +517,7 @@ U
 D
 L
 L
-V
+L
 L
 L
 L
@@ -562,7 +598,7 @@ D
 L
 L
 L
-L
+H
 L
 L
 D
@@ -611,14 +647,14 @@ D
 L
 D
 T
+T
+T
+Z
 L
-Z
-Z
-Z
 D
 L
 L
-L
+Y
 L
 L
 L
@@ -651,9 +687,9 @@ L
 L
 D
 L
-H
 L
-H
+L
+L
 L
 D
 L
@@ -683,14 +719,14 @@ D
 L
 L
 L
-L
+M
 L
 L
 L
 L
 L
 D
-L
+t
 L
 L
 L
@@ -742,7 +778,7 @@ L
 L
 L
 L
-L
+H
 L
 L
 D
@@ -811,7 +847,7 @@ L
 L
 D
 L
-L
+l
 L
 L
 L
@@ -885,7 +921,7 @@ L
 L
 L
 D
-L
+i
 L
 L
 L
@@ -925,9 +961,9 @@ L
 L
 L
 D
+i
 L
-L
-L
+M
 L
 L
 L
@@ -965,8 +1001,8 @@ L
 L
 L
 L
-V
-V
+L
+L
 L
 L
 L
@@ -1006,7 +1042,7 @@ L
 L
 L
 L
-L
+H
 L
 L
 L
@@ -1041,7 +1077,7 @@ U
 D
 D
 L
-L
+H
 L
 L
 L
@@ -1222,7 +1258,7 @@ L
 D
 L
 L
-L
+H
 L
 L
 L
@@ -1238,7 +1274,7 @@ a
 U
 U
 D
-L
+R
 L
 L
 L
