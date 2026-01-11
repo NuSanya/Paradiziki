@@ -259,10 +259,10 @@
 
 /turf/simulated/wall/indestructible/bingle/get_ru_names()
 	return list(
-		NOMINATIVE = "яма бинглов",
-		GENITIVE = "ямы бинглов",
-		DATIVE = "яме бинглов",
-		ACCUSATIVE = "яму бинглов",
-		INSTRUMENTAL = "ямой бинглов",
-		PREPOSITIONAL = "яме бинглов",
+		NOMINATIVE = "яма Бинглов",
+		GENITIVE = "ямы Бинглов",
+		DATIVE = "яме Бинглов",
+		ACCUSATIVE = "яму Бинглов",
+		INSTRUMENTAL = "ямой Бинглов",
+		PREPOSITIONAL = "яме Бинглов",
 	)

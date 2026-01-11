@@ -12,7 +12,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 
 /obj/structure/bingle_hole
 	name = "bingle pit"
-	desc = "Всепоглощающая бездна бесконечных ужасов... и бинглов."
+	desc = "Всепоглощающая бездна бесконечных ужасов... и Бинглов."
 	gender = FEMALE
 	armor = list(MELEE=20, BULLET=20, LASER=75, ENERGY=75, BOMB=75, BIO=100, RAD=100, FIRE=50, ACID=80)
 	max_integrity = 500
@@ -48,12 +48,12 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 
 /obj/structure/bingle_hole/get_ru_names()
 	return list(
-		NOMINATIVE = "яма бинглов",
-		GENITIVE = "ямы бинглов",
-		DATIVE = "яме бинглов",
-		ACCUSATIVE = "яму бинглов",
-		INSTRUMENTAL = "ямой бинглов",
-		PREPOSITIONAL = "яме бинглов"
+		NOMINATIVE = "яма Бинглов",
+		GENITIVE = "ямы Бинглов",
+		DATIVE = "яме Бинглов",
+		ACCUSATIVE = "яму Бинглов",
+		INSTRUMENTAL = "ямой Бинглов",
+		PREPOSITIONAL = "яме Бинглов"
 	)
 
 /obj/structure/bingle_hole/Initialize(mapload)
@@ -377,12 +377,12 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 
 /obj/structure/bingle_pit_overlay/get_ru_names()
 	return list(
-		NOMINATIVE = "яма бинглов",
-		GENITIVE = "ямы бинглов",
-		DATIVE = "яме бинглов",
-		ACCUSATIVE = "яму бинглов",
-		INSTRUMENTAL = "ямой бинглов",
-		PREPOSITIONAL = "яме бинглов"
+		NOMINATIVE = "яма Бинглов",
+		GENITIVE = "ямы Бинглов",
+		DATIVE = "яме Бинглов",
+		ACCUSATIVE = "яму Бинглов",
+		INSTRUMENTAL = "ямой Бинглов",
+		PREPOSITIONAL = "яме Бинглов"
 	)
 
 /obj/structure/bingle_pit_overlay/Initialize(mapload, obj/structure/bingle_hole/parent_pit)
