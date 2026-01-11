@@ -56,12 +56,12 @@
 
 /mob/living/simple_animal/hostile/bingle/get_ru_names()
 	return list(
-		NOMINATIVE = "бингл",
-		GENITIVE = "бингла",
-		DATIVE = "бинглу",
-		ACCUSATIVE = "бингла",
-		INSTRUMENTAL = "бинглом",
-		PREPOSITIONAL = "бингле"
+		NOMINATIVE = "Бингл",
+		GENITIVE = "Бингла",
+		DATIVE = "Бинглу",
+		ACCUSATIVE = "Бингла",
+		INSTRUMENTAL = "Бинглом",
+		PREPOSITIONAL = "Бингле"
 	)
 
 /mob/living/simple_animal/hostile/bingle/ComponentInitialize()
@@ -186,10 +186,10 @@
 
 /mob/living/simple_animal/hostile/bingle/lord/get_ru_names()
 	return list(
-		NOMINATIVE = "лорд бинглов",
-		GENITIVE = "лорда бинглов",
-		DATIVE = "лорду бинглов",
-		ACCUSATIVE = "лорда бинглов",
-		INSTRUMENTAL = "лордом бинглов",
-		PREPOSITIONAL = "лорде бинглов"
+		NOMINATIVE = "лорд Бинглов",
+		GENITIVE = "лорда Бинглов",
+		DATIVE = "лорду Бинглов",
+		ACCUSATIVE = "лорда Бинглов",
+		INSTRUMENTAL = "лордом Бинглов",
+		PREPOSITIONAL = "лорде Бинглов"
 	)
