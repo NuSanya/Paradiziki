@@ -9,7 +9,7 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 #define NUCLEAR_CODE_BINGLE_PIT_SIZE 25
 
 /// How much time is given at BINGLE_PIT_SIZE_GOAL for crew to kill the hole until it wins
-#define BINGLE_PIT_WIN_DELAY 60 SECONDS
+#define BINGLE_PIT_WIN_DELAY 2 MINUTES
 
 /// By how much do we multiply maxHealth variable on evolve
 #define BINGLE_EVOLVE_HEALTH_MULTIPLIER 1.5
