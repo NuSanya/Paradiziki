@@ -1,5 +1,7 @@
 /// Minimum amount of players required to start this event
-#define BINGLES_MINPLAYERS_TRIGGER 40
+#define BINGLES_MINPLAYERS_TRIGGER 0
+/// How many lords do we spawn
+#define BINGLE_LORD_SPAWN_COUNT 1
 
 /datum/event/bingles
 
@@ -16,24 +18,35 @@
 		EC.next_event_time = world.time + 1 MINUTES
 		return kill()
 
-	var/successSpawn = create_bingle_lord()
+	var/successSpawn = create_bingle_lords()
 	if(!successSpawn)
 		log_and_message_admins("Warning: Could not spawn any mobs for event Bingles")
 		return kill()
 
-/datum/event/bingles/proc/create_bingle_lord()
+/// Proc used to get candidates for bingle lords and spawn them
+/datum/event/bingles/proc/create_bingle_lords()
+	// Atom prototype for candidates poll
 	var/mob/living/simple_animal/hostile/bingle/lord/spawn_bingle = /mob/living/simple_animal/hostile/bingle/lord
 	var/list/candidates = SSghost_spawns.poll_candidates("Вы хотите занять роль Лорда Бинглов?", ROLE_BINGLE, TRUE, 30 SECONDS, source = spawn_bingle)
 	if(!length(candidates))
 		message_admins("Warning: No player volunteered to be a bingle lord!")
 		return FALSE
 
-	var/mob/candidate = pick_n_take(candidates)
-	var/turf/spawn_loc = pick(GLOB.xeno_spawn)
-	spawn_bingle = new(spawn_loc)
-	spawn_bingle.possess_by_player(candidate.key)
-	spawn_bingle.add_datum_if_not_exist()
-	log_and_message_admins("[spawn_bingle.key] has been made into a [spawn_bingle] by an event.")
+	for(var/i in 1 to BINGLE_LORD_SPAWN_COUNT)
+		if(!length(candidates))
+			message_admins("Warning: Only [i-1] out of [BINGLE_LORD_SPAWN_COUNT] volunteered to be bingle lords!")
+			return TRUE
+		var/mob/candidate = pick_n_take(candidates)
+		spawn_bingle_lord(candidate)
 	return TRUE
 
+/// Proc used to spawn a bingle lord out of a candidate
+/datum/event/bingles/proc/spawn_bingle_lord(mob/candidate)
+	var/turf/spawn_loc = pick(GLOB.xeno_spawn)
+	var/mob/living/simple_animal/hostile/bingle/lord/bingle = new(spawn_loc)
+	bingle.possess_by_player(candidate.key)
+	bingle.add_datum_if_not_exist()
+	log_and_message_admins("[bingle.key] has been made into a [bingle] by an event.")
+
 #undef BINGLES_MINPLAYERS_TRIGGER
+#undef BINGLE_LORD_SPAWN_COUNT
