@@ -24,6 +24,8 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	layer = PROJECTILE_HIT_THRESHHOLD_LAYER
 	/// The bingle pit turf reservation. Used for getting things in and out
 	var/datum/turf_reservation/pit_reservation
+	/// List of all bingle turfs used in pit reservation
+	var/list/inside_pit_turfs = list()
 	/// Values of all consumed items combined
 	var/item_value_consumed = 0
 	/// Current pit size (1x1, 2x2, etc.)
@@ -88,6 +90,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(eject_bingle_pit_contents), get_turf(src), current_pit_size, pit_reservation)
 	bingle_team = null
 	pit_reservation = null
+	inside_pit_turfs = null
 	return ..()
 
 /obj/structure/bingle_hole/examine(mob/user)
@@ -326,9 +329,14 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 				icon_state_to_use = "filler[rand(1, 4)]"
 
 			var/obj/structure/bingle_pit_overlay/overlay = locate() in T
-			if(!overlay || (overlay.parent_pit != src))
+			if(!overlay)
 				overlay = new(T, src)
 				pit_overlays += overlay
+
+			if(overlay.parent_pit != src)
+				INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(merge_bingle_holes), src, overlay.parent_pit)
+				return
+
 			overlay.icon_state = icon_state_to_use
 
 			// If pit is larger than 3x3, consume walls on these tiles
@@ -339,6 +347,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 				// Remove wall turf itself, if present
 				if(iswallturf(T))
 					T.dismantle_wall(TRUE)
+
 	SEND_SIGNAL(src, COMSIG_BINGLE_HOLE_GROW, current_pit_size, new_size)
 	current_pit_size = new_size
 	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
@@ -459,13 +468,13 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	log_game("[key_name(bingle)] was spawned as Bingle by the pit.")
 
 /obj/structure/bingle_hole/proc/get_random_bingle_pit_turf()
-	var/list/eligible_turfs = list()
-	// We dont use area since there are separate locations for separate holes. Instead, we check reservation turfs saved from template loading
-	for(var/turf/simulated/floor/indestructible/bingle/floor in pit_reservation?.reserved_turfs)
-		if(!floor.is_blocked_turf())
-			eligible_turfs += floor
-	if(length(eligible_turfs))
-		return pick(eligible_turfs)
+	if(!length(inside_pit_turfs))
+		for(var/turf/simulated/floor/indestructible/bingle/floor in pit_reservation?.reserved_turfs)
+			if(!floor.is_blocked_turf())
+				inside_pit_turfs += floor
+
+	if(length(inside_pit_turfs)) // Incase we haven't loaded the pit yet
+		return pick(inside_pit_turfs)
 
 /area/misc/bingle_pit
 	name = "Яма Бинглов"
@@ -491,3 +500,47 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 			thing.forceMove(eject_to)
 			thing.SpinAnimation(5, 1)
 			CHECK_TICK
+
+	qdel(pit_reservation)
+
+/**
+ * Proc used to merge bingle holes
+ *
+ * Reassigns all bingle mobs to the kept hole,
+ * Moves all items from the turf reservation to the kept one,
+ * Sums up some variables,
+ * and finally deletes the to be removed hole.
+ */
+/proc/merge_bingle_holes(obj/structure/bingle_hole/first_hole, obj/structure/bingle_hole/second_hole)
+	STOP_PROCESSING(SSbingle_pit, first_hole) // Prevent them from growing while merging
+	STOP_PROCESSING(SSbingle_pit, second_hole)
+	var/obj/structure/bingle_hole/hole_to_keep
+	var/obj/structure/bingle_hole/hole_to_destroy
+	if(first_hole.current_pit_size >= second_hole.current_pit_size)
+		hole_to_keep = first_hole
+		hole_to_destroy = second_hole
+	else
+		hole_to_keep = second_hole
+		hole_to_destroy = first_hole
+
+	// Reassign bingles of to remove hole to the kept one
+	if(LAZYACCESS(GLOB.bingles_by_hole, hole_to_destroy.UID()))
+		for(var/mob/living/simple_animal/hostile/bingle/bingle as anything in GLOB.bingles_by_hole[hole_to_destroy.UID()])
+			LAZYADDASSOCLIST(GLOB.bingles_by_hole, hole_to_keep.UID(), bingle)
+			bingle.spawn_hole = hole_to_keep
+		GLOB.bingles_by_hole -= hole_to_destroy.UID()
+
+	// Move everything from the destroyed hole to the new one
+	for(var/turf/turf as anything in hole_to_destroy.pit_reservation?.reserved_turfs)
+		for(var/atom/movable/thing in turf)
+			if(QDELETED(thing))
+				continue
+			var/turf/eject_to = hole_to_keep.get_random_bingle_pit_turf()
+			thing.forceMove(eject_to)
+
+	// Some var sums
+	hole_to_keep.last_bingle_spawn_value += hole_to_destroy.last_bingle_spawn_value
+	hole_to_keep.item_value_consumed += hole_to_destroy.item_value_consumed
+
+	START_PROCESSING(SSbingle_pit, hole_to_keep)
+	qdel(hole_to_destroy)
