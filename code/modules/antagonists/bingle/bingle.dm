@@ -180,7 +180,7 @@
 /mob/living/simple_animal/hostile/bingle/lord/get_death_chem_list()
 	return GLOB.liver_toxins + GLOB.borer_reagents
 
-/mob/living/simple_animal/hostile/bingle/add_datum_if_not_exist()
+/mob/living/simple_animal/hostile/bingle/lord/add_datum_if_not_exist()
 	if(!(mind.has_antag_datum(/datum/antagonist/bingle/lord)))
 		mind.add_antag_datum(/datum/antagonist/bingle/lord, /datum/team/bingles)
 

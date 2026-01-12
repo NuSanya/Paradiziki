@@ -540,7 +540,6 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 			thing.forceMove(eject_to)
 
 	// Some var sums
-	hole_to_keep.last_bingle_spawn_value += hole_to_destroy.last_bingle_spawn_value
 	hole_to_keep.item_value_consumed += hole_to_destroy.item_value_consumed
 
 	START_PROCESSING(SSbingle_pit, hole_to_keep)

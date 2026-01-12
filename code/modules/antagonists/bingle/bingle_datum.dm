@@ -30,7 +30,7 @@
 	/// Lord objective
 	var/datum/objective/bingle_lord/lord_objective
 
-/datum/antagonist/bingle/greet()
+/datum/antagonist/bingle/lord/greet()
 	var/list/messages = list()
 	messages.Add(span_danger("<center>Вы — Лорд Бинглов!</center>"))
 	messages.Add("<center>Вашей обязательной целью является создание ямы в месте, где вы сможете быстро собрать много вещей.</center>")
