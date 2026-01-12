@@ -74,6 +74,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 		simple_heal = 5, \
 		limit_to_trait = TRAIT_HEALS_FROM_BINGLE_HOLES, \
 		healing_color = COLOR_BLUE_LIGHT, \
+		requires_visibility = FALSE, \
 	)
 
 /obj/structure/bingle_hole/LateInitialize()
@@ -251,21 +252,6 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	// and ensure they animate back to normal afterwards
 	animate(pixel_x = original_px, pixel_y = original_py, alpha = original_alpha, transform = original_transform, time = 0.5 SECONDS, easing = EASE_IN)
 
-	// Create swirling particle effect at the pit
-	new /obj/effect/temp_visual/bingle_pit_swirl(pit_turf)
-
-/obj/effect/temp_visual/bingle_pit_swirl
-	name = "swirling void"
-	desc = "Реальность искажается вокруг ямы..."
-	icon_state = "quantum_sparks"
-	duration = 1.5 SECONDS
-	alpha = 150
-
-/obj/effect/temp_visual/bingle_pit_swirl/Initialize(mapload)
-	. = ..()
-	animate(src, transform = turn(transform, 360), time = 1 SECONDS)
-	animate(alpha = 0, time = 0.5 SECONDS)
-
 /obj/structure/bingle_hole/proc/finish_swallow_mob(mob/living/swallowed_mob)
 	if(QDELETED(swallowed_mob))
 		return
@@ -298,16 +284,6 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	if(!origin)
 		return
 
-	// Remove old overlays
-	QDEL_LIST(pit_overlays)
-
-	// If size is 1x1, use the default icon and no overlays
-	if(new_size == 1)
-		src.icon_state = "binglepit"
-		current_pit_size = 1
-		aura_healing.range = 3
-		return
-
 	// Calculate coordinates properly for both even and odd sizes
 	var/start_coord, end_coord
 	if(new_size % 2 == 1) // Odd sizes (1, 3, 5, etc.)
@@ -326,31 +302,34 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 				continue
 
 			var/icon_state_to_use
-			// Corners first (check both dx and dy conditions)
-			if(dx == start_coord && dy == end_coord)
-				icon_state_to_use = "corner_north"      // top left
-			else if(dx == end_coord && dy == end_coord)
-				icon_state_to_use = "corner_west"       // top right
-			else if(dx == end_coord && dy == start_coord)
-				icon_state_to_use = "corner_south"      // bottom right
-			else if(dx == start_coord && dy == start_coord)
-				icon_state_to_use = "corner_east"       // bottom left
+			if(dx == start_coord)
+				if(dy == end_coord)
+					icon_state_to_use = "corner_north"      // top left
+				else if(dy == start_coord)
+					icon_state_to_use = "corner_east"       // bottom left
+				else
+					icon_state_to_use = "edge_west"         // edge left
+			else if(dx == end_coord)
+				if(dy == end_coord)
+					icon_state_to_use = "corner_west"       // top right
+				else if(dy == start_coord)
+					icon_state_to_use = "corner_south"      // bottom right
+				else
+					icon_state_to_use = "edge_east"         // edge right
 			// Edges (check single conditions)
 			else if(dy == end_coord)
 				icon_state_to_use = "edge_north"        // top edge
 			else if(dy == start_coord)
 				icon_state_to_use = "edge_south"        // bottom edge
-			else if(dx == start_coord)
-				icon_state_to_use = "edge_west"         // left edge
-			else if(dx == end_coord)
-				icon_state_to_use = "edge_east"         // right edge
 			// Center fill
 			else
 				icon_state_to_use = "filler[rand(1, 4)]"
 
-			var/obj/structure/bingle_pit_overlay/overlay = new(T, src)
+			var/obj/structure/bingle_pit_overlay/overlay = locate() in T
+			if(!overlay || (overlay.parent_pit != src))
+				overlay = new(T, src)
+				pit_overlays += overlay
 			overlay.icon_state = icon_state_to_use
-			pit_overlays += overlay
 
 			// If pit is larger than 3x3, consume walls on these tiles
 			if(new_size > 3)
@@ -510,7 +489,5 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 				continue
 			var/turf/eject_to = pick(turfs_in_range)
 			thing.forceMove(eject_to)
-			var/dir = pick(GLOB.alldirs)
-			var/turf/edge = get_edge_target_turf(target_turf, dir)
-			thing.throw_at(edge, rand(1, 5), rand(1, 5))
+			thing.SpinAnimation(5, 1)
 			CHECK_TICK
