@@ -1,7 +1,7 @@
 /// Minimum amount of players required to start this event
 #define BINGLES_MINPLAYERS_TRIGGER 40
 /// How many lords do we spawn
-#define BINGLE_LORD_SPAWN_COUNT 1
+#define BINGLE_LORD_SPAWN_COUNT 2
 
 /datum/event/bingles
 
@@ -14,7 +14,7 @@
 	var/player_count = num_station_players()
 	if(player_count < BINGLES_MINPLAYERS_TRIGGER)
 		log_and_message_admins("Random event attempted to spawn bingles, but there were only [player_count]/[BINGLES_MINPLAYERS_TRIGGER] players.")
-		var/datum/event_container/EC = SSevents.event_containers[EVENT_LEVEL_MODERATE]
+		var/datum/event_container/EC = SSevents.event_containers[EVENT_LEVEL_MAJOR]
 		EC.next_event_time = world.time + 1 MINUTES
 		return kill()
 
