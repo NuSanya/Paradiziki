@@ -1,5 +1,5 @@
 /// Minimum amount of players required to start this event
-#define BINGLES_MINPLAYERS_TRIGGER 0
+#define BINGLES_MINPLAYERS_TRIGGER 40
 /// How many lords do we spawn
 #define BINGLE_LORD_SPAWN_COUNT 1
 
@@ -18,8 +18,8 @@
 		EC.next_event_time = world.time + 1 MINUTES
 		return kill()
 
-	var/successSpawn = create_bingle_lords()
-	if(!successSpawn)
+	var/spawn_success = create_bingle_lords()
+	if(!spawn_success)
 		log_and_message_admins("Warning: Could not spawn any mobs for event Bingles")
 		return kill()
 

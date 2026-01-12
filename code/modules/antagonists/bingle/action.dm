@@ -6,7 +6,7 @@
 	button_icon = 'icons/mob/bingle/binglepit.dmi'
 
 /datum/action/cooldown/bingle/IsAvailable(feedback = FALSE)
-	if(!is_binglelord(owner))
+	if(!isbingle(owner))
 		return FALSE
 	return ..()
 
@@ -46,12 +46,13 @@
 
 /// Spawns the hole and adds the owner to that's hole bingles_by_hole global list
 /datum/action/cooldown/bingle/create_hole/proc/spawn_hole(turf/target_turf, mob/living/simple_animal/hostile/bingle/bingle)
-	// Complete the bingle lord objective first
-	var/datum/antagonist/bingle/lord/lord_datum = bingle.mind.has_antag_datum(/datum/antagonist/bingle/lord)
-	var/datum/objective/bingle_lord/lord_obj = locate() in lord_datum.objectives
-	lord_obj?.completed = TRUE
-	// Now spawn the hole
 	var/obj/structure/bingle_hole/hole = new(target_turf)
 	// Add the one who spawned the hole to the assoc list
 	LAZYADDASSOCLIST(GLOB.bingles_by_hole, hole.UID(), bingle)
 	bingle.spawn_hole = hole // So that they get removed from the list on death
+	// Complete the bingle lord objective
+	var/datum/antagonist/bingle/lord/lord_datum = bingle.mind.has_antag_datum(/datum/antagonist/bingle/lord)
+	if(!lord_datum)
+		return
+	var/datum/objective/bingle_lord/lord_obj = locate() in lord_datum.objectives
+	lord_obj?.completed = TRUE

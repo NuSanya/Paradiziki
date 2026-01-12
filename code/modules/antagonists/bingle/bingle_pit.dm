@@ -348,11 +348,12 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 				if(iswallturf(T))
 					T.dismantle_wall(TRUE)
 
+	var/size_difference = new_size - current_pit_size
 	SEND_SIGNAL(src, COMSIG_BINGLE_HOLE_GROW, current_pit_size, new_size)
 	current_pit_size = new_size
-	aura_healing.range = max(round(new_size / 2, 1) + 2, 3)
-	max_integrity += BINGLE_PIT_GROW_INTEGRITY_INCREASE
-	repair_damage(BINGLE_PIT_GROW_INTEGRITY_INCREASE)
+	aura_healing.range = new_size + 2
+	max_integrity += size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE
+	repair_damage(size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE)
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
