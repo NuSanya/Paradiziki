@@ -30,3 +30,8 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 #define BINGLE_PIT_LIVING_HEAL_MULTIPLIER 1.5
 /// Limit of value gained from stack items
 #define BINGLE_PIT_STACK_GAIN_LIMIT 50
+/// How much we gain from eating singularities
+#define BINGLE_PIT_SINGULARITY_VALUE 250
+
+// How much extra defense we get on each successful hole merge
+#define BINGLE_PIT_MERGE_ARMOR_INCREASE 10

@@ -27,7 +27,7 @@
 	if(!is_station_level(our_turf.z))
 		user.balloon_alert(user, "вне станции!")
 		return
-	if(!check_hole_spawn(our_turf))
+	if(!check_for_enough_space(our_turf))
 		user.balloon_alert(user, "нет места!")
 		return
 	if(!do_after(user, creation_time, user, max_interact_count = 1, cancel_on_max = TRUE))
@@ -38,7 +38,7 @@
 	spawn_hole(our_turf, user)
 
 /// Used to check if we have any dense turfs nearby
-/datum/action/cooldown/bingle/create_hole/proc/check_hole_spawn(turf/selected_turf)
+/datum/action/cooldown/bingle/create_hole/proc/check_for_enough_space(turf/selected_turf)
 	for(var/turf/adjacent_turf as anything in RANGE_TURFS(1, selected_turf))
 		if(isnull(adjacent_turf) || adjacent_turf.density)
 			return FALSE

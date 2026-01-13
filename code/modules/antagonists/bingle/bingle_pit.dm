@@ -17,7 +17,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	armor = list(MELEE=20, BULLET=20, LASER=75, ENERGY=75, BOMB=75, BIO=100, RAD=100, FIRE=50, ACID=80)
 	max_integrity = 500
 	icon = 'icons/mob/bingle/binglepit.dmi'
-	icon_state = "binglepit"
+	icon_state = "binglepit-0"
 	light_color = LIGHT_COLOR_BABY_BLUE
 	light_range = 5
 	anchored = TRUE
@@ -185,12 +185,14 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	addtimer(CALLBACK(src, PROC_REF(finish_swallow_mob), victim), 1 SECONDS)
 	return TRUE
 
-/obj/structure/bingle_hole/proc/get_item_value(thing)
+/obj/structure/bingle_hole/proc/get_item_value(atom/thing)
 	if(isliving(thing))
 		return BINGLE_PIT_LIVING_VALUE
-	else if(isstack(thing))
+	if(isstack(thing))
 		var/obj/item/stack/stack = thing
 		return min(stack.amount, BINGLE_PIT_STACK_GAIN_LIMIT)
+	if(issingularity(thing))
+		return BINGLE_PIT_SINGULARITY_VALUE
 	return 1
 
 /obj/structure/bingle_hole/proc/swallow_obj(obj/thing)
@@ -263,22 +265,29 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	if(bingle_pit_turf)
 		swallowed_mob.forceMove(bingle_pit_turf)
 		swallowed_mob.remove_traits(list(TRAIT_FALLING_INTO_BINGLE_HOLE, TRAIT_NO_TRANSFORM), UNIQUE_TRAIT_SOURCE(src))
-	else
-		if(swallowed_mob.client || swallowed_mob.mind)
-			swallowed_mob.moveToNullspace()
-		else
-			qdel(swallowed_mob)
+		return
+
+	if(swallowed_mob.client || swallowed_mob.mind)
+		swallowed_mob.moveToNullspace()
+		return
+
+	qdel(swallowed_mob)
 
 /obj/structure/bingle_hole/proc/finish_swallow_obj(obj/swallowed_obj)
 	if(QDELETED(swallowed_obj))
+		return
+	// We cant really contain teslas, but singularities on the other hand
+	if(istype(swallowed_obj, /obj/singularity/energy_ball))
+		qdel(swallowed_obj)
 		return
 
 	var/turf/bingle_pit_turf = get_random_bingle_pit_turf()
 	if(bingle_pit_turf)
 		swallowed_obj.forceMove(bingle_pit_turf)
 		REMOVE_TRAIT(swallowed_obj, TRAIT_FALLING_INTO_BINGLE_HOLE, UNIQUE_TRAIT_SOURCE(src))
-	else
-		qdel(swallowed_obj)
+		return
+
+	qdel(swallowed_obj)
 
 /obj/structure/bingle_hole/proc/grow_pit(new_size)
 	if(current_pit_size >= new_size)
@@ -287,78 +296,78 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	if(!origin)
 		return
 
-	// Calculate coordinates properly for both even and odd sizes
-	var/start_coord, end_coord
+	// Calculate corner coordinate offset based on new size
+	var/corner_offset
 	if(new_size % 2 == 1) // Odd sizes (1, 3, 5, etc.)
 		var/half = (new_size - 1) / 2
-		start_coord = -half
-		end_coord = half
+		corner_offset = -half
 	else // Even sizes (2, 4, 6, etc.)
 		var/half = new_size / 2
-		start_coord = -(half - 1)
-		end_coord = half
+		corner_offset = -(half - 1)
 
-	for(var/dx = start_coord to end_coord)
-		for(var/dy = start_coord to end_coord)
-			var/turf/T = locate(origin.x + dx, origin.y + dy, origin.z)
-			if(!T)
-				continue
+	for(var/turf/turf as anything in CORNER_BLOCK_OFFSET(origin, new_size, new_size, corner_offset, corner_offset))
+		if(!turf)
+			continue
 
-			var/icon_state_to_use
-			if(dx == start_coord)
-				if(dy == end_coord)
-					icon_state_to_use = "corner_north"      // top left
-				else if(dy == start_coord)
-					icon_state_to_use = "corner_east"       // bottom left
-				else
-					icon_state_to_use = "edge_west"         // edge left
-			else if(dx == end_coord)
-				if(dy == end_coord)
-					icon_state_to_use = "corner_west"       // top right
-				else if(dy == start_coord)
-					icon_state_to_use = "corner_south"      // bottom right
-				else
-					icon_state_to_use = "edge_east"         // edge right
-			// Edges (check single conditions)
-			else if(dy == end_coord)
-				icon_state_to_use = "edge_north"        // top edge
-			else if(dy == start_coord)
-				icon_state_to_use = "edge_south"        // bottom edge
-			// Center fill
-			else
-				icon_state_to_use = "filler[rand(1, 4)]"
+		if(is_space_or_openspace(turf) && !check_spaceturf_size(turf))
+			continue
 
-			var/obj/structure/bingle_pit_overlay/overlay = locate() in T
-			if(!overlay)
-				overlay = new(T, src)
-				pit_overlays += overlay
+		var/obj/structure/bingle_pit_overlay/overlay = locate() in turf
+		if(!overlay)
+			overlay = new(turf, src)
+			pit_overlays += overlay
 
-			if(overlay.parent_pit != src)
-				INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(merge_bingle_holes), src, overlay.parent_pit)
-				return
+		if(overlay.parent_pit != src)
+			// We are stopping processing anyways till the proc completes
+			merge_bingle_holes(src, overlay.parent_pit)
+			return
 
-			overlay.icon_state = icon_state_to_use
+		if(new_size <= 3)
+			continue
 
-			// If pit is larger than 3x3, consume walls on these tiles
-			if(new_size > 3)
-				for(var/obj/thing in T)
-					if(thing.density && isstructure(thing) && !istype(thing, /obj/structure/bingle_pit_overlay))
-						swallow(thing)
-				// Remove wall turf itself, if present
-				if(iswallturf(T))
-					T.dismantle_wall(TRUE)
+		// If pit is larger than 3x3, consume walls on these tiles
+		for(var/atom/thing as anything in turf)
+			if(thing.density && isstructure(thing) && !istype(thing, /obj/structure/bingle_pit_overlay))
+				swallow(thing)
+		// Remove wall turf itself, if present
+		if(iswallturf(turf))
+			turf.dismantle_wall(TRUE)
 
 	var/size_difference = new_size - current_pit_size
 	SEND_SIGNAL(src, COMSIG_BINGLE_HOLE_GROW, current_pit_size, new_size)
 	current_pit_size = new_size
 	aura_healing.range = new_size + 2
-	max_integrity += size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE
+	modify_max_integrity(max_integrity + size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE, FALSE)
 	repair_damage(size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE)
+
+/**
+ * Proc to check for big spaceturf spaces around a spaceturf
+ *
+ * Looks for any spaceturf neighbours, and if there are
+ * more than 4, returns FALSE.
+ *
+ * Why 4? Counting for all cardinal directions. Works pretty much fine
+ */
+/obj/structure/bingle_hole/proc/check_spaceturf_size(turf/spaceturf)
+	var/spaceturf_amount = 0
+	for(var/turf/turf as anything in TURF_NEIGHBORS(spaceturf))
+		if(!is_space_or_openspace(turf))
+			continue
+		spaceturf_amount += 1
+		if(spaceturf_amount >= 4)
+			return FALSE
+	return TRUE
+
 
 /obj/structure/bingle_pit_overlay
 	name = "bingle pit"
 	desc = "Что-то словно манит вас прыгнуть туда..."
 	icon = 'icons/mob/bingle/binglepit.dmi'
+	icon_state = "floor"
+	base_icon_state = "bingle_pit"
+	smooth = SMOOTH_BITMASK
+	canSmoothWith = SMOOTH_GROUP_BINGLE_PIT
+	smoothing_groups = SMOOTH_GROUP_BINGLE_PIT
 	layer = BELOW_OBJ_LAYER
 	anchored = TRUE
 	mouse_opacity = MOUSE_OPACITY_OPAQUE
@@ -477,6 +486,14 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	if(length(inside_pit_turfs)) // Incase we haven't loaded the pit yet
 		return pick(inside_pit_turfs)
 
+// We would rather eat the singularity, and we can contain it inside
+/obj/structure/bingle_hole/singularity_act()
+	return
+
+// We would rather eat the singularity, and we can contain it inside
+/obj/structure/bingle_pit_overlay/singularity_act()
+	return
+
 /area/misc/bingle_pit
 	name = "Яма Бинглов"
 	area_flags = UNIQUE_AREA
@@ -509,7 +526,8 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
  *
  * Reassigns all bingle mobs to the kept hole,
  * Moves all items from the turf reservation to the kept one,
- * Sums up some variables,
+ * Reassigns pit overlays to the kept one,
+ * Moves the to be kept hole to the cross turf,
  * and finally deletes the to be removed hole.
  */
 /proc/merge_bingle_holes(obj/structure/bingle_hole/first_hole, obj/structure/bingle_hole/second_hole)
@@ -523,6 +541,12 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	else
 		hole_to_keep = second_hole
 		hole_to_destroy = first_hole
+
+	// Overlays "merging"
+	for(var/obj/structure/bingle_pit_overlay/pit_overlay as anything in hole_to_destroy.pit_overlays)
+		hole_to_destroy.pit_overlays -= pit_overlay
+		hole_to_keep.pit_overlays += pit_overlay
+		pit_overlay.parent_pit = hole_to_keep
 
 	// Reassign bingles of to remove hole to the kept one
 	if(LAZYACCESS(GLOB.bingles_by_hole, hole_to_destroy.UID()))
@@ -539,8 +563,20 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 			var/turf/eject_to = hole_to_keep.get_random_bingle_pit_turf()
 			thing.forceMove(eject_to)
 
-	// Some var sums
-	hole_to_keep.item_value_consumed += hole_to_destroy.item_value_consumed
+	// Some var stuff
+	// Shitty var check to see whose armor is best (Works anyways)
+	if(hole_to_keep.armor.getRating(MELEE) < hole_to_destroy.armor.getRating(MELEE))
+		hole_to_keep.armor = hole_to_destroy.armor
+	hole_to_keep.armor = hole_to_keep.armor.modifyRating(
+		melee_value = BINGLE_PIT_MERGE_ARMOR_INCREASE,
+		bullet_value = BINGLE_PIT_MERGE_ARMOR_INCREASE,
+		laser_value = BINGLE_PIT_MERGE_ARMOR_INCREASE,
+		energy_value = BINGLE_PIT_MERGE_ARMOR_INCREASE,
+	)
+
+	hole_to_keep.modify_max_integrity(hole_to_keep.max_integrity + hole_to_destroy.max_integrity, FALSE)
+	hole_to_keep.repair_damage(hole_to_destroy.obj_integrity)
 
 	START_PROCESSING(SSbingle_pit, hole_to_keep)
+	// And finally remove the to destroy hole
 	qdel(hole_to_destroy)
