@@ -144,7 +144,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 
 	// Pit grows every BINGLE_PIT_GROW_VALUE item value - calculate target size
 	var/desired_pit_size = 1 + round(item_value_consumed / BINGLE_PIT_GROW_VALUE)
-	desired_pit_size = min(desired_pit_size, BINGLE_PIT_SIZE_GOAL)
+	desired_pit_size = min(desired_pit_size, BINGLE_PIT_MAX_SIZE)
 
 	if(desired_pit_size > current_pit_size)
 		grow_pit(desired_pit_size)
@@ -214,7 +214,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	return TRUE
 
 /obj/structure/bingle_hole/proc/swallow(atom/movable/item)
-	if(QDELETED(src) || QDELETED(item) || item == src)
+	if(QDELETED(src) || QDELETED(item))
 		return
 	if(is_type_in_typecache(item, GLOB.bingle_hole_blacklist))
 		return
@@ -268,7 +268,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 		return
 
 	if(swallowed_mob.client || swallowed_mob.mind)
-		swallowed_mob.moveToNullspace()
+		swallowed_mob.gib() // This would never really happen but just incase
 		return
 
 	qdel(swallowed_mob)
@@ -276,7 +276,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 /obj/structure/bingle_hole/proc/finish_swallow_obj(obj/swallowed_obj)
 	if(QDELETED(swallowed_obj))
 		return
-	// We cant really contain teslas, but singularities on the other hand
+	// We cant really contain teslas (since they just teleport around), but singularities on the other hand
 	if(istype(swallowed_obj, /obj/singularity/energy_ball))
 		qdel(swallowed_obj)
 		return
@@ -336,7 +336,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	var/size_difference = new_size - current_pit_size
 	SEND_SIGNAL(src, COMSIG_BINGLE_HOLE_GROW, current_pit_size, new_size)
 	current_pit_size = new_size
-	aura_healing.range = new_size + 2
+	aura_healing.range = round(new_size / 2) + 2
 	modify_max_integrity(max_integrity + size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE, FALSE)
 	repair_damage(size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE)
 
@@ -565,13 +565,15 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 
 	// Some var stuff
 	// Shitty var check to see whose armor is best (Works anyways)
-	if(hole_to_keep.armor.getRating(MELEE) < hole_to_destroy.armor.getRating(MELEE))
-		hole_to_keep.armor = hole_to_destroy.armor
-	hole_to_keep.armor = hole_to_keep.armor.modifyRating(
-		melee_value = BINGLE_PIT_MERGE_ARMOR_INCREASE,
-		bullet_value = BINGLE_PIT_MERGE_ARMOR_INCREASE,
-		laser_value = BINGLE_PIT_MERGE_ARMOR_INCREASE,
-		energy_value = BINGLE_PIT_MERGE_ARMOR_INCREASE,
+	var/datum/armor/kept_armor = hole_to_keep.armor
+	var/datum/armor/removed_armor = hole_to_destroy.armor
+	if(kept_armor.getRating(MELEE) < removed_armor.getRating(MELEE))
+		kept_armor = removed_armor
+	kept_armor = kept_armor.setRating(
+		melee_value = min(kept_armor.getRating(MELEE) + BINGLE_PIT_MERGE_ARMOR_INCREASE, BINGLE_PIT_MERGE_ARMOR_CAP),
+		bullet_value = min(kept_armor.getRating(BULLET) + BINGLE_PIT_MERGE_ARMOR_INCREASE, BINGLE_PIT_MERGE_ARMOR_CAP),
+		laser_value = min(kept_armor.getRating(LASER) + BINGLE_PIT_MERGE_ARMOR_INCREASE, BINGLE_PIT_MERGE_ARMOR_CAP),
+		energy_value = min(kept_armor.getRating(ENERGY) + BINGLE_PIT_MERGE_ARMOR_INCREASE, BINGLE_PIT_MERGE_ARMOR_CAP),
 	)
 
 	hole_to_keep.modify_max_integrity(hole_to_keep.max_integrity + hole_to_destroy.max_integrity, FALSE)

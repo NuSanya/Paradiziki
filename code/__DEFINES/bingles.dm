@@ -1,7 +1,9 @@
 /// Lazy assoc list in format Key(hole UID) - List(mobs)
 GLOBAL_LIST_EMPTY(bingles_by_hole)
 
-/// Max pit size of bingle hole (Also the goal of bingles)
+/// Max possible size of bingle hole
+#define BINGLE_PIT_MAX_SIZE 60
+/// Goal size of bingle hole
 #define BINGLE_PIT_SIZE_GOAL 50
 /// At what size do we announce to the station about bingles
 #define ANNOUNCE_BINGLE_PIT_SIZE 3
@@ -33,5 +35,7 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 /// How much we gain from eating singularities
 #define BINGLE_PIT_SINGULARITY_VALUE 250
 
-// How much extra defense we get on each successful hole merge
+/// How much extra defense we get on each successful hole merge
 #define BINGLE_PIT_MERGE_ARMOR_INCREASE 10
+/// Maximum of armor value we can get from hole merging
+#define BINGLE_PIT_MERGE_ARMOR_CAP 75
