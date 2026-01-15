@@ -1752,4 +1752,4 @@ GLOBAL_LIST_EMPTY(admin_objective_list)
 	if(!team)
 		return FALSE
 	var/datum/team/bingles/bingle_team = team
-	return bingle_team.max_size_achieved
+	return bingle_team.goal_size_achieved
