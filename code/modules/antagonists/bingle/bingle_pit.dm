@@ -199,7 +199,10 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 		return FALSE
 	victim.add_traits(list(TRAIT_FALLING_INTO_BINGLE_HOLE, TRAIT_NO_TRANSFORM), UNIQUE_TRAIT_SOURCE(src))
 	item_value_consumed += get_item_value(victim)
-	repair_damage(BINGLE_PIT_LIVING_HEAL_MULTIPLIER * BINGLE_PIT_LIVING_VALUE)
+	if(iscarbon(victim) && victim.mind)
+		repair_damage(BINGLE_PIT_PLAYER_HEAL)
+	else
+		repair_damage(BINGLE_PIT_LIVING_HEAL)
 	// Only animate if we're actually swallowing
 	animate_falling_into_pit(victim)
 	// Delay the actual movement to let animation play
@@ -228,6 +231,9 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 			content.forceMove(content.drop_location())
 		else if(isobj(content))
 			item_value_consumed += get_item_value(content)
+			repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
+
+	repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
 	// Only animate if we're actually swallowing
 	animate_falling_into_pit(thing)
 	// Delay the actual movement to let animation play

@@ -22,20 +22,27 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 /// By how much do we multiply obj_damage variable on evolve
 #define BINGLE_EVOLVE_OBJ_DAMAGE_MULTIPLIER 2
 
-/// By how much do we increase the health of the bingle pit on growth
-#define BINGLE_PIT_GROW_INTEGRITY_INCREASE 25
 /// How often based on item_value_consumed do we grow the pit
 #define BINGLE_PIT_GROW_VALUE 100
 /// How many more items do we need per size increase for grow
 #define BINGLE_PIT_ON_GROW_INCREASE_VALUE 1
+/// By how much do we increase the health of the bingle pit on growth
+#define BINGLE_PIT_GROW_INTEGRITY_INCREASE 25
+
 /// How often based on item_value_consumed do we spawn a bingle
 #define BINGLE_SPAWN_VALUE 50
 /// At what item_value_consumed do bingles become evolved
 #define BINGLE_EVOLVE_VALUE 500
+
+/// How much the pit should heal from living mobs
+#define BINGLE_PIT_LIVING_HEAL 25
+/// How much the pit should heal from carbon mobs with mind
+#define BINGLE_PIT_PLAYER_HEAL 50
+// How much the pit should heal from consuming an item
+#define BINGLE_PIT_OBJECT_CONSUME_HEAL 2
+
 /// How much does the pit gain from living mobs
 #define BINGLE_PIT_LIVING_VALUE 25
-/// How much the pit should heal from BINGLE_PIT_LIVING_VALUE multiplied by this
-#define BINGLE_PIT_LIVING_HEAL_MULTIPLIER 1.5
 /// Limit of value gained from stack items
 #define BINGLE_PIT_STACK_GAIN_LIMIT 50
 /// How much we gain from eating singularities
