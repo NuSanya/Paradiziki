@@ -11,7 +11,7 @@
 	/// Have we sent nuclear codes if the pit got even larger
 	var/sent_nuclear_codes = FALSE
 	/// Have we gotten a hole with max size reached?
-	var/max_size_achieved = FALSE
+	var/goal_size_achieved = FALSE
 	/// Timerid of gamma code up
 	var/gamma_timerid
 	/// Timerid of roundend countdown
@@ -38,7 +38,7 @@
 
 /datum/team/bingles/declare_completion()
 	var/list/text = list()
-	if(max_size_achieved)
+	if(goal_size_achieved)
 		text += span_fontsize3("<br><br><b>Победа \"Бинглов\"!</b>")
 		text += "<br><b>Яма Бинглов стала такой большой, что поглотила всю станцию целиком!</b>"
 	else
@@ -78,7 +78,7 @@
 
 /// Proc used to stop the roundend timer if there are no more max size holes present
 /datum/team/bingles/proc/handle_roundend_destroy(obj/structure/bingle_hole/destroyed_hole)
-	if(!max_size_achieved)
+	if(!goal_size_achieved)
 		return
 
 	deltimer(win_grow_timerids[destroyed_hole.UID()])
@@ -94,7 +94,7 @@
 				Рекомендуется вызов шаттла.",
 		new_title = ANNOUNCE_CCPARANORMAL_RU,
 	)
-	max_size_achieved = FALSE
+	goal_size_achieved = FALSE
 
 /// Proc used to lower gamma code if it was caused by any bingle holes
 /datum/team/bingles/proc/try_remove_gamma()
@@ -148,8 +148,8 @@
 	if(new_size < BINGLE_PIT_SIZE_GOAL)
 		return
 	INVOKE_ASYNC(src, PROC_REF(start_growing_hole), source)
-	if(!max_size_achieved)
-		max_size_achieved = TRUE
+	if(!goal_size_achieved)
+		goal_size_achieved = TRUE
 		INVOKE_ASYNC(src, PROC_REF(start_bingle_win), source)
 
 /// Proc to announce to the station about bingles and raise code to gamma
