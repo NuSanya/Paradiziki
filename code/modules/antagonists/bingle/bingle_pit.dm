@@ -390,7 +390,6 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	current_pit_size = new_size
 	aura_healing.range = round(new_size / 2) + 2
 	modify_max_integrity(max_integrity + size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE, FALSE)
-	repair_damage(size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE)
 
 // Proc to grow a hole by 1
 /obj/structure/bingle_hole/proc/grow_pit_by_one()
