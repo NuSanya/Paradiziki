@@ -1,10 +1,10 @@
 /// Lazy assoc list in format Key(hole UID) - List(mobs)
 GLOBAL_LIST_EMPTY(bingles_by_hole)
 
-/// Max possible size of bingle hole
-#define BINGLE_PIT_MAX_SIZE 60
+/// Max possible size of bingle hole via item consumption
+#define BINGLE_PIT_MAX_SIZE 40
 /// Goal size of bingle hole
-#define BINGLE_PIT_SIZE_GOAL 50
+#define BINGLE_PIT_SIZE_GOAL 40
 /// At what size do we announce to the station about bingles
 #define ANNOUNCE_BINGLE_PIT_SIZE 3
 /// At what size do we send nuclear codes
@@ -12,6 +12,10 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 
 /// How much time is given at BINGLE_PIT_SIZE_GOAL for crew to kill the hole until it wins
 #define BINGLE_PIT_WIN_DELAY 1 MINUTES
+/// How often do we grow the pit while the win delay is active
+#define BINGLE_PIT_WIN_GROW_COOLDOWN 2 SECONDS
+/// To what size do we grow the hole after win while the cinematic plays
+#define BINGLE_PIT_AFTER_WIN_SIZE 200
 
 /// By how much do we multiply maxHealth variable on evolve
 #define BINGLE_EVOLVE_HEALTH_MULTIPLIER 1.5
@@ -22,6 +26,8 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 #define BINGLE_PIT_GROW_INTEGRITY_INCREASE 25
 /// How often based on item_value_consumed do we grow the pit
 #define BINGLE_PIT_GROW_VALUE 100
+/// How many more items do we need per size increase for grow
+#define BINGLE_PIT_ON_GROW_INCREASE_VALUE 1
 /// How often based on item_value_consumed do we spawn a bingle
 #define BINGLE_SPAWN_VALUE 50
 /// At what item_value_consumed do bingles become evolved
@@ -36,6 +42,6 @@ GLOBAL_LIST_EMPTY(bingles_by_hole)
 #define BINGLE_PIT_SINGULARITY_VALUE 250
 
 /// How much extra defense we get on each successful hole merge
-#define BINGLE_PIT_MERGE_ARMOR_INCREASE 10
+#define BINGLE_PIT_MERGE_ARMOR_INCREASE 15
 /// Maximum of armor value we can get from hole merging
 #define BINGLE_PIT_MERGE_ARMOR_CAP 75

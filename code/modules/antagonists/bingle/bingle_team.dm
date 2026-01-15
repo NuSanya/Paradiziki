@@ -12,8 +12,12 @@
 	var/sent_nuclear_codes = FALSE
 	/// Have we gotten a hole with max size reached?
 	var/max_size_achieved = FALSE
+	/// Timerid of gamma code up
+	var/gamma_timerid
 	/// Timerid of roundend countdown
-	var/timerid
+	var/win_timerid
+	/// Assoc list (hole UID -> timerid) of all loop timer ids of holes growing
+	var/list/win_grow_timerids = list()
 
 /datum/team/bingles/New(list/starting_members)
 	..()
@@ -61,7 +65,7 @@
 	UnregisterSignal(source, COMSIG_QDELETING)
 	UnregisterSignal(source, COMSIG_BINGLE_HOLE_GROW)
 	gib_related_bingles(source)
-	INVOKE_ASYNC(src, PROC_REF(handle_roundend_destroy))
+	INVOKE_ASYNC(src, PROC_REF(handle_roundend_destroy), source)
 	INVOKE_ASYNC(src, PROC_REF(try_remove_gamma))
 
 /// Proc used to gib all bingles connected to a hole given as an argument
@@ -73,14 +77,17 @@
 	GLOB.bingles_by_hole -= hole.UID()
 
 /// Proc used to stop the roundend timer if there are no more max size holes present
-/datum/team/bingles/proc/handle_roundend_destroy()
+/datum/team/bingles/proc/handle_roundend_destroy(obj/structure/bingle_hole/destroyed_hole)
 	if(!max_size_achieved)
 		return
+
+	deltimer(win_grow_timerids[destroyed_hole.UID()])
 	// If we find any hole with a size bigger than rounend requirement, then we dont stop the timer.
 	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
 		if(hole.current_pit_size >= BINGLE_PIT_SIZE_GOAL)
 			return
-	deltimer(timerid)
+
+	deltimer(win_timerid)
 	GLOB.major_announcement.announce(
 		message = "Яма критического размера на [station_name()] уничтожена. \
 				В случае, если код не будет снижен, то на станции существуют ещё ямы. \
@@ -97,6 +104,7 @@
 	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
 		if(hole.current_pit_size >= ANNOUNCE_BINGLE_PIT_SIZE)
 			return
+	deltimer(gamma_timerid)
 	GLOB.major_announcement.announce(
 		message = "Замечено снижение паранормальной активности на [station_name()]. \
 				Действие Космического Закона и Стандартных Рабочих Процедур возвращается в норму. \
@@ -139,6 +147,7 @@
 
 	if(new_size < BINGLE_PIT_SIZE_GOAL)
 		return
+	INVOKE_ASYNC(src, PROC_REF(start_growing_hole), source)
 	if(!max_size_achieved)
 		max_size_achieved = TRUE
 		INVOKE_ASYNC(src, PROC_REF(start_bingle_win), source)
@@ -152,8 +161,7 @@
 		new_title = ANNOUNCE_BIOHAZARD_RU,
 		new_sound = 'sound/effects/siren-spooky.ogg',
 	)
-	// A bit hacky, but saves my sanity by having it stop and delete itself on hole destroy, if we didn't have 5 seconds pass.
-	hole.addtimer(CALLBACK(SSsecurity_level, TYPE_PROC_REF(/datum/controller/subsystem/security_level, set_level), SEC_LEVEL_GAMMA), 5 SECONDS, TIMER_STOPPABLE | TIMER_DELETE_ME)
+	gamma_timerid = addtimer(CALLBACK(SSsecurity_level, TYPE_PROC_REF(/datum/controller/subsystem/security_level, set_level), SEC_LEVEL_GAMMA), 5 SECONDS, TIMER_STOPPABLE | TIMER_DELETE_ME)
 
 /// Proc to send nuclear codes to the station
 /datum/team/bingles/proc/send_nuclear_codes()
@@ -191,7 +199,7 @@
 		new_title = "Отчёт об объекте [station_name()].",
 		new_sound = 'sound/AI/commandreport.ogg'
 	)
-	timerid = addtimer(CALLBACK(src, TYPE_PROC_REF(/datum/team/bingles, bingle_win)), BINGLE_PIT_WIN_DELAY, TIMER_STOPPABLE | TIMER_DELETE_ME)
+	win_timerid = addtimer(CALLBACK(src, TYPE_PROC_REF(/datum/team/bingles, bingle_win)), BINGLE_PIT_WIN_DELAY, TIMER_STOPPABLE | TIMER_DELETE_ME)
 
 /**
  * Proc called to end the round (and win)
@@ -201,10 +209,30 @@
 /datum/team/bingles/proc/bingle_win()
 	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
 		hole.resistance_flags |= INDESTRUCTIBLE // We already won, no you can't break the hole while the cinematic plays
-	//play_cinematic(/datum/cinematic/nuke, world)
+	/*
+	// Pick a hole to grow mid cinematic
+	var/obj/structure/bingle_hole/hole_to_grow = get_largest_bingle_pit()
+	// Basically grow over the whole sector
+	var/datum/callback/grow_callback = CALLBACK(hole_to_grow, TYPE_PROC_REF(/obj/structure/bingle_hole, grow_pit), BINGLE_PIT_AFTER_WIN_SIZE)
+	play_cinematic(/datum/cinematic/nuke, world, grow_callback)
+	*/
 	GLOB.major_announcement.announce(
 		message = "Объект потерян. Причина: распространение биологической угрозы Бинглов. Взведение устройства самоуничтожения персоналом или внешними силами в данный момент не представляется возможным из-за высокого уровня заражения. Активация протоколов изоляции.",
 		new_title = "Отчёт об объекте [station_name()].",
 		new_sound = 'sound/AI/commandreport.ogg'
 	)
 	SSticker.mode.end_game()
+
+/// Proc used to get the largest bingle pit we have
+/datum/team/bingles/proc/get_largest_bingle_pit()
+	var/obj/structure/bingle_hole/hole_to_return = /obj/structure/bingle_hole
+	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
+		if(hole.current_pit_size >= hole_to_return.current_pit_size)
+			hole_to_return = hole
+	return hole_to_return
+
+/// Proc to grow a hole in a loop with a cooldown while win timer is active
+/datum/team/bingles/proc/start_growing_hole(obj/structure/bingle_hole/hole_to_grow)
+	if(!hole_to_grow)
+		return
+	win_grow_timerids[hole_to_grow.UID()] = addtimer(CALLBACK(hole_to_grow, TYPE_PROC_REF(/obj/structure/bingle_hole, grow_pit_by_one)), BINGLE_PIT_WIN_GROW_COOLDOWN, TIMER_UNIQUE | TIMER_LOOP | TIMER_STOPPABLE | TIMER_DELETE_ME)

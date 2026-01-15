@@ -33,6 +33,9 @@
 	if(!do_after(user, creation_time, user, max_interact_count = 1, cancel_on_max = TRUE))
 		user.balloon_alert(user, "прервано!")
 		return
+	if(!check_for_enough_space(our_turf)) // Double check before do_after and after for QOL
+		user.balloon_alert(user, "нет места!")
+		return
 	user.balloon_alert(user, "яма создана")
 	Remove(owner) // First we remove, then spawn the hole. Could do it async, but pretty sure it makes it more laggy
 	spawn_hole(our_turf, user)
@@ -41,6 +44,10 @@
 /datum/action/cooldown/bingle/create_hole/proc/check_for_enough_space(turf/selected_turf)
 	for(var/turf/adjacent_turf as anything in RANGE_TURFS(1, selected_turf))
 		if(isnull(adjacent_turf) || adjacent_turf.density)
+			return FALSE
+		if(locate(/obj/structure/bingle_hole) in adjacent_turf)
+			return FALSE
+		if(locate(/obj/structure/bingle_pit_overlay) in adjacent_turf)
 			return FALSE
 	return TRUE
 
