@@ -421,7 +421,5 @@
 
 #define TRAIT_PRESSURE_VISION "pressure_vision"
 
-#define TRAIT_MESON_VISION "meson_vision"
-
 /// Trait used to ensure that things don't get animated as falling in multiple times
 #define TRAIT_FALLING_INTO_BINGLE_HOLE "falling_into_bingle_pit"
