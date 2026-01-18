@@ -540,7 +540,7 @@
 	mobile_port.remove_ripples()
 
 	//move or squish anything in the way ship at destination
-	//mobile_port.shuttle_smash(old_turfs, new_turfs, new_dock.dir)
+	mobile_port.shuttle_smash(old_turfs, new_turfs, new_dock.dir)
 
 	// begin transition
 	for(var/i in 1 to length(old_turfs))
@@ -622,7 +622,7 @@
 
 	mobile_port.unlockPortDoors(new_dock)
 	areaInstance.parallax_movedir = mobile_port.preferred_direction
-	SEND_SIGNAL(src, COMSIG_SHUTTLE_DOCK, new_dock)
+	SEND_SIGNAL(mobile_port, COMSIG_SHUTTLE_DOCK, new_dock)
 
 /obj/docking_port/mobile/proc/is_turf_blacklisted_for_transit(turf/T)
 	var/static/list/blacklisted_turf_types = typecacheof(GLOB.blacklisted_turf_types_for_transit)
