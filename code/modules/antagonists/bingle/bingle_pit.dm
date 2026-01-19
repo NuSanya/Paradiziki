@@ -96,7 +96,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	QDEL_NULL(aura_healing)
 	QDEL_LIST(pit_overlays)
 	STOP_PROCESSING(SSbingle_pit, src)
-	INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(eject_bingle_pit_contents), get_turf(src), current_pit_size, pit_reservation)
+	INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(eject_bingle_pit_contents), get_turf(src), round(current_pit_size / 2), pit_reservation)
 	bingle_team = null
 	pit_reservation = null
 	inside_pit_turfs = null
@@ -571,7 +571,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 				continue
 			var/turf/eject_to = pick(turfs_in_range)
 			thing.forceMove(eject_to)
-			thing.SpinAnimation(5, 1)
+			thing.SpinAnimation(5, 1) // So that people emerging from the hole still have a chance at living
 			CHECK_TICK
 
 	qdel(pit_reservation)
