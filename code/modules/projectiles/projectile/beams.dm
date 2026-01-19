@@ -685,8 +685,7 @@
 	name = "strong turret laser"
 	damage = 45
 	armour_penetration = 30
-	forcedodge = 3
-	tile_dropoff_forcedodge = 0.2
+	forcedodge = 2
 
 /// Used in mega-swarmer minigun
 /obj/projectile/beam/disabler/swarmer/minigun
