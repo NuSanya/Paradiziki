@@ -209,6 +209,7 @@
 /datum/team/bingles/proc/bingle_win()
 	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
 		hole.resistance_flags |= INDESTRUCTIBLE // We already won, no you can't break the hole while the cinematic plays
+		deltimer(win_grow_timerids[hole.UID()]) // Stop the grow timer loop
 	/*
 	// Pick a hole to grow mid cinematic
 	var/obj/structure/bingle_hole/hole_to_grow = get_largest_bingle_pit()
@@ -235,4 +236,4 @@
 /datum/team/bingles/proc/start_growing_hole(obj/structure/bingle_hole/hole_to_grow)
 	if(!hole_to_grow)
 		return
-	win_grow_timerids[hole_to_grow.UID()] = addtimer(CALLBACK(hole_to_grow, TYPE_PROC_REF(/obj/structure/bingle_hole, grow_pit_by_one)), BINGLE_PIT_WIN_GROW_COOLDOWN, TIMER_UNIQUE | TIMER_LOOP | TIMER_STOPPABLE | TIMER_DELETE_ME)
+	win_grow_timerids[hole_to_grow.UID()] = addtimer(CALLBACK(hole_to_grow, TYPE_PROC_REF(/obj/structure/bingle_hole, grow_pit_by_set_amount), 1), BINGLE_PIT_WIN_GROW_COOLDOWN, TIMER_UNIQUE | TIMER_LOOP | TIMER_STOPPABLE | TIMER_DELETE_ME)

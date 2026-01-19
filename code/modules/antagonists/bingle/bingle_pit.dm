@@ -391,9 +391,9 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	aura_healing.range = round(new_size / 2) + 2
 	modify_max_integrity(max_integrity + size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE, FALSE)
 
-// Proc to grow a hole by 1
-/obj/structure/bingle_hole/proc/grow_pit_by_one()
-	grow_pit(current_pit_size + 1)
+/// Proc to force grow a hole by a set amount
+/obj/structure/bingle_hole/proc/grow_pit_by_set_amount(grow_amount)
+	grow_pit(current_pit_size + grow_amount)
 
 /**
  * Proc to check for big spaceturf spaces around a spaceturf
