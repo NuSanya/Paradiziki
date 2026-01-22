@@ -1,6 +1,19 @@
 /// Lazy assoc list in format Key(hole UID) - List(mobs)
 GLOBAL_LIST_EMPTY(bingles_by_hole)
 
+/// Typecache list of things not allowed in bingle holes
+GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
+	/mob/living/simple_animal/hostile/bingle,
+	/obj/effect,
+	/obj/projectile,
+	/obj/structure/bingle_hole,
+	/obj/structure/bingle_pit_overlay,
+	/obj/item/stack/spacechips,
+	/obj/item/stack/spacecash,
+	/obj/item/disk/nuclear, // No log spam
+	)
+))
+
 /// Max possible size of bingle hole via item consumption
 #define BINGLE_PIT_MAX_SIZE 40
 /// Goal size of bingle hole

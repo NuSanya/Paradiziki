@@ -1,16 +1,3 @@
-/// Typecache list of things not allowed in bingle holes
-GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
-	/mob/living/simple_animal/hostile/bingle,
-	/obj/effect,
-	/obj/projectile,
-	/obj/structure/bingle_hole,
-	/obj/structure/bingle_pit_overlay,
-	/obj/item/stack/spacechips,
-	/obj/item/stack/spacecash,
-	/obj/item/disk/nuclear, // No log spam
-	)
-))
-
 /obj/structure/bingle_hole
 	name = "bingle pit"
 	desc = "Всепоглощающая бездна бесконечных ужасов... и Бинглов."
@@ -545,8 +532,13 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 /obj/structure/bingle_hole/singularity_act()
 	return
 
-// We would rather eat the singularity, and we can contain it inside
+/obj/structure/bingle_hole/singularity_pull(obj/singularity/S, current_size)
+	return
+
 /obj/structure/bingle_pit_overlay/singularity_act()
+	return
+
+/obj/structure/bingle_hole/singularity_pull(obj/singularity/S, current_size)
 	return
 
 /area/misc/bingle_pit
