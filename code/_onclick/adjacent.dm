@@ -71,7 +71,7 @@ Adjacency (to turf):
 		return TRUE
 
 	var/turf/corner_turf = loc
-	if(!corner_turf)
+	if(!istype(corner_turf))
 		return FALSE
 
 	if(!is_multi_tile_object(src))
