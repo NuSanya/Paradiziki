@@ -77,10 +77,12 @@ Adjacency (to turf):
 	if(!is_multi_tile_object(src))
 		return corner_turf.Adjacent(neighbor, target = neighbor, mover = src)
 
-	// Check for all turfs we are currently occupying, checking bound_width / bound_height variables.
+	// Check for all turfs we are currently occupying, checking bound_width / bound_height variables
+	var/horizontal_turf_amount = bound_width / ICON_SIZE_X
+	var/vertical_turf_amount = bound_height / ICON_SIZE_Y
 	// We round to the nearest integer
-	var/horizontal_turf_amount = max(1, floor(bound_width / ICON_SIZE_X) + (fract(bound_width) >= 0.5))
-	var/vertical_turf_amount = max(1, floor(bound_height / ICON_SIZE_Y) + (fract(bound_height) >= 0.5))
+	horizontal_turf_amount = max(1, floor(horizontal_turf_amount) + (fract(horizontal_turf_amount) >= 0.5))
+	vertical_turf_amount = max(1, floor(vertical_turf_amount) + (fract(vertical_turf_amount) >= 0.5))
 	for(var/turf/our_turf as anything in CORNER_BLOCK(corner_turf, horizontal_turf_amount, vertical_turf_amount))
 		if(our_turf.Adjacent(neighbor, target = neighbor, mover = src))
 			return TRUE
