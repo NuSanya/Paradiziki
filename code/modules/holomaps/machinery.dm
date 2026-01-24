@@ -103,7 +103,7 @@
 		if(!holomap_datum)
 			// Something is very wrong if we have to un-fuck ourselves here.
 			stack_trace("Holomap at [COORD(src)] couldn't setup holomap_datum.")
-			to_chat(user, span_warning("[capitalize(declent_ru(NOMINATIVE))] сбоит и выдает сообщение: \"ОШИБКА: NTOS не отвечает.\""))
+			to_chat(user, span_warning("[DECLENT_RU_CAP(src, NOMINATIVE)] сбоит и выдает сообщение: \"ОШИБКА: NTOS не отвечает.\""))
 			return
 
 	holomap_datum.update_map(handle_overlays())
@@ -336,8 +336,8 @@
 		var/area/alarms = get_area(air_alarm)
 		if(air_alarm?.z == current_z_level && alarms?.atmosalm) //Altered it to fire_alam since we don't have an area variable on air_alarms
 			var/image/alarm_icon = image('icons/misc/8x8.dmi', "atmos_marker")
-			alarm_icon.pixel_x = air_alarm.x + HOLOMAP_CENTER_X - 1
-			alarm_icon.pixel_y = air_alarm.y + HOLOMAP_CENTER_Y
+			alarm_icon.pixel_w = air_alarm.x + HOLOMAP_CENTER_X - 1
+			alarm_icon.pixel_z = air_alarm.y + HOLOMAP_CENTER_Y
 			air_alarms += alarm_icon
 
 	if(length(air_alarms))
