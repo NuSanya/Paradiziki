@@ -179,7 +179,7 @@
 	. = ..()
 	if(!looker || !creature)
 		return INITIALIZE_HINT_QDEL
-	modsuit_image = image(icon = icon, loc = src, icon_state = real_icon_state, layer = ABOVE_ALL_MOB_LAYER, pixel_x = ((creature.x - looker.x) * ICON_SIZE_X), pixel_y = ((creature.y - looker.y) * ICON_SIZE_Y))
+	modsuit_image = image(icon = icon, loc = src, icon_state = real_icon_state, layer = ABOVE_ALL_MOB_LAYER, pixel_w = ((creature.x - looker.x) * ICON_SIZE_X), pixel_z = ((creature.y - looker.y) * ICON_SIZE_Y))
 	modsuit_image.plane = ABOVE_LIGHTING_PLANE
 	modsuit_image.mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	source_UID = looker.UID()
@@ -545,8 +545,8 @@
 	if(!check_power(use_energy_cost))
 		return
 	mod.wearer.visible_message(
-		span_warning("[capitalize(declent_ru(NOMINATIVE))] [mod.declent_ru(GENITIVE)] [mod.wearer.declent_ru(GENITIVE)] реагиру[PLUR_ET_UT(src)] на атаку и распыля[PLUR_ET_UT(src)] перцовый газ!"),
-		span_notice("[capitalize(declent_ru(NOMINATIVE))] вашего [mod.declent_ru(GENITIVE)] распыля[PLUR_ET_UT(src)] облако перцового газа!")
+		span_warning("[DECLENT_RU_CAP(src, NOMINATIVE)] [mod.declent_ru(GENITIVE)] [mod.wearer.declent_ru(GENITIVE)] реагиру[PLUR_ET_UT(src)] на атаку и распыля[PLUR_ET_UT(src)] перцовый газ!"),
+		span_notice("[DECLENT_RU_CAP(src, NOMINATIVE)] вашего [mod.declent_ru(GENITIVE)] распыля[PLUR_ET_UT(src)] облако перцового газа!")
 	)
 	on_use()
 
