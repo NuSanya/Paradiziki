@@ -50,13 +50,13 @@ SUBSYSTEM_DEF(capitalism)
 		if(!goal.check_completion() || (goal in completed_goals))
 			continue
 
+		completed_goals += goal
 		total_station_goal_bounty += goal.station_bounty
 		for(var/prom in goal.personal_reward)
 			if(s_ex_personal_bounty[prom])
 				s_ex_personal_bounty[prom] += goal.personal_reward[prom]
 			else
 				s_ex_personal_bounty[prom] = goal.personal_reward[prom]
-			completed_goals += goal
 
 	if(total_station_goal_bounty)
 		base_account.credit(total_station_goal_bounty, "Начисление награды за выполнение цели.", "Отдел развития \"Нанотрейзен\"", base_account.owner_name)
@@ -106,9 +106,15 @@ SUBSYSTEM_DEF(capitalism)
 
 /datum/controller/subsystem/capitalism/proc/payment_process()
 	. = TRUE
+	var/list/to_be_paid_accounts = list()
 	for(var/datum/money_account/account as anything in GLOB.all_money_accounts)
 		if(!account.salary_payment_active || !account.linked_job.paycheck || account.suspended)
 			continue
+		to_be_paid_accounts[account] = TRUE
+
+	while(length(to_be_paid_accounts))
+		var/datum/money_account/account = to_be_paid_accounts[length(to_be_paid_accounts)]
+		to_be_paid_accounts.len--
 		if(!payment_account.charge(account.linked_job.paycheck, account, "Выплата зарплаты персоналу.", "Отдел финансов \"Нанотрейзен\"" , "Поступление зарплаты.", "Поступление зарплаты" ,"Терминал Бизель №[rand(111,333)]"))
 			return FALSE // If we somehow failed the payment (likely to not enough money), immediately return
 		account.notify_pda_owner("<b>Поступление зарплаты </b>\"На ваш привязанный аккаунт поступило [account.linked_job.paycheck] кредитов\" (Невозможно Ответить)", FALSE)
