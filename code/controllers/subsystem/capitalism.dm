@@ -119,7 +119,6 @@ SUBSYSTEM_DEF(capitalism)
 			return FALSE // If we somehow failed the payment (likely to not enough money), immediately return
 		account.notify_pda_owner("<b>Поступление зарплаты </b>\"На ваш привязанный аккаунт поступило [account.linked_job.paycheck] кредитов\" (Невозможно Ответить)", FALSE)
 		total_salary_payment += account.linked_job.paycheck
-		CHECK_TICK
 
 /datum/controller/subsystem/capitalism/proc/smart_bounty_payment(list/jobs_payment, money)
 	if(!length(jobs_payment) || !money)
