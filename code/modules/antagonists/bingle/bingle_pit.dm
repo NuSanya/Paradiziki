@@ -4,6 +4,7 @@
 	gender = FEMALE
 	armor = list(MELEE=20, BULLET=20, LASER=75, ENERGY=75, BOMB=75, BIO=100, RAD=100, FIRE=50, ACID=80)
 	max_integrity = 500
+	resistance_flags = FIRE_PROOF | UNACIDABLE
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	icon_state = "bingle_pit-0"
 	base_icon_state = "bingle_pit"
@@ -199,12 +200,16 @@
 /obj/structure/bingle_hole/proc/get_item_value(atom/thing)
 	if(isliving(thing))
 		return BINGLE_PIT_LIVING_VALUE
-	if(isstack(thing))
-		var/obj/item/stack/stack = thing
-		return min(stack.amount, BINGLE_PIT_STACK_GAIN_LIMIT)
 	if(issingularity(thing))
 		return BINGLE_PIT_SINGULARITY_VALUE
-	return 1
+	if(!isstack(thing))
+		return 1
+
+	var/obj/item/stack/stack = thing
+	// If we have a set limit on this specific stack type, we limit to that. Otherwise, limit to common limiter
+	if(LAZYACCESS(GLOB.bingle_hole_stack_limit, stack.type))
+		return min(stack.amount, GLOB.bingle_hole_stack_limit[stack.type])
+	return min(stack.amount, BINGLE_PIT_STACK_GAIN_LIMIT)
 
 /obj/structure/bingle_hole/proc/swallow_obj(obj/thing)
 	if(!isobj(thing))
@@ -407,6 +412,7 @@
 	icon = 'icons/mob/bingle/binglepit.dmi'
 	icon_state = "floor"
 	base_icon_state = "bingle_pit"
+	resistance_flags = FIRE_PROOF | UNACIDABLE
 	smooth = SMOOTH_BITMASK
 	canSmoothWith = SMOOTH_GROUP_BINGLE_PIT
 	smoothing_groups = SMOOTH_GROUP_BINGLE_PIT

@@ -8,10 +8,15 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 	/obj/projectile,
 	/obj/structure/bingle_hole,
 	/obj/structure/bingle_pit_overlay,
-	/obj/item/stack/spacechips,
-	/obj/item/stack/spacecash,
 	/obj/item/disk/nuclear, // No log spam
 	)
+))
+
+/// Assoc list of stack objects and their respective gain limits
+GLOBAL_LIST_INIT(bingle_hole_stack_limit, list(
+	/obj/item/stack/cable_coil = 3, // Gets really weird when there are toolboxes with 90 cable coils
+	/obj/item/stack/spacecash = 2, // If someone decides to feed the pit with money, that would be funny
+	/obj/item/stack/spacechips = 4, // Basically just rarer cash
 ))
 
 /// Max possible size of bingle hole via item consumption
@@ -38,7 +43,7 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 /// How often based on item_value_consumed do we grow the pit
 #define BINGLE_PIT_GROW_VALUE 100
 /// How many more items do we need per size increase for grow
-#define BINGLE_PIT_ON_GROW_INCREASE_VALUE 1
+#define BINGLE_PIT_ON_GROW_INCREASE_VALUE 2
 /// By how much do we increase the health of the bingle pit on growth
 #define BINGLE_PIT_GROW_INTEGRITY_INCREASE 25
 
@@ -57,9 +62,9 @@ GLOBAL_LIST_INIT(bingle_hole_blacklist, typecacheof(list(
 /// How much does the pit gain from living mobs
 #define BINGLE_PIT_LIVING_VALUE 25
 /// Limit of value gained from stack items
-#define BINGLE_PIT_STACK_GAIN_LIMIT 50
+#define BINGLE_PIT_STACK_GAIN_LIMIT 30
 /// How much we gain from eating singularities
-#define BINGLE_PIT_SINGULARITY_VALUE 250
+#define BINGLE_PIT_SINGULARITY_VALUE 100
 
 /// How much extra defense we get on each successful hole merge
 #define BINGLE_PIT_MERGE_ARMOR_INCREASE 15

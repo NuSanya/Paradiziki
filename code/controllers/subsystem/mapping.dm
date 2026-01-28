@@ -581,6 +581,7 @@ SUBSYSTEM_DEF(mapping)
 	z_reservation = null,
 	reservation_type = /datum/turf_reservation,
 	turf_type_override = null,
+	noisy = TRUE,
 )
 	UNTIL((!z_reservation || reservation_ready["[z_reservation]"]) && !clearing_reserved_turfs)
 	var/datum/turf_reservation/reserve = new reservation_type
@@ -592,7 +593,7 @@ SUBSYSTEM_DEF(mapping)
 				return reserve
 		//If we didn't return at this point, theres a good chance we ran out of room on the exisiting reserved z levels, so lets try a new one
 		var/new_reserved_z = add_reservation_zlevel()
-		initialize_reserved_level(new_reserved_z)
+		initialize_reserved_level(new_reserved_z, noisy)
 		if(reserve.reserve(width, height, z_size, new_reserved_z))
 			return reserve
 	else
@@ -604,7 +605,7 @@ SUBSYSTEM_DEF(mapping)
 	QDEL_NULL(reserve)
 
 //This is not for wiping reserved levels, use wipe_reservations() for that.
-/datum/controller/subsystem/mapping/proc/initialize_reserved_level(z)
+/datum/controller/subsystem/mapping/proc/initialize_reserved_level(z, noisy = TRUE)
 	UNTIL(!clearing_reserved_turfs) //regardless, lets add a check just in case.
 	clearing_reserved_turfs = TRUE //This operation will likely clear any existing reservations, so lets make sure nothing tries to make one while we're doing it.
 	if(!check_level_trait(z, RESERVED_LEVEL))
@@ -622,7 +623,7 @@ SUBSYSTEM_DEF(mapping)
 
 	// Gotta create these suckers if we've not done so already
 	if(SSatoms.initialized)
-		SSatoms.InitializeAtoms(Z_TURFS(z))
+		SSatoms.InitializeAtoms(Z_TURFS(z), noisy)
 
 	unused_turfs["[z]"] = reserved_block
 	reservation_ready["[z]"] = TRUE

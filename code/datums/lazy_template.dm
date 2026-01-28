@@ -61,6 +61,7 @@
 		width,
 		height,
 		bounds[MAP_MAXZ],
+		noisy = FALSE,
 	)
 	if(!reservation)
 		CRASH("Failed to reserve a block for lazy template: '[key]'")
