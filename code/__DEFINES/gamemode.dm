@@ -88,3 +88,4 @@
 #define SPECIAL_ROLE_IMP "Imp"
 #define SPECIAL_ROLE_BINGLE_LORD "Bingle Lord"
 #define SPECIAL_ROLE_BINGLE	"Bingle"
+#define SPECIAL_ROLE_SERVANT "Servant"

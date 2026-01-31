@@ -1753,3 +1753,15 @@ GLOBAL_LIST_EMPTY(admin_objective_list)
 		return FALSE
 	var/datum/team/bingles/bingle_team = team
 	return bingle_team.goal_size_achieved
+
+/datum/objective/serve
+	name = "Служить"
+	antag_menu_name = "Служить"
+	explanation_text = "Вы должны служить... Кому-то..."
+	var/mob/living/serve_to
+
+/datum/objective/serve/New(mob/living/target_to_serve)
+	if(!istype(target_to_serve))
+		return
+	serve_to = target_to_serve
+	explanation_text = "Вы слуга [serve_to.real_name]. Вы должны сделать всё, что в ваших силах, чтобы выполнить [GEND_HIS_HER(serve_to)] приказы."
