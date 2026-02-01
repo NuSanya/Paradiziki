@@ -219,8 +219,10 @@
 	for(var/atom/movable/content as anything in thing.get_all_contents() - thing)
 		if(QDELETED(content) || HAS_TRAIT(content, TRAIT_FALLING_INTO_BINGLE_HOLE) || isbrain(content))
 			continue
-		if(isliving(content) || is_type_in_typecache(content, GLOB.bingle_hole_blacklist))
+		if(isliving(content))
 			content.forceMove(content.drop_location())
+		else if(is_type_in_typecache(content, GLOB.bingle_hole_blacklist))
+			qdel(content)
 		else if(isobj(content))
 			item_value_consumed += get_item_value(content)
 			repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
@@ -263,14 +265,14 @@
 	var/original_alpha = item.alpha
 
 	// Make the item spin and shrink as it falls toward the center
-	var/original_transform = matrix(item.transform)
+	var/original_transform = item.transform
 
 	// Calculate movement toward pit center
 	var/dx = pit_turf.x - item_turf.x
 	var/dy = pit_turf.y - item_turf.y
 
 	// Animate the item moving toward pit center while spinning and shrinking
-	animate(item, pixel_x = dx * world.icon_size, pixel_y = dy * world.icon_size, transform = turn(original_transform, 360) * 0.3, alpha = 100, time = 0.8 SECONDS, easing = EASE_IN)
+	animate(item, pixel_x = dx * world.icon_size, pixel_y = dy * world.icon_size, transform = turn(original_transform, 360), alpha = 100, time = 0.8 SECONDS, easing = EASE_IN)
 
 	// Final disappear animation
 	animate(transform = turn(original_transform, 720) * 0.1, alpha = 0, time = 0.2 SECONDS, easing = EASE_IN)
@@ -310,7 +312,6 @@
 		return
 
 	swallowed_obj.forceMove(bingle_pit_turf)
-
 
 /obj/structure/bingle_hole/proc/grow_pit(new_size)
 	if(current_pit_size >= new_size)
