@@ -167,6 +167,7 @@
 	bingles_evolved = TRUE
 	SEND_SIGNAL(bingle_team, COMSIG_MASS_BINGLE_EVOLVE, src)
 
+/// Mob and objects falling into the hole procs are separated. This one is for mobs.
 /obj/structure/bingle_hole/proc/swallow_mob(mob/living/victim)
 	if(!isliving(victim))
 		return FALSE
@@ -211,11 +212,15 @@
 		return min(stack.amount, GLOB.bingle_hole_stack_limit[stack.type])
 	return min(stack.amount, BINGLE_PIT_STACK_GAIN_LIMIT)
 
+/// Mob and objects falling into the hole procs are separated. This one is for objects.
 /obj/structure/bingle_hole/proc/swallow_obj(obj/thing)
 	if(!isobj(thing))
 		return FALSE
+
 	ADD_TRAIT(thing, TRAIT_FALLING_INTO_BINGLE_HOLE, UNIQUE_TRAIT_SOURCE(src))
-	item_value_consumed += get_item_value(thing)
+	repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
+
+	var/object_value = get_item_value(thing)
 	for(var/atom/movable/content as anything in thing.get_all_contents() - thing)
 		if(QDELETED(content) || HAS_TRAIT(content, TRAIT_FALLING_INTO_BINGLE_HOLE) || isbrain(content))
 			continue
@@ -224,16 +229,24 @@
 		else if(is_type_in_typecache(content, GLOB.bingle_hole_blacklist))
 			qdel(content)
 		else if(isobj(content))
-			item_value_consumed += get_item_value(content)
+			object_value = min(object_value + get_item_value(content), BINGLE_PIT_OBJECT_CONTENTS_VALUE_LIMIT)
 			repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
 
-	repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
+	item_value_consumed += object_value
 	// Only animate if we're actually swallowing
 	animate_falling_into_pit(thing)
 	// Delay the actual movement to let animation play
 	addtimer(CALLBACK(src, PROC_REF(finish_swallow_obj), thing), 1 SECONDS)
 	return TRUE
 
+/**
+ * Proc called when someone falls into the hole.
+ *
+ * Currently checks for abstract objects, blacklist objects,
+ * and thrown objects.
+ *
+ * Handling is separated into two procs, swallow_mob and swallow_obj.
+ */
 /obj/structure/bingle_hole/proc/swallow(atom/movable/item)
 	if(QDELETED(src) || QDELETED(item))
 		return
@@ -280,6 +293,7 @@
 	// and ensure they animate back to normal afterwards
 	animate(pixel_x = original_px, pixel_y = original_py, alpha = original_alpha, transform = original_transform, time = 0.5 SECONDS, easing = EASE_IN)
 
+/// Transfers the swallowed mob into the hole, if the reservation is loaded.
 /obj/structure/bingle_hole/proc/finish_swallow_mob(mob/living/swallowed_mob)
 	if(QDELETED(swallowed_mob))
 		return
@@ -296,6 +310,7 @@
 
 	qdel(swallowed_mob)
 
+/// Transfers the swallowed object into the hole, if the reservation exists.
 /obj/structure/bingle_hole/proc/finish_swallow_obj(obj/swallowed_obj)
 	if(QDELETED(swallowed_obj))
 		return
@@ -313,6 +328,7 @@
 
 	swallowed_obj.forceMove(bingle_pit_turf)
 
+/// Grows a pit to a certain size. Can't grow to a smaller size.
 /obj/structure/bingle_hole/proc/grow_pit(new_size)
 	if(current_pit_size >= new_size)
 		return
@@ -384,7 +400,7 @@
 	aura_healing.range = round(new_size / 2) + 2
 	modify_max_integrity(max_integrity + size_difference * BINGLE_PIT_GROW_INTEGRITY_INCREASE, FALSE)
 
-/// Proc to force grow a hole by a set amount
+/// Proc to force grow a hole by a set amount.
 /obj/structure/bingle_hole/proc/grow_pit_by_set_amount(grow_amount)
 	grow_pit(current_pit_size + grow_amount)
 
@@ -504,7 +520,6 @@
 		. += span_alert("Внутри находится <b>[parent_pit.item_value_consumed]</b> предмет[DECL_CREDIT(parent_pit.item_value_consumed)]!")
 		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[BINGLE_PIT_GROW_VALUE]</b> предмет[declension_ru(BINGLE_PIT_GROW_VALUE, "", "а", "ов")]!")
 
-/// Update the spawn proc to ensure proper tracking
 /obj/structure/bingle_hole/proc/spawn_bingle_from_ghost()
 	var/image/poll_source = image('icons/mob/bingle/bingles.dmi', "bingle")
 	var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Хотите сыграть за Бингла?", ROLE_BINGLE, TRUE, poll_time = 10 SECONDS, source = poll_source)

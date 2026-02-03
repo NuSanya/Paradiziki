@@ -64,7 +64,9 @@ GLOBAL_LIST_INIT(bingle_hole_stack_limit, list(
 /// Limit of value gained from stack items
 #define BINGLE_PIT_STACK_GAIN_LIMIT 30
 /// How much we gain from eating singularities
-#define BINGLE_PIT_SINGULARITY_VALUE 100
+#define BINGLE_PIT_SINGULARITY_VALUE 200
+/// Maximum amount of resources we can gain from an object's contents
+#define BINGLE_PIT_OBJECT_CONTENTS_VALUE_LIMIT 100
 
 /// How much extra defense we get on each successful hole merge
 #define BINGLE_PIT_MERGE_ARMOR_INCREASE 15
