@@ -1611,6 +1611,8 @@
 
 #define COMSIG_GREYSCALE_CONFIG_REFRESHED "greyscale_config_refreshed"
 
+#define COMSIG_LUNGE_DUAL_STRIKE "lunge_dual_strike"
+
 /// From /mob/living/simple_animal/hostile/swarmer, sent by swarmer to swarmer_team datum
 #define COMSIG_SWARMER_TRY_PROCESS_ORGANIC_ITEM "swarmer_try_process_organic"
 /// From /datum/team/swarmer_team, sent by team to organic processer structure

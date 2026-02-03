@@ -10,6 +10,7 @@
 	var/light_intensity = 2
 	light_color = LIGHT_COLOR_BLUE
 	resistance_flags = FLAMMABLE
+	custom_price = PAYCHECK_MIN * 0.1
 
 /obj/item/reagent_containers/food/drinks/drinkingglass/shotglass/get_ru_names()
 	return list(
@@ -101,14 +102,14 @@
 	..()
 	set_light_range_power_color(light_intensity, 1, light_color)
 	set_light_on(TRUE)
-	visible_message(span_notice("[capitalize(declent_ru(NOMINATIVE))] начинает гореть синим пламенем!"))
+	visible_message(span_notice("[DECLENT_RU_CAP(src, NOMINATIVE)] начинает гореть синим пламенем!"))
 	update_appearance(UPDATE_NAME|UPDATE_OVERLAYS)
 
 /obj/item/reagent_containers/food/drinks/drinkingglass/shotglass/extinguish(silent = FALSE)
 	..()
 	set_light_on(FALSE)
 	if(!silent)
-		visible_message(span_notice("[capitalize(declent_ru(NOMINATIVE))] перестаёт гореть!"))
+		visible_message(span_notice("[DECLENT_RU_CAP(src, NOMINATIVE)] перестаёт гореть!"))
 	update_appearance(UPDATE_NAME|UPDATE_OVERLAYS)
 
 /obj/item/reagent_containers/food/drinks/drinkingglass/shotglass/burn() //Let's override fire deleting the reagents inside the shot

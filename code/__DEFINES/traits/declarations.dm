@@ -416,6 +416,9 @@
 /// If any of the owner's robotic parts are being repaired right now
 #define TRAIT_REPAIRING_LIMB "repairing_limb"
 
+/// Mob with this trait will not suffer from radiation effects
+#define TRAIT_NO_RADIATION_EFFECTS "no_radiation_effects"
+
 #define TRAIT_TWOHANDED_BLOCKED "twohandec_blocked"
 
 #define TRAIT_CLEAVE_BLOCKED "cleave_blocked"
@@ -427,3 +430,8 @@
 #define TRAIT_BLOCK_METABOLIZE "block_metabolize"
 
 #define TRAIT_PRESSURE_VISION "pressure_vision"
+
+/// Immune to being afflicted by time stop (spell)
+#define TRAIT_TIME_STOP_IMMUNE "time_stop_immune"
+
+#define TRAIT_LUNGE_HAS_ATTACKED "trait_lunge_has_attacked"
