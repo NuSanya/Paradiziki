@@ -28,7 +28,7 @@
 
 /obj/item/tripod/get_ru_names_cached()
 	return camera ? list(
-		NOMINATIVE = "сложенный штатив c камерой",
+		NOMINATIVE = "сложенный штатив с камерой",
 		GENITIVE = "сложенного штатива с камерой",
 		DATIVE = "сложенному штативу с камерой",
 		ACCUSATIVE = "сложенный штатив с камерой",
@@ -262,13 +262,14 @@
 	RegisterSignal(tripod_item, COMSIG_OBJ_INTEGRITY_CHANGED, PROC_REF(on_parent_item_integrity_changed))
 
 /obj/structure/tripod/Destroy(force)
-	UnregisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE)
+	UnregisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE)\
+	UnregisterSignal(tripod_item, COMSIG_OBJ_INTEGRITY_CHANGED)
 	QDEL_NULL(tripod_item)
 	return ..()
 
 /obj/structure/tripod/get_ru_names_cached()
 	return (tripod_item.camera) ? list(
-		NOMINATIVE = "штатив c камерой",
+		NOMINATIVE = "штатив с камерой",
 		GENITIVE = "штатива с камерой",
 		DATIVE = "штативу с камерой",
 		ACCUSATIVE = "штатив с камерой",
