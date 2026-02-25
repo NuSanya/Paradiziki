@@ -262,7 +262,7 @@
 	RegisterSignal(tripod_item, COMSIG_OBJ_INTEGRITY_CHANGED, PROC_REF(on_parent_item_integrity_changed))
 
 /obj/structure/tripod/Destroy(force)
-	UnregisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE)\
+	UnregisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE)
 	UnregisterSignal(tripod_item, COMSIG_OBJ_INTEGRITY_CHANGED)
 	QDEL_NULL(tripod_item)
 	return ..()
