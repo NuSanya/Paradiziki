@@ -381,11 +381,11 @@
 
 
 #define BROADCAST_CAMERA_ACTION_TOGGLE "Переключить режим камеры"
-#define BROADCAST_CAMERA_ACTION_CARTRIDGE "Вытащить картридж"
+#define BROADCAST_CAMERA_ACTION_CARTRIDGE "Вытащить ленту"
 
 /obj/item/broadcast_camera
 	name = "broadcast camera"
-	desc = "Камера, что принимает кассеты, и может быть установлена на штатив."
+	desc = "Камера, что принимает киноленты и может быть установлена на штатив."
 	icon = 'icons/obj/tripod_camera.dmi'
 	icon_state = "broadcast_camera_off"
 	item_state = "broadcast_camera_off"
