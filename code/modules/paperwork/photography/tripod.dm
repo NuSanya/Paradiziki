@@ -495,10 +495,12 @@
 	active = !active
 	active ? soundloop.start() : soundloop.stop()
 	update_appearance(UPDATE_ICON_STATE)
-	if(user)
-		var/message = active ? "включено" : "отключено"
-		user.balloon_alert(user, message)
-		user.update_held_items()
+	if(!user)
+		return
+
+	var/message = active ? "включено" : "отключено"
+	user.balloon_alert(user, message)
+	user.update_held_items()
 
 /obj/item/broadcast_camera/update_icon_state()
 	if(active)
