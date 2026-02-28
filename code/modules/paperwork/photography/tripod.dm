@@ -10,7 +10,7 @@
 
 #define FOLDED_TRIPOD_ACTION_ASSEMBLY "Собрать штатив"
 #define FOLDED_TRIPOD_ACTION_REMOVE_CAMERA "Снять камеру"
-#define FOLDED_TRIPOD_ACTION_CAMERA "Действия с камерой"
+#define FOLDED_TRIPOD_ACTION_CAMERA "Другие действия с камерой"
 
 /obj/item/tripod
 	name = "folded tripod"
@@ -71,16 +71,16 @@
 			camera.attack_self(user)
 
 /obj/item/tripod/attackby(obj/item/I, mob/user, params)
-	if(user.a_intent == INTENT_HARM)
+	if(istype(I, /obj/item/broadcast_camera))
+		try_attach_camera(I, user)
+		return ATTACK_CHAIN_BLOCKED_ALL
+
+	if(!camera)
 		return ..()
 
-	if(istype(I, /obj/item/broadcast_camera))
-		return try_attach_camera(I, user)
-
-	if(camera)
-		return camera.attackby(I, user, params)
-
-	return ..()
+	. = camera.attackby(I, user, params)
+	if(!ATTACK_CHAIN_CANCEL_CHECK(.))
+		return ..()
 
 /// Proc to check if we can assembly the tripod by a given user on a given turf.
 /obj/item/tripod/proc/assembly_checks(mob/user, turf/target_turf)
@@ -133,7 +133,7 @@
 	)
 
 	if(!built_tripod)
-		built_tripod = new /obj/structure/tripod(src) // MUST be created inside src to work correctly
+		built_tripod = new(src) // MUST be created inside src to work correctly
 
 	contents -= built_tripod // avoiding cycling contents
 	built_tripod.forceMove(target_turf)
@@ -160,21 +160,33 @@
 		ignored_mobs = user,
 	)
 
-	user.put_in_hands(camera)
+	detach_camera(user)
+
+/// Helper proc to detach the camera. User argument is not required
+/obj/item/tripod/proc/detach_camera(mob/user)
+	if(!camera)
+		return
+
 	UnregisterSignal(camera, COMSIG_BROADCAST_CAMERA_TOGGLE)
+	camera.forceMove_turf()
+
+	if(!user) // Some code repetition since the order of operations matters
+		camera = null
+		update_appearance()
+		return
+
+	user.put_in_hands(camera)
 	camera = null
 	update_appearance()
 	user.update_held_items()
 
 /**
  * Proc to attempt to attach a camera to the tripod.
- *
- * Returns attack chain bitflags.
  */
 /obj/item/tripod/proc/try_attach_camera(obj/item/broadcast_camera/new_camera, mob/user)
 	if(camera)
 		user.balloon_alert(user, "уже есть!")
-		return ATTACK_CHAIN_PROCEED
+		return
 
 	user.balloon_alert(user, "прикрепление камеры...")
 	user.visible_message(
@@ -183,11 +195,11 @@
 	)
 
 	if(!do_after(user, 3 SECONDS, user, NONE, max_interact_count = 1, cancel_on_max = TRUE))
-		return ATTACK_CHAIN_PROCEED
+		return
 
-	if(!user.drop_transfer_item_to_loc(new_camera, src))
+	if(!user.drop_item_ground(new_camera, silent = TRUE))
 		user.balloon_alert(user, "приклеено к руке")
-		return ATTACK_CHAIN_PROCEED
+		return
 
 	user.balloon_alert(user, "камера прикреплена")
 	user.visible_message(
@@ -195,11 +207,19 @@
 		ignored_mobs = user,
 	)
 
+	attach_camera(new_camera, user)
+
+/// Helper proc to attach a camera to the tripod. User argument is not required
+/obj/item/tripod/proc/attach_camera(obj/item/broadcast_camera/new_camera, mob/user)
+	if(!new_camera || camera)
+		return
+
 	camera = new_camera
 	RegisterSignal(camera, COMSIG_BROADCAST_CAMERA_TOGGLE, PROC_REF(on_camera_toggle))
 	update_appearance()
-	user.update_held_items()
-	return ATTACK_CHAIN_BLOCKED_ALL
+	camera.forceMove(src)
+	if(user)
+		user.update_held_items()
 
 /// Signal proc to listen from the camera to change stuff based on its active state
 /obj/item/tripod/proc/on_camera_toggle(datum/source)
@@ -235,6 +255,14 @@
 		icon_state = "tripod_camera_off"
 		item_state = "tripod_camera_off"
 
+// Tripod with a camera by default
+/obj/item/tripod/camera
+
+/obj/item/tripod/camera/Initialize(mapload)
+	. = ..()
+	var/obj/item/broadcast_camera/new_camera = new
+	attach_camera(new_camera)
+
 #undef FOLDED_TRIPOD_ACTION_ASSEMBLY
 #undef FOLDED_TRIPOD_ACTION_REMOVE_CAMERA
 #undef FOLDED_TRIPOD_ACTION_CAMERA
@@ -257,7 +285,7 @@
 
 /obj/structure/tripod/Initialize(mapload)
 	. = ..()
-	tripod_item = istype(loc, /obj/item/tripod) ? loc : new /obj/item/tripod(src)
+	tripod_item = istype(loc, /obj/item/tripod) ? loc : new(src)
 	RegisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE, PROC_REF(on_parent_item_update))
 	RegisterSignal(tripod_item, COMSIG_OBJ_INTEGRITY_CHANGED, PROC_REF(on_parent_item_integrity_changed))
 
@@ -335,10 +363,9 @@
 	user.put_in_hands(tripod_item)
 
 /obj/structure/tripod/attackby(obj/item/I, mob/user, params)
-	if(user.a_intent == INTENT_HARM)
+	. = tripod_item.attackby(I, user, params)
+	if(!ATTACK_CHAIN_CANCEL_CHECK(.))
 		return ..()
-
-	return tripod_item.attackby(I, user, params)
 
 /obj/structure/tripod/wrench_act(mob/living/user, obj/item/I)
 	. = TRUE
@@ -381,7 +408,7 @@
 
 
 #define BROADCAST_CAMERA_ACTION_TOGGLE "Переключить режим камеры"
-#define BROADCAST_CAMERA_ACTION_CARTRIDGE "Вытащить картридж"
+#define BROADCAST_CAMERA_ACTION_CARTRIDGE "Вытащить кассету"
 
 /obj/item/broadcast_camera
 	name = "broadcast camera"
@@ -424,17 +451,17 @@
 	if(!istype(I, /obj/item/tape))
 		return ..()
 
+	. = ATTACK_CHAIN_BLOCKED_ALL
 	add_fingerprint(user)
 	if(tape)
 		loc.balloon_alert(user, "уже вставлено")
-		return ATTACK_CHAIN_PROCEED
+		return
 	if(!user.drop_transfer_item_to_loc(I, src))
-		return ATTACK_CHAIN_PROCEED
+		return
 
 	tape = I
 	loc.balloon_alert(user, "вставлено")
 	playsound(loc, 'sound/items/taperecorder/taperecorder_close.ogg', 50, FALSE)
-	return ATTACK_CHAIN_BLOCKED_ALL
 
 /obj/item/broadcast_camera/attack_self(mob/user)
 	. = ..()
@@ -467,7 +494,7 @@
 /// Proc used to toggle the state of the camera.
 /obj/item/broadcast_camera/proc/toggle(mob/user)
 	if(!active && !tape)
-		user?.balloon_alert(user, "требуется лента!")
+		user?.balloon_alert(user, "требуется кассета!")
 		return
 
 	active = !active
