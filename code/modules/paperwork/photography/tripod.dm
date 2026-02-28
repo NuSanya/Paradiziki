@@ -494,7 +494,7 @@
 /// Proc used to toggle the state of the camera.
 /obj/item/broadcast_camera/proc/toggle(mob/user)
 	if(!active && !tape)
-		user?.balloon_alert(user, "требуется кассета!")
+		user?.balloon_alert(user, "требуется лента!")
 		return
 
 	active = !active
