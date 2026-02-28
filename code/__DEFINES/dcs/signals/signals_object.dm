@@ -118,6 +118,3 @@
 
 /// Sent from /datum/powernet/remove_cable()
 #define COMSIG_UPDATE_TWOHANDED_DAMAGE "update_twohanded_damage"
-
-/// Sent from /obj/item/broadcast_camera/toggle()
-#define COMSIG_BROADCAST_CAMERA_TOGGLE "broadcast_camera_toggle"

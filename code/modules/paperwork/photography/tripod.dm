@@ -6,6 +6,8 @@
  *
  * Most of the stuff is inherited. The folded tripod item takes actions straight from the camera, and then the unfolded tripod takes
  * everything from the folded tripod that ends up inside the unfolded one.
+ *
+ * TODO: Some mechanic for turned on broadcast camera
  */
 
 #define FOLDED_TRIPOD_ACTION_ASSEMBLY "Собрать штатив"
@@ -48,7 +50,7 @@
 	if(camera)
 		var/turf/our_turf = get_turf(src)
 		our_turf ? camera.forceMove(our_turf) : qdel(camera)
-		UnregisterSignal(camera, COMSIG_BROADCAST_CAMERA_TOGGLE)
+		UnregisterSignal(camera, COMSIG_ATOM_UPDATE_APPEARANCE)
 		camera = null
 	return ..()
 
@@ -167,7 +169,7 @@
 	if(!camera)
 		return
 
-	UnregisterSignal(camera, COMSIG_BROADCAST_CAMERA_TOGGLE)
+	UnregisterSignal(camera, COMSIG_ATOM_UPDATE_APPEARANCE)
 	camera.forceMove_turf()
 
 	if(!user) // Some code repetition since the order of operations matters
@@ -215,7 +217,7 @@
 		return
 
 	camera = new_camera
-	RegisterSignal(camera, COMSIG_BROADCAST_CAMERA_TOGGLE, PROC_REF(on_camera_toggle))
+	RegisterSignal(camera, COMSIG_ATOM_UPDATE_APPEARANCE, PROC_REF(on_camera_toggle))
 	update_appearance()
 	camera.forceMove(src)
 	if(user)
@@ -287,11 +289,9 @@
 	. = ..()
 	tripod_item = istype(loc, /obj/item/tripod) ? loc : new(src)
 	RegisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE, PROC_REF(on_parent_item_update))
-	RegisterSignal(tripod_item, COMSIG_OBJ_INTEGRITY_CHANGED, PROC_REF(on_parent_item_integrity_changed))
 
 /obj/structure/tripod/Destroy(force)
 	UnregisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE)
-	UnregisterSignal(tripod_item, COMSIG_OBJ_INTEGRITY_CHANGED)
 	QDEL_NULL(tripod_item)
 	return ..()
 
@@ -316,11 +316,6 @@
 /obj/structure/tripod/proc/on_parent_item_update(datum/source)
 	SIGNAL_HANDLER
 	update_appearance()
-
-/// Signal proc called on tripod_item getting damaged
-/obj/structure/tripod/proc/on_parent_item_integrity_changed(datum/source, old_value, new_value)
-	SIGNAL_HANDLER
-	update_integrity(new_value)
 
 /obj/structure/tripod/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
@@ -499,8 +494,7 @@
 
 	active = !active
 	active ? soundloop.start() : soundloop.stop()
-	update_icon(UPDATE_ICON_STATE)
-	SEND_SIGNAL(src, COMSIG_BROADCAST_CAMERA_TOGGLE)
+	update_appearance(UPDATE_ICON_STATE)
 	if(user)
 		var/message = active ? "включено" : "отключено"
 		user.balloon_alert(user, message)
