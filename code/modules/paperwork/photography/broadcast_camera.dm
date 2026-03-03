@@ -23,7 +23,7 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 	/// The camera itself
 	var/obj/machinery/camera/portable/camera
 	/// What network is used for the camera
-	var/camera_network = "news"
+	var/static/camera_network = "news"
 	/// Range of sound capturing
 	var/canhear_range = 7
 	/// How often can we toggle it off and on
@@ -156,8 +156,9 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 /// Proc used to initialize the internal camera
 /obj/item/broadcast_camera/proc/init_camera(mob/user)
 	if(!camera)
-		var/camera_name = user ? tgui_input_text(user, "Введите название трансляции", "Название трансляции", user.name) : "broadcast [rand(100, 999)]"
-		camera_name = camera_name ? camera_name : (user ? user.name : "broadcast [rand(100, 999)]") // checking for null
+		var/camera_name = "broadcast [rand(100, 999)]"
+		if(user)
+			camera_name = tgui_input_text(user, "Введите название трансляции", "Название трансляции", user.name) || user.name
 		camera = new(src, list(camera_network), camera_name)
 		camera.toggle_cam(null, FALSE) // on by default
 		GLOB.cameranet.cameras -= camera// just QOL, removes it from monitor camera list
@@ -168,8 +169,7 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 
 	var/change_broadcast_name = tgui_alert(user, "Желаете ли вы сменить текущее название трансляции?", "Смена названия трансляции", list("Да", "Нет"))
 	if(change_broadcast_name == "Да")
-		var/new_name = tgui_input_text(user, "Введите название трансляции", "Название трансляции", user.name)
-		new_name = new_name ? new_name : user.name // check if they entered null
+		var/new_name = tgui_input_text(user, "Введите название трансляции", "Название трансляции", user.name) || user.name
 		camera.c_tag = new_name
 
 /// Proc used to update enternainment monitors about our existence and the cameranet about current state
@@ -185,8 +185,8 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 		GLOB.active_entertainment_cameras -= camera
 		GLOB.cameranet.cameras -= camera
 
-	// TODO: This is bad
-	for(var/obj/machinery/computer/security/TV as anything in SSmachines.get_by_type(/obj/machinery/computer/security))
+	// This is bad and I have no clue how to make this good
+	for(var/obj/machinery/computer/security/telescreen/entertainment/TV as anything in SSmachines.get_by_type(/obj/machinery/computer/security/telescreen/entertainment))
 		if(!(camera_network in TV.network))
 			continue
 		TV.update_icon(UPDATE_OVERLAYS)
@@ -197,7 +197,6 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 		return
 
 	var/msg = "[speaker.name] говор[PLUR_IT_YAT(speaker)]: \"[multilingual_to_message(message_pieces)]\""
-	// TODO: This is bad
 	for(var/obj/machinery/computer/security/TV as anything in camera.computers_watched_by)
 		if(!length(TV.concurrent_users))
 			continue
