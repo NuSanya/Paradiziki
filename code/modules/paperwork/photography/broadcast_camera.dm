@@ -160,16 +160,16 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 		if(user)
 			camera_name = tgui_input_text(user, "Введите название трансляции", "Название трансляции", user.name) || user.name
 		camera = new(src, list(camera_network), camera_name)
-		camera.toggle_cam(null, FALSE) // on by default
-		GLOB.cameranet.cameras -= camera// just QOL, removes it from monitor camera list
+		camera.toggle_cam(null, FALSE)
+		GLOB.cameranet.cameras -= camera // removes camera from lists as well
 		return
 
 	if(!user)
 		return
 
-	var/change_broadcast_name = tgui_alert(user, "Желаете ли вы сменить текущее название трансляции?", "Смена названия трансляции", list("Да", "Нет"))
+	var/change_broadcast_name = tgui_alert(user, "Желаете ли вы сменить название трансляции? Текущее название: \"[camera.c_tag]\".", "Смена названия трансляции", list("Да", "Нет"))
 	if(change_broadcast_name == "Да")
-		var/new_name = tgui_input_text(user, "Введите название трансляции", "Название трансляции", user.name) || user.name
+		var/new_name = tgui_input_text(user, "Введите название трансляции", "Название трансляции", camera.c_tag) || user.name
 		camera.c_tag = new_name
 
 /// Proc used to update enternainment monitors about our existence and the cameranet about current state
@@ -177,16 +177,14 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 	if(!camera)
 		return
 
-	camera.toggle_cam(null, FALSE)
 	if(active)
 		GLOB.active_entertainment_cameras += camera
-		GLOB.cameranet.cameras += camera
+		GLOB.cameranet.cameras += camera // adds camera to monitor list
 	else
 		GLOB.active_entertainment_cameras -= camera
 		GLOB.cameranet.cameras -= camera
 
-	for(var/obj/machinery/computer/security/telescreen/entertainment/TV as anything in SSmachines.get_by_type(/obj/machinery/computer/security/telescreen/entertainment))
-		TV.update_icon(UPDATE_OVERLAYS)
+	camera.toggle_cam(null, FALSE)
 
 /obj/item/broadcast_camera/hear_talk(mob/speaker, list/message_pieces)
 	. = ..()

@@ -281,11 +281,13 @@
 	. = ..()
 	RegisterSignal(src, COMSIG_MOB_ATTACKED_RANGED, PROC_REF(on_ranged_attack))
 	RegisterSignal(src, COMSIG_MONITOR_CAMERA_SWITCHED, PROC_REF(on_camera_switch))
+	RegisterSignal(GLOB.cameranet, list(COMSIG_CAMERANET_CAMERA_ADDED, COMSIG_CAMERANET_CAMERA_REMOVED), PROC_REF(on_cameranet_camera_update))
 
 /obj/machinery/computer/security/telescreen/entertainment/Destroy()
 	. = ..()
 	UnregisterSignal(src, COMSIG_MOB_ATTACKED_RANGED)
 	UnregisterSignal(src, COMSIG_MONITOR_CAMERA_SWITCHED)
+	UnregisterSignal(GLOB.cameranet, list(COMSIG_CAMERANET_CAMERA_ADDED, COMSIG_CAMERANET_CAMERA_REMOVED))
 	if(active_camera)
 		UnregisterSignal(active_camera, COMSIG_MOVABLE_HEAR)
 
@@ -321,6 +323,11 @@
 
 	var/msg = "[speaker.name] говор[PLUR_IT_YAT(speaker)]: \"[multilingual_to_message(message_pieces)]\""
 	atom_say(msg)
+
+/// Signal proc called of cameranet camera updates
+/obj/machinery/computer/security/telescreen/entertainment/proc/on_cameranet_camera_update(datum/source, obj/machinery/camera/cam)
+	SIGNAL_HANDLER
+	update_icon(UPDATE_OVERLAYS)
 
 /obj/machinery/computer/security/telescreen/entertainment/update_overlays()
 	icon_screen = length(GLOB.active_entertainment_cameras) ? icon_screen_on : initial(icon_screen)
