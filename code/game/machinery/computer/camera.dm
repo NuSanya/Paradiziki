@@ -134,16 +134,14 @@
 			to_chat(usr, span_warning("ОШИБКА. Камера не найдена."))
 			return
 
+		var/old_camera = active_camera
 		active_camera?.computers_watched_by -= src
 		active_camera = selected_camera
 		active_camera.computers_watched_by += src
 		playsound(src, SFX_TERMINAL_TYPE, 25, FALSE)
 
-		if(isnull(active_camera))
-			return TRUE
-
+		SEND_SIGNAL(src, COMSIG_MONITOR_CAMERA_SWITCHED, old_camera)
 		update_active_camera_screen()
-
 		return TRUE
 
 /obj/machinery/computer/security/proc/update_active_camera_screen()
@@ -282,10 +280,14 @@
 /obj/machinery/computer/security/telescreen/entertainment/Initialize(mapload)
 	. = ..()
 	RegisterSignal(src, COMSIG_MOB_ATTACKED_RANGED, PROC_REF(on_ranged_attack))
+	RegisterSignal(src, COMSIG_MONITOR_CAMERA_SWITCHED, PROC_REF(on_camera_switch))
 
 /obj/machinery/computer/security/telescreen/entertainment/Destroy()
 	. = ..()
 	UnregisterSignal(src, COMSIG_MOB_ATTACKED_RANGED)
+	UnregisterSignal(src, COMSIG_MONITOR_CAMERA_SWITCHED)
+	if(active_camera)
+		UnregisterSignal(active_camera, COMSIG_MOVABLE_HEAR)
 
 /obj/machinery/computer/security/telescreen/entertainment/proc/on_ranged_attack(datum/source, mob/user, params)
 	SIGNAL_HANDLER
@@ -295,6 +297,30 @@
 		return
 
 	INVOKE_ASYNC(src, TYPE_PROC_REF(/datum, ui_interact), user)
+
+/// Signal proc called on camera switch. Used for registering signals to broadcast speech as well
+/obj/machinery/computer/security/telescreen/entertainment/proc/on_camera_switch(datum/source, obj/machinery/camera/old_camera)
+	SIGNAL_HANDLER
+
+	if(old_camera)
+		if(old_camera == active_camera)
+			return
+		UnregisterSignal(old_camera, COMSIG_MOVABLE_HEAR)
+
+	// Override is true to not over complicate things, since the camera switches on open, while closing sets active_camera to null.
+	// Modifying ui_close() to also unregister this signal seems not worth the effort.
+	RegisterSignal(active_camera, COMSIG_MOVABLE_HEAR, PROC_REF(on_camera_hear), override = TRUE)
+
+/// Signal proc called on chosen camera hear. Broadcasts heard speech to src
+/obj/machinery/computer/security/telescreen/entertainment/proc/on_camera_hear(datum/source, mob/speaker, list/message_pieces)
+	SIGNAL_HANDLER
+
+	if(!length(concurrent_users) || !active_camera) // Active camera is null if the ui got closed, most likely.
+		UnregisterSignal(source, COMSIG_MOVABLE_HEAR)
+		return
+
+	var/msg = "[speaker.name] говор[PLUR_IT_YAT(speaker)]: \"[multilingual_to_message(message_pieces)]\""
+	atom_say(msg)
 
 /obj/machinery/computer/security/telescreen/entertainment/update_overlays()
 	icon_screen = length(GLOB.active_entertainment_cameras) ? icon_screen_on : initial(icon_screen)

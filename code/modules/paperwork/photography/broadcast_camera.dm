@@ -21,7 +21,7 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 	/// Sound loop of the camera working
 	var/datum/looping_sound/film_roll/soundloop
 	/// The camera itself
-	var/obj/machinery/camera/portable/camera
+	var/obj/machinery/camera/portable/no_ai/camera
 	/// What network is used for the camera
 	var/static/camera_network = "news"
 	/// Range of sound capturing
@@ -185,10 +185,7 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 		GLOB.active_entertainment_cameras -= camera
 		GLOB.cameranet.cameras -= camera
 
-	// This is bad and I have no clue how to make this good
 	for(var/obj/machinery/computer/security/telescreen/entertainment/TV as anything in SSmachines.get_by_type(/obj/machinery/computer/security/telescreen/entertainment))
-		if(!(camera_network in TV.network))
-			continue
 		TV.update_icon(UPDATE_OVERLAYS)
 
 /obj/item/broadcast_camera/hear_talk(mob/speaker, list/message_pieces)
@@ -196,11 +193,7 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 	if(!camera || !active)
 		return
 
-	var/msg = "[speaker.name] говор[PLUR_IT_YAT(speaker)]: \"[multilingual_to_message(message_pieces)]\""
-	for(var/obj/machinery/computer/security/TV as anything in camera.computers_watched_by)
-		if(!length(TV.concurrent_users))
-			continue
-		TV.atom_say(msg, FALSE)
+	camera.hear_talk(speaker, message_pieces)
 
 /obj/item/broadcast_camera/update_icon_state()
 	if(active)

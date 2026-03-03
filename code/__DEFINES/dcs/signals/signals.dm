@@ -1613,3 +1613,6 @@
 #define COMSIG_LUNGE_DUAL_STRIKE "lunge_dual_strike"
 
 #define COMSIG_MASKFILTER_UPDATE_STATE "ttsfilter_update_state"
+
+/// Sent on camera switch in camera monitors (/obj/machinery/computer/security/ui_act(action, params))
+#define COMSIG_MONITOR_CAMERA_SWITCHED "monitor_camera_switched"
