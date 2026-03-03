@@ -276,7 +276,7 @@
 	network = list("news")
 	layer = 4 //becouse of plasma glass with layer = 3
 	circuit = /obj/item/circuitboard/camera/telescreen/entertainment
-	/// Icon utilised when `GLOB.active_video_cameras` list have anything inside.
+	/// Icon utilised when `GLOB.active_entertainment_cameras` list have anything inside.
 	var/icon_screen_on = "entertainment"
 
 /obj/machinery/computer/security/telescreen/entertainment/Initialize(mapload)
@@ -297,7 +297,7 @@
 	INVOKE_ASYNC(src, TYPE_PROC_REF(/datum, ui_interact), user)
 
 /obj/machinery/computer/security/telescreen/entertainment/update_overlays()
-	icon_screen = length(GLOB.active_video_cameras) ? icon_screen_on : initial(icon_screen)
+	icon_screen = length(GLOB.active_entertainment_cameras) ? icon_screen_on : initial(icon_screen)
 	return ..()
 
 /obj/machinery/computer/security/telescreen/entertainment/ui_state(mob/user)
