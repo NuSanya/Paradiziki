@@ -221,7 +221,7 @@
 		user.update_held_items()
 
 /// Signal proc to listen from the camera to change stuff based on its active state
-/obj/item/tripod/proc/on_camera_toggle(datum/source)
+/obj/item/tripod/proc/on_camera_toggle(datum/source, updates)
 	SIGNAL_HANDLER
 	update_appearance()
 
@@ -286,9 +286,12 @@
 
 /obj/structure/tripod/Initialize(mapload)
 	. = ..()
-	tripod_item = istype(loc, /obj/item/tripod) ? loc : new(src)
+	if(istype(loc, obj/item/tripod))
+		tripod_item = loc
+		update_appearance()
+	else
+		tripod_item = new(src)
 	RegisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE, PROC_REF(on_parent_item_update))
-	update_appearance()
 
 /obj/structure/tripod/Destroy(force)
 	UnregisterSignal(tripod_item, COMSIG_ATOM_UPDATE_APPEARANCE)
@@ -313,7 +316,7 @@
 	)
 
 /// Signal proc called on tripod_item appearance update.
-/obj/structure/tripod/proc/on_parent_item_update(datum/source)
+/obj/structure/tripod/proc/on_parent_item_update(datum/source, updates)
 	SIGNAL_HANDLER
 	update_appearance()
 

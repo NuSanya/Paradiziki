@@ -197,9 +197,9 @@ GLOBAL_LIST_EMPTY(active_entertainment_cameras)
 	if(active)
 		icon_state = "broadcast_camera_on"
 		item_state = "broadcast_camera_on"
-	else
-		icon_state = "broadcast_camera_off"
-		item_state = "broadcast_camera_off"
+		return
+	icon_state = "broadcast_camera_off"
+	item_state = "broadcast_camera_off"
 
 #undef BROADCAST_CAMERA_ACTION_TOGGLE
 #undef BROADCAST_CAMERA_ACTION_CARTRIDGE
