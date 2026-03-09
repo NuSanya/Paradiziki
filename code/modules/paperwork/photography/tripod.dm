@@ -286,7 +286,7 @@
 
 /obj/structure/tripod/Initialize(mapload)
 	. = ..()
-	if(istype(loc, obj/item/tripod))
+	if(istype(loc, /obj/item/tripod))
 		tripod_item = loc
 		update_appearance()
 	else
