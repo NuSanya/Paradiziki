@@ -7620,10 +7620,6 @@
 /obj/effect/spawner/lootdrop/maintenance,
 /turf/simulated/floor/plating,
 /area/maintenance/fsmaint)
-"aBr" = (
-/obj/effect/decal/cleanable/dirt,
-/turf/simulated/wall,
-/area/maintenance/fsmaint)
 "aBs" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/universal,
 /turf/simulated/wall,
@@ -14730,11 +14726,6 @@
 	},
 /turf/simulated/floor/plasteel,
 /area/storage/primary)
-"bdI" = (
-/obj/effect/decal/cleanable/dirt,
-/obj/effect/spawner/random_spawners/wall_rusted_30,
-/turf/simulated/wall,
-/area/maintenance/fsmaint)
 "bdJ" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
@@ -18540,10 +18531,6 @@
 	},
 /turf/simulated/floor/plasteel,
 /area/hallway/primary/central/nw)
-"bss" = (
-/obj/effect/decal/cleanable/dirt,
-/turf/simulated/wall,
-/area/maintenance/fsmaint2)
 "bsu" = (
 /obj/structure/cable{
 	icon_state = "2-8"
@@ -19324,10 +19311,6 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /turf/simulated/floor/plasteel,
 /area/crew_quarters/dorms)
-"bvE" = (
-/obj/effect/decal/cleanable/dirt,
-/turf/simulated/wall,
-/area/maintenance/livingcomplex)
 "bvH" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
@@ -19443,10 +19426,6 @@
 /obj/effect/decal/warning_stripes/yellow/hollow,
 /turf/simulated/floor/plasteel,
 /area/bridge/meeting_room)
-"bwe" = (
-/obj/effect/decal/cleanable/dirt,
-/turf/simulated/wall/rust,
-/area/maintenance/fsmaint2)
 "bwg" = (
 /obj/structure/cable{
 	icon_state = "1-2"
@@ -59120,7 +59099,6 @@
 /turf/simulated/floor/plasteel,
 /area/hallway/primary/central/sw)
 "jlP" = (
-/obj/effect/decal/cleanable/dirt,
 /obj/effect/decal/warning_stripes/yellow,
 /obj/structure/noticeboard,
 /turf/simulated/wall,
@@ -60908,6 +60886,9 @@
 /obj/item/tank/internals/emergency_oxygen/plasma{
 	pixel_x = -5
 	},
+/obj/structure/reagent_dispensers/spacecleanertank{
+	pixel_y = -32
+	},
 /turf/simulated/floor/plasteel{
 	dir = 10;
 	icon_state = "blue"
@@ -61401,10 +61382,6 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
 /turf/simulated/floor/plating,
 /area/maintenance/engineering)
-"kmd" = (
-/obj/effect/decal/cleanable/dirt,
-/turf/simulated/wall,
-/area/maintenance/genetics)
 "kmn" = (
 /obj/machinery/atmospherics/binary/volume_pump{
 	desc = "Позволяет опустошить трубу дыхательной смеси, отправив её в отходы на повторную фильтрацию";
@@ -128096,7 +128073,7 @@ bdF
 avq
 avq
 aBR
-aBr
+awl
 awl
 awl
 aFI
@@ -128353,7 +128330,7 @@ bdG
 avq
 avq
 aBR
-aBr
+awl
 avq
 bpy
 aFI
@@ -129373,11 +129350,11 @@ aPg
 ajb
 ajb
 awl
-aBr
+awl
 awl
 aRF
 aCh
-bdI
+aCh
 awl
 avq
 bhR
@@ -130407,7 +130384,7 @@ baV
 aHp
 bdM
 aya
-aBr
+awl
 aSP
 aSP
 aSP
@@ -130916,7 +130893,7 @@ lTl
 atG
 aCh
 aCh
-aBr
+awl
 bbd
 auZ
 att
@@ -134525,7 +134502,7 @@ uTI
 uTI
 olG
 olG
-bvE
+olG
 olG
 bzv
 vAB
@@ -134582,7 +134559,7 @@ cjF
 gab
 hGa
 cfW
-kmd
+ciY
 cLX
 ckE
 clk
@@ -138379,7 +138356,7 @@ aGX
 bkk
 bnl
 bqt
-bss
+aGX
 aGY
 pcV
 kKR
@@ -138636,7 +138613,7 @@ aGX
 bkt
 kKR
 bqw
-bss
+aGX
 kKR
 pcV
 cLi
@@ -139150,7 +139127,7 @@ bip
 bku
 bnr
 bqB
-bss
+aGX
 aGY
 kKR
 cLi
@@ -139922,7 +139899,7 @@ bkJ
 fnW
 jTk
 aMz
-bwe
+yig
 kKR
 cLi
 cNB
