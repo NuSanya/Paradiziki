@@ -189,8 +189,8 @@
 								/obj/item/flashlight/emp = 1),												// 20 TK
 			"Darklord" = list("Name" = "'Darklord' bundle",	// 100-122 TK
 								"Desc" = "Turn your anger into hate and your hate into suffering with a mix of energy swords and magical powers. DO IT.",
-								/*/obj/item/t_scanner = 1,
-								/obj/item/clothing/gloves/color/yellow/power = 1,		// Plan B fot 'coming soon' Martial Art. // I suppose its not coming */
+/*								/obj/item/t_scanner = 1,
+								/obj/item/clothing/gloves/color/yellow/power = 1,*/		// Plan B fot 'coming soon' Martial Art. // I suppose its not coming 
 								/obj/item/melee/energy/sword/saber/red = 2,									// 80 TK
 								/obj/item/dnainjector/telemut/darkbundle = 1,								// 0 TK
 								/obj/item/clothing/suit/hooded/chaplain_hoodie = 1,							// 0 TK
