@@ -27,7 +27,7 @@
 	attack_sound = 'sound/effects/blobattack.ogg'
 	butcher_results = null
 	/// What hole we appeared from (or connected to)
-	var/obj/structure/bingle_hole/spawn_hole
+	var/spawn_hole_uid
 
 	/// Flag to check if we are already evolved or not
 	var/evolved = FALSE
@@ -85,16 +85,16 @@
 /mob/living/simple_animal/hostile/bingle/Initialize(mapload, obj/structure/bingle_hole/hole)
 	. = ..()
 	if(hole)
-		spawn_hole = hole
-		LAZYADDASSOCLIST(GLOB.bingles_by_hole, spawn_hole.UID(), src)
+		var/hole_uid = hole.UID()
+		spawn_hole_uid = hole_uid
+		LAZYADDASSOCLIST(GLOB.bingles_by_hole, hole_uid, src)
 	RegisterSignal(src, COMSIG_BINGLE_EVOLVE, PROC_REF(evolve))
 	RegisterSignal(src, COMSIG_LIVING_DEATH, PROC_REF(on_death))
 	add_traits(bingle_traits, INNATE_TRAIT)
 
 /mob/living/simple_animal/hostile/bingle/Destroy()
-	if(spawn_hole)
-		LAZYREMOVEASSOC(GLOB.bingles_by_hole, spawn_hole.UID(), src)
-		spawn_hole = null
+	if(spawn_hole_uid)
+		LAZYREMOVEASSOC(GLOB.bingles_by_hole, spawn_hole_uid, src)
 	UnregisterSignal(src, COMSIG_BINGLE_EVOLVE)
 	UnregisterSignal(src, COMSIG_LIVING_DEATH)
 	remove_traits(bingle_traits, INNATE_TRAIT)

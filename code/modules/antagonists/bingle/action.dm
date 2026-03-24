@@ -55,8 +55,9 @@
 /datum/action/cooldown/bingle/create_hole/proc/spawn_hole(turf/target_turf, mob/living/simple_animal/hostile/bingle/bingle)
 	var/obj/structure/bingle_hole/hole = new(target_turf)
 	// Add the one who spawned the hole to the assoc list
-	LAZYADDASSOCLIST(GLOB.bingles_by_hole, hole.UID(), bingle)
-	bingle.spawn_hole = hole // So that they get removed from the list on death
+	var/hole_uid = hole.UID()
+	LAZYADDASSOCLIST(GLOB.bingles_by_hole, hole_uid, bingle)
+	bingle.spawn_hole_uid = hole_uid// So that they get removed from the list on death
 	// Complete the bingle lord objective
 	var/datum/antagonist/bingle/lord/lord_datum = bingle.mind.has_antag_datum(/datum/antagonist/bingle/lord)
 	if(!lord_datum)
