@@ -148,9 +148,11 @@
 	if(new_size < BINGLE_PIT_SIZE_GOAL)
 		return
 	INVOKE_ASYNC(src, PROC_REF(start_growing_hole), source)
-	if(!goal_size_achieved)
-		goal_size_achieved = TRUE
-		INVOKE_ASYNC(src, PROC_REF(start_bingle_win), source)
+
+	if(goal_size_achieved)
+		return
+	goal_size_achieved = TRUE
+	INVOKE_ASYNC(src, PROC_REF(start_bingle_win), source)
 
 /// Proc to announce to the station about bingles and raise code to gamma
 /datum/team/bingles/proc/make_announcement(obj/structure/bingle_hole/hole)
@@ -165,20 +167,21 @@
 
 /// Proc to send nuclear codes to the station
 /datum/team/bingles/proc/send_nuclear_codes()
-	var/intercepttext = ""
-	var/interceptname = ""
 	var/nukecode = GLOB.nuke_codes[/obj/machinery/nuclearbomb]
-	interceptname = "Ядерные коды от боеголовки [command_name()]"
-	intercepttext += span_fontsize3("<b>Постановление Nanotrasen</b>: Биологическая угроза.<hr>")
-	intercepttext += "Для [station_name()] была издана директива 7-12.<br>"
-	intercepttext += "Биологическая угроза вышла из-под контроля и скоро поглотит станцию.<br>"
-	intercepttext += "Вам приказано следующее:<br>"
-	intercepttext += " 1. Защищать диск ядерной аутентификации.<br>"
-	intercepttext += " 2. Взорвать ядерную боеголовку, находящуюся в хранилище станции.<br>"
-	intercepttext += "Код ядерной аутентификации: [nukecode]<br>"
-	intercepttext += "Конец сообщения."
+	var/intercept_name = "Ядерные коды от боеголовки [command_name()]"
 
-	SSticker?.mode?.special_directive(intercepttext, interceptname)
+	var/list/intercept_text_list = list()
+	intercept_text_list += span_fontsize3("<b>Постановление Nanotrasen</b>: Биологическая угроза.<hr>")
+	intercept_text_list += "Для [station_name()] была издана директива 7-12.<br>"
+	intercept_text_list += "Биологическая угроза вышла из-под контроля и скоро поглотит станцию.<br>"
+	intercept_text_list += "Вам приказано следующее:<br>"
+	intercept_text_list += " 1. Защищать диск ядерной аутентификации.<br>"
+	intercept_text_list += " 2. Взорвать ядерную боеголовку, находящуюся в хранилище станции.<br>"
+	intercept_text_list += "Код ядерной аутентификации: [nukecode]<br>"
+	intercept_text_list += "Конец сообщения."
+
+	var/intercept_text = intercept_text_list.Join("")
+	SSticker?.mode?.special_directive(intercept_text, intercept_name)
 	GLOB.major_announcement.announce(
 		message = "Угроза вышла из под контроля. Коды от ядерной боеголовки загружены и распечатаны на всех консолях связи. Слава НТ!",
 		new_title = ANNOUNCE_CCPARANORMAL_RU,
@@ -207,9 +210,10 @@
  * Makes all holes indestructible and calls the cinematic.
  */
 /datum/team/bingles/proc/bingle_win()
+	var/list/win_grow_timerids_cached = win_grow_timerids
 	for(var/obj/structure/bingle_hole/hole as anything in bingle_holes)
 		hole.resistance_flags |= INDESTRUCTIBLE // We already won, no you can't break the hole while the cinematic plays
-		deltimer(win_grow_timerids[hole.UID()]) // Stop the grow timer loop
+		deltimer(win_grow_timerids_cached[hole.UID()]) // Stop the grow timer loop
 	/*
 	// Pick a hole to grow mid cinematic
 	var/obj/structure/bingle_hole/hole_to_grow = get_largest_bingle_pit()

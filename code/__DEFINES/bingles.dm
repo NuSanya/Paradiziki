@@ -61,10 +61,12 @@ GLOBAL_LIST_INIT(bingle_hole_stack_limit, list(
 
 /// How much does the pit gain from living mobs
 #define BINGLE_PIT_LIVING_VALUE 25
-/// Limit of value gained from stack items
-#define BINGLE_PIT_STACK_GAIN_LIMIT 30
 /// How much we gain from eating singularities
 #define BINGLE_PIT_SINGULARITY_VALUE 200
+/// How much we gain from any object (multiplied by stack amount)
+#define BINGLE_PIT_DEFAULT_OBJECT_GAIN_VALUE 1
+/// Limit of value gained from stack items
+#define BINGLE_PIT_STACK_GAIN_LIMIT 30
 /// Maximum amount of resources we can gain from an object's contents
 #define BINGLE_PIT_OBJECT_CONTENTS_VALUE_LIMIT 100
 

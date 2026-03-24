@@ -2,7 +2,7 @@
 	name = "bingle pit"
 	desc = "Всепоглощающая бездна бесконечных ужасов... и Бинглов."
 	gender = FEMALE
-	armor = list(MELEE=20, BULLET=20, LASER=75, ENERGY=75, BOMB=75, BIO=100, RAD=100, FIRE=50, ACID=80)
+	armor = list(MELEE = 20, BULLET = 20, LASER = 75, ENERGY = 75, BOMB = 75, BIO = 100, RAD = 100, FIRE = 50, ACID = 80)
 	max_integrity = 500
 	resistance_flags = FIRE_PROOF | UNACIDABLE
 	icon = 'icons/mob/bingle/binglepit.dmi'
@@ -92,9 +92,11 @@
 
 /obj/structure/bingle_hole/examine(mob/user)
 	. = ..()
-	if(isbingle(user))
-		. += span_alert("Внутри находится <b>[item_value_consumed]</b> предмет[DECL_CREDIT(item_value_consumed)]!")
-		. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[BINGLE_PIT_GROW_VALUE]</b> предмет[declension_ru(BINGLE_PIT_GROW_VALUE, "", "а", "ов")]!")
+	if(!isbingle(user))
+		return
+
+	. += span_alert("Внутри находится <b>[item_value_consumed]</b> предмет[DECL_CREDIT(item_value_consumed)]!")
+	. += span_notice("Существа смогут упасть туда, если в яме будет минимум <b>[BINGLE_PIT_GROW_VALUE]</b> предмет[declension_ru(BINGLE_PIT_GROW_VALUE, "", "а", "ов")]!")
 
 /obj/structure/bingle_hole/CanAStarPass(to_dir, datum/can_pass_info/pass_info)
 	if(!pass_info.is_living)
@@ -181,11 +183,12 @@
 		if(victim.movement_type & (FLYING | FLOATING))
 			return FALSE
 
-	if(current_pit_size == 1)
+	if(item_value_consumed < BINGLE_PIT_GROW_VALUE)
 		var/turf/target = get_edge_target_turf(src, pick(GLOB.alldirs))
 		victim.throw_at(target, rand(1, 5), rand(1, 5))
 		to_chat(victim, span_warning("Вы не пролезаете в яму!"))
 		return FALSE
+
 	victim.add_traits(list(TRAIT_FALLING_INTO_BINGLE_HOLE, TRAIT_NO_TRANSFORM), UNIQUE_TRAIT_SOURCE(src))
 	item_value_consumed += get_item_value(victim)
 	if(iscarbon(victim) && victim.mind)
@@ -204,13 +207,14 @@
 	if(issingularity(thing))
 		return BINGLE_PIT_SINGULARITY_VALUE
 	if(!isstack(thing))
-		return 1
+		return BINGLE_PIT_DEFAULT_OBJECT_GAIN_VALUE
 
 	var/obj/item/stack/stack = thing
+	var/stack_value = stack.amount * BINGLE_PIT_DEFAULT_OBJECT_GAIN_VALUE
 	// If we have a set limit on this specific stack type, we limit to that. Otherwise, limit to common limiter
 	if(LAZYACCESS(GLOB.bingle_hole_stack_limit, stack.type))
-		return min(stack.amount, GLOB.bingle_hole_stack_limit[stack.type])
-	return min(stack.amount, BINGLE_PIT_STACK_GAIN_LIMIT)
+		return min(stack_value, GLOB.bingle_hole_stack_limit[stack.type])
+	return min(stack_value, BINGLE_PIT_STACK_GAIN_LIMIT)
 
 /// Mob and objects falling into the hole procs are separated. This one is for objects.
 /obj/structure/bingle_hole/proc/swallow_obj(obj/thing)
@@ -221,16 +225,20 @@
 	repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
 
 	var/object_value = get_item_value(thing)
+	var/list/hole_blacklist = GLOB.bingle_hole_blacklist
 	for(var/atom/movable/content as anything in thing.get_all_contents() - thing)
 		if(QDELETED(content) || HAS_TRAIT(content, TRAIT_FALLING_INTO_BINGLE_HOLE) || isbrain(content))
 			continue
 		if(isliving(content))
 			content.forceMove(content.drop_location())
-		else if(is_type_in_typecache(content, GLOB.bingle_hole_blacklist))
+			continue
+		if(is_type_in_typecache(content, hole_blacklist))
 			qdel(content)
-		else if(isobj(content))
-			object_value = min(object_value + get_item_value(content), BINGLE_PIT_OBJECT_CONTENTS_VALUE_LIMIT)
-			repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
+			continue
+		if(!isobj(content))
+			continue
+		object_value = min(object_value + get_item_value(content), BINGLE_PIT_OBJECT_CONTENTS_VALUE_LIMIT)
+		repair_damage(BINGLE_PIT_OBJECT_CONSUME_HEAL)
 
 	item_value_consumed += object_value
 	// Only animate if we're actually swallowing
@@ -258,10 +266,12 @@
 		return
 	if(item.throwing && item.throwing.target_turf != loc) // you can throw things over the pit
 		return
-	if(swallow_mob(item) || swallow_obj(item))
-		item.pulledby?.stop_pulling()
-		item.stop_pulling()
-		item.unbuckle_all_mobs()
+	if(!swallow_mob(item) && !swallow_obj(item))
+		return
+
+	item.pulledby?.stop_pulling()
+	item.stop_pulling()
+	item.unbuckle_all_mobs()
 
 /obj/structure/bingle_hole/proc/animate_falling_into_pit(atom/movable/item)
 	var/turf/item_turf = get_turf(item)
@@ -359,6 +369,8 @@
 	expansion_turfs += CORNER_BLOCK_OFFSET(origin, new_size, size_increase, corner_offset, right_side_offset) // up
 	expansion_turfs += CORNER_BLOCK_OFFSET(origin, size_increase, new_size, right_side_offset, corner_offset) // right
 
+	// faster to access
+	var/list/our_overlays = pit_overlays
 	for(var/turf/turf as anything in expansion_turfs)
 		if(QDELETED(src))
 			return
@@ -371,9 +383,10 @@
 
 		var/obj/structure/bingle_hole/hole = locate() in turf
 		var/obj/structure/bingle_pit_overlay/overlay = locate() in turf
+
 		if(!overlay)
 			overlay = new(turf, src)
-			pit_overlays += overlay
+			our_overlays += overlay
 
 		if(overlay.parent_pit != src)
 			merge_bingle_holes(src, overlay.parent_pit)
@@ -385,15 +398,13 @@
 		if(new_size <= 3)
 			continue
 
-		// If pit is larger than 3x3, consume walls on these tiles
-		for(var/atom/thing as anything in turf)
-			if(thing.density && isstructure(thing) && !istype(thing, /obj/structure/bingle_pit_overlay))
-				swallow(thing)
+		// If pit is larger than 3x3, consume contents of the turf
+		for(var/atom/movable/thing as anything in turf)
+			swallow(thing)
+
 		// Remove wall turf itself, if present
 		if(iswallturf(turf))
 			turf.dismantle_wall(TRUE)
-
-		CHECK_TICK
 
 	SEND_SIGNAL(src, COMSIG_BINGLE_HOLE_GROW, current_pit_size, new_size)
 	current_pit_size = new_size
@@ -417,7 +428,7 @@
 	for(var/turf/turf as anything in TURF_NEIGHBORS(spaceturf))
 		if(!is_space_or_openspace(turf))
 			continue
-		spaceturf_amount += 1
+		spaceturf_amount++
 		if(spaceturf_amount >= 4)
 			return FALSE
 	return TRUE
@@ -542,13 +553,15 @@
 	log_game("[key_name(bingle)] was spawned as Bingle by the pit.")
 
 /obj/structure/bingle_hole/proc/get_random_bingle_pit_turf()
-	if(!length(inside_pit_turfs))
+	// faster to access
+	var/list/inside_pit_turfs_cached = inside_pit_turfs
+	if(!length(inside_pit_turfs_cached))
 		for(var/turf/simulated/floor/indestructible/bingle/floor in pit_reservation?.reserved_turfs)
 			if(!floor.is_blocked_turf())
-				inside_pit_turfs += floor
+				inside_pit_turfs_cached += floor
 
-	if(length(inside_pit_turfs)) // Incase we haven't loaded the pit yet
-		return pick(inside_pit_turfs)
+	if(length(inside_pit_turfs_cached)) // Incase we haven't loaded the pit yet
+		return pick(inside_pit_turfs_cached)
 
 // We would rather eat the singularity, and we can contain it inside
 /obj/structure/bingle_hole/singularity_act()
@@ -614,17 +627,22 @@
 		hole_to_destroy = grown_pit
 
 	// Overlays "merging"
-	for(var/obj/structure/bingle_pit_overlay/pit_overlay as anything in hole_to_destroy.pit_overlays)
-		hole_to_destroy.pit_overlays -= pit_overlay
-		hole_to_keep.pit_overlays += pit_overlay
+	var/list/overlays_to_keep = hole_to_keep.pit_overlays
+	var/list/overlays_to_transfer = hole_to_destroy.pit_overlays
+	for(var/obj/structure/bingle_pit_overlay/pit_overlay as anything in overlays_to_transfer)
 		pit_overlay.parent_pit = hole_to_keep
+	overlays_to_keep += overlays_to_transfer
+	overlays_to_transfer = list()
 
 	// Reassign bingles of to remove hole to the kept one
-	if(LAZYACCESS(GLOB.bingles_by_hole, hole_to_destroy.UID()))
-		for(var/mob/living/simple_animal/hostile/bingle/bingle as anything in GLOB.bingles_by_hole[hole_to_destroy.UID()])
-			LAZYADDASSOCLIST(GLOB.bingles_by_hole, hole_to_keep.UID(), bingle)
+	var/list/bingles_by_hole = GLOB.bingles_by_hole
+	var/hole_to_keep_uid = hole_to_keep.UID()
+	var/hole_to_destroy_uid = hole_to_destroy.UID()
+	if(LAZYACCESS(bingles_by_hole, hole_to_destroy_uid))
+		for(var/mob/living/simple_animal/hostile/bingle/bingle as anything in bingles_by_hole[hole_to_destroy_uid])
+			LAZYADDASSOCLIST(bingles_by_hole, hole_to_keep_uid, bingle)
 			bingle.spawn_hole = hole_to_keep
-		GLOB.bingles_by_hole -= hole_to_destroy.UID()
+		bingles_by_hole -= hole_to_destroy_uid
 
 	// Move everything from the destroyed hole to the new one
 	for(var/turf/turf as anything in hole_to_destroy.pit_reservation?.reserved_turfs)

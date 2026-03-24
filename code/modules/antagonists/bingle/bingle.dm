@@ -56,12 +56,12 @@
 
 /mob/living/simple_animal/hostile/bingle/get_ru_names()
 	return list(
-		NOMINATIVE = "Бингл",
-		GENITIVE = "Бингла",
-		DATIVE = "Бинглу",
-		ACCUSATIVE = "Бингла",
-		INSTRUMENTAL = "Бинглом",
-		PREPOSITIONAL = "Бингле"
+		NOMINATIVE = "бингл",
+		GENITIVE = "бингла",
+		DATIVE = "бинглу",
+		ACCUSATIVE = "бингла",
+		INSTRUMENTAL = "бинглом",
+		PREPOSITIONAL = "бингле"
 	)
 
 /mob/living/simple_animal/hostile/bingle/ComponentInitialize()
@@ -133,7 +133,7 @@
 	var/list/possible_chems = get_death_chem_list()
 	var/chemicals_to_use = rand(reagents_amount_min, reagents_amount_max)
 	var/datum/reagents/reagents_list = new (reagent_max * reagents_amount_max)
-	for(var/i = 1 to chemicals_to_use)
+	for(var/i in 1 to chemicals_to_use)
 		var/chem_id = pick(possible_chems)
 		reagents_list.add_reagent(chem_id, rand(reagent_min, reagent_max))
 
@@ -186,10 +186,10 @@
 
 /mob/living/simple_animal/hostile/bingle/lord/get_ru_names()
 	return list(
-		NOMINATIVE = "лорд Бинглов",
-		GENITIVE = "лорда Бинглов",
-		DATIVE = "лорду Бинглов",
-		ACCUSATIVE = "лорда Бинглов",
-		INSTRUMENTAL = "лордом Бинглов",
-		PREPOSITIONAL = "лорде Бинглов"
+		NOMINATIVE = "лорд бинглов",
+		GENITIVE = "лорда бинглов",
+		DATIVE = "лорду бинглов",
+		ACCUSATIVE = "лорда бинглов",
+		INSTRUMENTAL = "лордом бинглов",
+		PREPOSITIONAL = "лорде бинглов"
 	)
