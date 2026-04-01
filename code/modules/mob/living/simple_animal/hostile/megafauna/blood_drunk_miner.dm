@@ -23,8 +23,8 @@ Difficulty: Medium
 /mob/living/simple_animal/hostile/megafauna/blood_drunk_miner
 	name = "blood-drunk miner"
 	desc = "Шахтёр, обречённый вечно скитаться в бесконечной охоте."
-	health = 900
-	maxHealth = 900
+	health = 2700
+	maxHealth = 2700
 	icon_state = "miner"
 	icon_living = "miner"
 	icon = 'icons/mob/lavaland/blood_drunk.dmi'
@@ -314,8 +314,8 @@ Difficulty: Medium
 	dash_cooldown_to_use = 0.5 SECONDS //Becomes a teleporting shit.
 	ranged_cooldown_time = 5 //They got some cooldown mods.
 	projectiletype = /obj/projectile/kinetic/miner/enraged
-	maxHealth = 1800
-	health = 1800 //Bit more of a challenge.
+	maxHealth = initial(maxHealth) * 2
+	health = initial(health) * 2 //Bit more of a challenge.
 
 /mob/living/simple_animal/hostile/megafauna/blood_drunk_miner/unrage()
 	. = ..()
