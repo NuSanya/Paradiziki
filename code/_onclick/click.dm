@@ -156,7 +156,7 @@
 	// Allows you to click on a box's contents, if that box is on the ground, but no deeper than that
 	sdepth = A.storage_depth_turf()
 	if(isturf(A) || isturf(A.loc) || (sdepth != -1 && sdepth <= 1))
-		if(A.Adjacent(src)) // see adjacent.dm
+		if(A.Adjacent(src) || A.loc.Adjacent(src)) // see adjacent.dm
 			beforeAdjacentClick(A, params)
 			if(W)
 				W.melee_attack_chain(src, A, params)

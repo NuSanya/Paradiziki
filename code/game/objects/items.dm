@@ -315,6 +315,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	add_eatable_component()
 	scatter_item()
 
+	GLOB.item_stack_manager.handle_turf_stacking(get_turf(src), src)
+
 /obj/item/proc/add_eatable_component()
 	AddComponent(/datum/component/eatable)
 
@@ -1491,7 +1493,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	if(resistance_flags & ON_FIRE)
 		return max(heat, BURNING_ITEM_MINIMUM_TEMPERATURE)
 	return heat
-	
+
 /**
  * Updates all action buttons associated with this item
  *

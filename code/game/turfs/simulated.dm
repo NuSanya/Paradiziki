@@ -98,6 +98,10 @@
 
 /turf/simulated/Entered(atom/movable/arrived, atom/old_loc, list/atom/old_locs)
 	. = ..()
+	if(isitem(arrived))
+		GLOB.item_stack_manager.handle_turf_stacking(src, arrived)
+		return
+
 	var/mob/living/simple_animal/Hulk = arrived
 	if(istype(arrived, /mob/living/simple_animal/hulk))
 		if(Hulk.body_position != LYING_DOWN)
