@@ -1,8 +1,5 @@
 GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 
-/// Global proc wrapper for item stack manager main handler
-#define ITEM_STACK_MANAGER_HANDLER(item) (GLOB.item_stack_manager.handle_turf_stacking(item))
-
 /// Minimum amount of movables on a turf required for a stack to appear
 #define MINIMUM_ITEM_STACK_TURF_CONTENTS_REQUIREMENT 80
 /// How many items should a stack include (or lesser) to be qdeled, must be lesser than the define above by a good margin

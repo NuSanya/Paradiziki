@@ -319,7 +319,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 
 	add_eatable_component()
 	scatter_item()
-	ITEM_STACK_MANAGER_HANDLER(src)
+	GLOB.item_stack_manager.handle_turf_stacking(src)
 
 // Tries turf stacking on move. This could be in turf/Entered, but I think this is better
 /obj/item/Move(atom/newloc, direct = NONE, glide_size_override = 0, update_dir = TRUE)
@@ -327,7 +327,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	if(!.)
 		return
 
-	ITEM_STACK_MANAGER_HANDLER(src)
+	GLOB.item_stack_manager.handle_turf_stacking(src)
 
 /obj/item/proc/add_eatable_component()
 	AddComponent(/datum/component/eatable)
@@ -716,7 +716,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	mouse_opacity = initial(mouse_opacity)
 	remove_outline()
 
-	ITEM_STACK_MANAGER_HANDLER(src)
+	GLOB.item_stack_manager.handle_turf_stacking(src)
 
 	SEND_SIGNAL(src, COMSIG_ITEM_DROPPED, user, slot)
 	var/drop_sound = get_drop_sound()
