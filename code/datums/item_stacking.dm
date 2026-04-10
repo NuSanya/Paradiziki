@@ -43,7 +43,7 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	if(!item || !istype(item))
 		return FALSE
 
-	if(!istype(item.loc, /turf))
+	if(!isturf(item.loc))
 		return FALSE
 
 	var/turf/item_turf = item.loc
@@ -259,7 +259,8 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 
 	var/turf/user_turf = get_turf(user)
 	var/turf/stack_turf = get_turf(src)
-	var/turf/output_turf = (user_turf == stack_turf) ? pick(stack_turf.AdjacentTurfs(TRUE)) : user_turf
+	var/list/adjacent_stack_turfs = stack_turf.AdjacentTurfs(TRUE)
+	var/turf/output_turf = (user_turf == stack_turf) ? (length(adjacent_stack_turfs) ? pick(adjacent_stack_turfs) : null) : user_turf
 	if(!output_turf)
 		user.balloon_alert(user, "не вытащить!")
 		return
@@ -332,11 +333,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	acid_overlay_applied = TRUE
 	add_overlay(GLOB.acid_overlay)
 
-/// Signal proc called on item fire_act
-/atom/movable/item_stack/proc/on_item_fire_act(obj/item/source, exposed_temperature, exposed_volume)
-	SIGNAL_HANDLER
-	handle_burning_overlay(source)
-
 /// Signal proc called on item extinguish
 /atom/movable/item_stack/proc/on_item_extinguish(obj/item/source)
 	SIGNAL_HANDLER
@@ -356,7 +352,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		item.blob_vore_act(voring_core)
-		stack_contents -= item
 		CHECK_TICK
 
 // blob_act all items
@@ -369,7 +364,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		item.blob_act(attacking_blob)
-		stack_contents -= item
 		CHECK_TICK
 
 // fire_act all items
@@ -381,7 +375,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	for(var/obj/item/item as anything in stack_contents)
 		if(item.fire_act(exposed_temperature, exposed_volume))
 			handle_burning_overlay(item)
-		stack_contents -= item
 		CHECK_TICK
 
 // water_act all items
@@ -393,7 +386,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		item.water_act(volume, temperature, source, method)
-		stack_contents -= item
 		CHECK_TICK
 
 // Damage the last inserted item
@@ -413,7 +405,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		item.ex_act(severity, target)
-		stack_contents -= item
 		CHECK_TICK
 
 // emp_act all items
@@ -424,7 +415,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		item.emp_act(severity)
-		stack_contents -= item
 		CHECK_TICK
 
 // acid_act all items
@@ -435,7 +425,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		item.acid_act(acidpwr, acid_volume)
-		stack_contents -= item
 		CHECK_TICK
 
 // fart_act all items
@@ -446,7 +435,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		item.fart_act(user)
-		stack_contents -= item
 		CHECK_TICK
 
 // singularity_act all items
@@ -457,7 +445,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		item.singularity_act()
-		stack_contents -= item
 		CHECK_TICK
 
 // Move the stack towards the singularity, mimicing item handling
