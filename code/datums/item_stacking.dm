@@ -215,10 +215,10 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 
 /// Proc used on init to insert all existing items on turf into src
 /atom/movable/item_stack/proc/add_items_on_init()
-    var/turf/our_turf = get_turf(src)
-    var/list/items_to_move = our_turf.contents.Copy()
-    for(var/obj/item/item in items_to_move)
-        add_item(item)
+	var/turf/our_turf = get_turf(src)
+	var/list/items_to_move = our_turf.contents.Copy()
+	for(var/obj/item/item in items_to_move)
+		add_item(item)
 
 /// Signal proc called on item exiting the stack
 /atom/movable/item_stack/proc/on_exited(datum/source, atom/movable/departed, atom/newLoc)
