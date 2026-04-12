@@ -1048,7 +1048,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 /obj/item/singularity_pull(S, current_size)
 	..()
 	if(current_size >= STAGE_FOUR)
-		throw_at(S, 14, 3, spin = 0)
+		throw_at(S, ITEM_SINGULARITY_PULL_THROW_RANGE, ITEM_SINGULARITY_PULL_THROW_SPEED, spin = 0)
 	else
 		return
 

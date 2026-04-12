@@ -127,3 +127,4 @@
 
 /// Sent on camera switch in camera monitors (/obj/machinery/computer/security/ui_act(action, params))
 #define COMSIG_MONITOR_CAMERA_SWITCHED "monitor_camera_switched"
+

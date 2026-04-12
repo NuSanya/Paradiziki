@@ -244,7 +244,7 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	acid_act(acidpwr, acid_volume)
 
 /// Signal proc called on tuf getting water_act
-/atom/movable/item_stack/proc/on_turf_water_act(datum/source, volume, temperature, source, method)
+/atom/movable/item_stack/proc/on_turf_water_act(datum/source, volume, temperature, source_arg, method)
 	SIGNAL_HANDLER
 	water_act(volume, temperature, source, method)
 
@@ -387,10 +387,9 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		var/item_call_result = call(item, proc_ref)(arglist(args_list))
-		if(item_call_result && stack_proc_ref)
-			call(src, stack_proc_ref)(item)
-
-		CHECK_TICK
+		if(!item_call_result || !stack_proc_ref)
+			continue
+		call(src, stack_proc_ref)(item)
 
 // fire_act all items
 /atom/movable/item_stack/fire_act(exposed_temperature, exposed_volume)
@@ -436,7 +435,7 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 /atom/movable/item_stack/singularity_pull(obj/singularity/S, current_size)
 	. = ..()
 	if(current_size >= STAGE_FOUR)
-		throw_at(S, 14, 3, spin = 0)
+		throw_at(S, ITEM_SINGULARITY_PULL_THROW_RANGE, ITEM_SINGULARITY_PULL_THROW_SPEED, spin = 0)
 		return
 
 	step_towards(src, S)

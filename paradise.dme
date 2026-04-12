@@ -114,6 +114,7 @@
 #include "code\__DEFINES\insurance.dm"
 #include "code\__DEFINES\inventory.dm"
 #include "code\__DEFINES\is_helpers.dm"
+#include "code\__DEFINES\items.dm"
 #include "code\__DEFINES\keybindings.dm"
 #include "code\__DEFINES\language.dm"
 #include "code\__DEFINES\lavaland.dm"
