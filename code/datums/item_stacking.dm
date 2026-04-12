@@ -105,11 +105,24 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/burning_overlay_applied = FALSE
 	/// Does the stack have acid overlay already applied?
 	var/acid_overlay_applied = FALSE
+	/// Given to connect_loc to avoid shitcode problems
+	var/static/list/loc_connections = list(
+		// For some unknown reason, despite /atom having basic handling of acid_act,
+		// all things causing acid_act() happen to not handle strictly atoms.
+		// So instead, look for turf acid_act to acid_act all things inside.
+		// Until acid refactor this remains
+		COMSIG_ATOM_ACID_ACT = PROC_REF(on_turf_acid_act),
+		// There is also a problem with water_act, with
+		// reagents not handling strictly atom interactions.
+		// Until chem rework this remains
+		COMSIG_ATOM_EXPOSE_REAGENTS = PROC_REF(on_turf_water_act)
+	)
 
 /atom/movable/item_stack/Initialize(mapload)
 	. = ..()
 	add_items_on_init()
 	RegisterSignal(src, COMSIG_ATOM_EXITED, PROC_REF(on_exited))
+	AddElement(/datum/element/connect_loc, loc_connections)
 
 /atom/movable/item_stack/Destroy(force)
 	QDEL_LIST_ASSOC_VAL(used_mutables)
@@ -225,6 +238,26 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	SIGNAL_HANDLER
 	remove_item(departed)
 
+/// Signal proc called on turf getting acid_act
+/atom/movable/item_stack/proc/on_turf_acid_act(datum/source, acidpwr, acid_volume)
+	SIGNAL_HANDLER
+	acid_act(acidpwr, acid_volume)
+
+/// Signal proc called on tuf getting water_act
+/atom/movable/item_stack/proc/on_turf_water_act(datum/source, volume, temperature, source, method)
+	SIGNAL_HANDLER
+	water_act(volume, temperature, source, method)
+
+/// Signal proc called on item extinguish
+/atom/movable/item_stack/proc/on_item_extinguish(obj/item/source)
+	SIGNAL_HANDLER
+	handle_burning_overlay(source)
+
+/// Signal proc called on item acid processing
+/atom/movable/item_stack/proc/on_item_acid_process(obj/item/source, acid_level)
+	SIGNAL_HANDLER
+	handle_acid_overlay(source)
+
 // Inserts an item if possible into the stack
 /atom/movable/item_stack/attackby(obj/item/item, mob/user, params)
 	. = ..()
@@ -330,16 +363,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	acid_overlay_applied = TRUE
 	add_overlay(GLOB.acid_overlay)
 
-/// Signal proc called on item extinguish
-/atom/movable/item_stack/proc/on_item_extinguish(obj/item/source)
-	SIGNAL_HANDLER
-	handle_burning_overlay(source)
-
-/// Signal proc called on item acid processing
-/atom/movable/item_stack/proc/on_item_acid_process(obj/item/source, acid_level)
-	SIGNAL_HANDLER
-	handle_acid_overlay(source)
-
 // Fuck the person who named this proc by the way
 // blob_vore_act all items
 /atom/movable/item_stack/blob_vore_act(obj/structure/blob/special/core/voring_core)
@@ -351,98 +374,63 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 		item.blob_vore_act(voring_core)
 		CHECK_TICK
 
-// blob_act all items
-/atom/movable/item_stack/blob_act(obj/structure/blob/attacking_blob)
-	. = ..()
-	if(!.)
-		return
-
+/**
+ * Proc to mass call a proc over all items inside src
+ *
+ * Arguments:
+ * * proc_ref: the proc we are calling
+ * * args_list: args var of proc
+ * * stack_proc_ref: the proc we call on successful item proc_ref call with item as an argument
+ */
+/atom/movable/item_stack/proc/proc_all_items(proc_ref, args_list, stack_proc_ref)
 	// Copying contents since the stack gets qdel() if not enough items are present
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
-		item.blob_act(attacking_blob)
+		var/item_call_result = call(item, proc_ref)(arglist(args_list))
+		if(item_call_result && stack_proc_ref)
+			call(src, stack_proc_ref)(item)
+
 		CHECK_TICK
 
 // fire_act all items
 /atom/movable/item_stack/fire_act(exposed_temperature, exposed_volume)
 	. = ..()
+	proc_all_items(TYPE_PROC_REF(/atom, fire_act), args, PROC_REF(handle_burning_overlay))
 
-	// Copying contents since the stack gets qdel() if not enough items are present
-	var/list/stack_contents = contents.Copy()
-	for(var/obj/item/item as anything in stack_contents)
-		if(item.fire_act(exposed_temperature, exposed_volume))
-			handle_burning_overlay(item)
-		CHECK_TICK
+// blob_act all items
+/atom/movable/item_stack/blob_act(obj/structure/blob/attacking_blob)
+	. = ..()
+	proc_all_items(TYPE_PROC_REF(/atom, blob_act), args)
 
 // water_act all items
 /atom/movable/item_stack/water_act(volume, temperature, source, method = REAGENT_TOUCH)
 	. = ..()
-
-	// Copying contents since the stack gets qdel() if not enough items are present
-	// Maybe the stack will consist only of items that get deleted on water_act?
-	var/list/stack_contents = contents.Copy()
-	for(var/obj/item/item as anything in stack_contents)
-		item.water_act(volume, temperature, source, method)
-		CHECK_TICK
-
-// Damage the last inserted item
-/atom/movable/item_stack/bullet_act(obj/projectile/P, def_zone)
-	. = ..()
-	if(!.)
-		return
-
-	var/obj/item/last_inserted_item = contents[length(contents)]
-	return last_inserted_item.bullet_act(P, def_zone)
+	proc_all_items(TYPE_PROC_REF(/atom, water_act), args)
 
 // ex_act all items
 /atom/movable/item_stack/ex_act(severity, target)
 	. = ..()
-
-	// Copying contents since the stack gets qdel() if not enough items are present
-	var/list/stack_contents = contents.Copy()
-	for(var/obj/item/item as anything in stack_contents)
-		item.ex_act(severity, target)
-		CHECK_TICK
+	proc_all_items(TYPE_PROC_REF(/atom, ex_act), args)
 
 // emp_act all items
 /atom/movable/item_stack/emp_act(severity)
 	. = ..()
-
-	// Copying contents since the stack gets qdel() if not enough items are present
-	var/list/stack_contents = contents.Copy()
-	for(var/obj/item/item as anything in stack_contents)
-		item.emp_act(severity)
-		CHECK_TICK
+	proc_all_items(TYPE_PROC_REF(/atom, emp_act), args)
 
 // acid_act all items
 /atom/movable/item_stack/acid_act(acidpwr, acid_volume)
 	. = ..()
-
-	// Copying contents since the stack gets qdel() if not enough items are present
-	var/list/stack_contents = contents.Copy()
-	for(var/obj/item/item as anything in stack_contents)
-		item.acid_act(acidpwr, acid_volume)
-		CHECK_TICK
+	proc_all_items(TYPE_PROC_REF(/atom, acid_act), args)
 
 // fart_act all items
 /atom/movable/item_stack/fart_act(mob/living/user)
 	. = ..()
-
-	// Copying contents since the stack gets qdel() if not enough items are present
-	var/list/stack_contents = contents.Copy()
-	for(var/obj/item/item as anything in stack_contents)
-		item.fart_act(user)
-		CHECK_TICK
+	proc_all_items(TYPE_PROC_REF(/atom, fart_act), args)
 
 // singularity_act all items
 /atom/movable/item_stack/singularity_act()
 	. = ..()
-
-	// Copying contents since the stack gets qdel() if not enough items are present
-	var/list/stack_contents = contents.Copy()
-	for(var/obj/item/item as anything in stack_contents)
-		item.singularity_act()
-		CHECK_TICK
+	proc_all_items(TYPE_PROC_REF(/atom, singularity_act), args)
 
 // Move the stack towards the singularity, mimicing item handling
 /atom/movable/item_stack/singularity_pull(obj/singularity/S, current_size)
@@ -452,6 +440,15 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 		return
 
 	step_towards(src, S)
+
+// Damage the last inserted item
+/atom/movable/item_stack/bullet_act(obj/projectile/P, def_zone)
+	. = ..()
+	if(!.)
+		return
+
+	var/obj/item/last_inserted_item = contents[length(contents)]
+	return last_inserted_item.bullet_act(P, def_zone)
 
 #undef MINIMUM_ITEM_STACK_TURF_CONTENTS_REQUIREMENT
 #undef ITEM_STACK_QDEL_THRESHOLD
