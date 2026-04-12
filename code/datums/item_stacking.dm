@@ -307,10 +307,9 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 
 	item.forceMove(output_turf)
 	if(!(item.can_be_pulled(user, force = user.pull_force)))
-		item.forceMove(src)
+		add_item(item)
 		return
 
-	remove_item(item)
 	INVOKE_ASYNC(user, TYPE_PROC_REF(/mob/living, pulled), item)
 
 // Calls the lootpanel on this stack

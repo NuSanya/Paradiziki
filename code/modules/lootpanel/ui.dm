@@ -32,17 +32,12 @@
 	if(QDELETED(index) || QDELETED(thing)) // Obj is gone
 		return FALSE
 
-	var/found_thing_in_source_atoms = FALSE
-	if(locate(thing) in source_atoms)
-		found_thing_in_source_atoms = TRUE
-
-	for(var/atom/atom as anything in source_atoms)
-		if(found_thing_in_source_atoms)
-			break
-
-		if(locate(thing) in atom.contents)
-			found_thing_in_source_atoms = TRUE
-			break
+	var/found_thing_in_source_atoms = (thing in source_atoms)
+	if(!found_thing_in_source_atoms)
+		for(var/atom/atom as anything in source_atoms)
+			if(thing in atom.contents)
+				found_thing_in_source_atoms = TRUE
+				break
 
 	if(!found_thing_in_source_atoms)
 		qdel(index)
