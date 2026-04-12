@@ -91,7 +91,7 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 // The stack object itself. Uses overlays to show what items are held inside.
 /atom/movable/item_stack
 	name = "a bunch of items"
-	desc = "Куча всяких предметов."
+	desc = "Куча беспорядочно раскиданных вещей."
 	anchored = TRUE
 	/// What mutables are currently used in overlays. Format: Item UID() -> Mutable
 	var/list/used_mutables = list()
@@ -129,6 +129,16 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	UnregisterSignal(src, COMSIG_ATOM_EXITED) // before remove_items_on_destroy for optimization
 	remove_items_on_destroy()
 	return ..()
+
+/atom/movable/item_stack/get_ru_names()
+	return list(
+		NOMINATIVE = "куча вещей",
+		GENITIVE = "кучи вещей",
+		DATIVE = "куче вещей",
+		ACCUSATIVE = "кучу вещей",
+		INSTRUMENTAL = "кучей вещей",
+		PREPOSITIONAL = "о куче вещей",
+	)
 
 /// Removes all items from src to turf and cleans up signals
 /atom/movable/item_stack/proc/remove_items_on_destroy()
