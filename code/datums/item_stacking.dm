@@ -251,12 +251,12 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 /// Signal proc called on turf getting acid_act
 /atom/movable/item_stack/proc/on_turf_acid_act(datum/source, acidpwr, acid_volume)
 	SIGNAL_HANDLER
-	acid_act(acidpwr, acid_volume)
+	INVOKE_ASYNC(src, PROC_REF(acid_act), acidpwr, acid_volume)
 
 /// Signal proc called on tuf getting water_act
 /atom/movable/item_stack/proc/on_turf_water_act(datum/source, volume, temperature, source_arg, method)
 	SIGNAL_HANDLER
-	water_act(volume, temperature, source, method)
+	INVOKE_ASYNC(src, PROC_REF(water_act), volume, temperature, source_arg, method)
 
 /// Signal proc called on item extinguish
 /atom/movable/item_stack/proc/on_item_extinguish(obj/item/source)
@@ -373,17 +373,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	acid_overlay_applied = TRUE
 	add_overlay(GLOB.acid_overlay)
 
-// Fuck the person who named this proc by the way
-// blob_vore_act all items
-/atom/movable/item_stack/blob_vore_act(obj/structure/blob/special/core/voring_core)
-	. = ..()
-
-	// Copying contents since the stack gets qdel() if not enough items are present
-	var/list/stack_contents = contents.Copy()
-	for(var/obj/item/item as anything in stack_contents)
-		item.blob_vore_act(voring_core)
-		CHECK_TICK
-
 /**
  * Proc to mass call a proc over all items inside src
  *
@@ -397,14 +386,19 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 	var/list/stack_contents = contents.Copy()
 	for(var/obj/item/item as anything in stack_contents)
 		var/item_call_result = call(item, proc_ref)(arglist(args_list))
-		if(!item_call_result || !stack_proc_ref)
-			continue
-		call(src, stack_proc_ref)(item)
+		if(item_call_result && stack_proc_ref)
+			call(src, stack_proc_ref)(item)
+		CHECK_TICK
 
 // fire_act all items
 /atom/movable/item_stack/fire_act(exposed_temperature, exposed_volume)
 	. = ..()
 	proc_all_items(TYPE_PROC_REF(/atom, fire_act), args, PROC_REF(handle_burning_overlay))
+
+// blob_vore_act all items
+/atom/movable/item_stack/blob_vore_act(obj/structure/blob/special/core/voring_core)
+	. = ..()
+	proc_all_items(TYPE_PROC_REF(/atom, blob_vore_act), args)
 
 // blob_act all items
 /atom/movable/item_stack/blob_act(obj/structure/blob/attacking_blob)
