@@ -387,7 +387,6 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 		var/item_call_result = call(item, proc_ref)(arglist(args_list))
 		if(item_call_result && stack_proc_ref)
 			call(src, stack_proc_ref)(item)
-		CHECK_TICK
 
 // fire_act all items
 /atom/movable/item_stack/fire_act(exposed_temperature, exposed_volume)
