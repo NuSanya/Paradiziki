@@ -80,7 +80,7 @@
 			// explosions have a spawn so this makes sure that we don't get gibbed
 			addtimer(CALLBACK(src, PROC_REF(wiz_cleanup), user, check), 0.3 SECONDS) //I want to be sure this lasts long enough, with lag.
 			add_attack_logs(user, check, "caused a wizard [id] explosion")
-			playsound(user, epic_sound_effect, 80)
+			playsound(user, epic_sound_effect, 100, ignore_walls = TRUE, pressure_affected = FALSE)
 			both_wiz = TRUE
 		user.do_attack_animation(check, no_effect = TRUE)
 		check.do_attack_animation(user, no_effect = TRUE)
