@@ -127,7 +127,7 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 /atom/movable/item_stack/Destroy(force)
 	QDEL_LIST_ASSOC_VAL(used_mutables)
 	UnregisterSignal(src, COMSIG_ATOM_EXITED) // before remove_items_on_destroy for optimization
-	remove_items_on_destroy()
+	remove_items_on_destroy(force)
 	return ..()
 
 /atom/movable/item_stack/get_ru_names()
@@ -140,8 +140,21 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 		PREPOSITIONAL = "о куче вещей",
 	)
 
-/// Removes all items from src to turf and cleans up signals
-/atom/movable/item_stack/proc/remove_items_on_destroy()
+/**
+ * Handles items on src qdel
+ *
+ * Qdels all items if forced, or if we have more items on qdel than possible
+ * Otherwise, unregisters signals and forceMove()s the item to turf.
+ */
+/atom/movable/item_stack/proc/remove_items_on_destroy(force = FALSE)
+	// This could be put into the loop above, but would require repeating an if condition
+	if(force || (length(contents) > ITEM_STACK_QDEL_THRESHOLD))
+		while(length(contents))
+			var/obj/item/item = contents[length(contents)]
+			unregister_item_signals(item)
+			qdel(item, force)
+		return
+
 	var/turf/our_turf = get_turf(src)
 	while(length(contents))
 		var/obj/item/item = contents[length(contents)]
@@ -378,11 +391,16 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
  * Arguments:
  * * proc_ref: the proc we are calling
  * * args_list: args var of proc
+ * * do_part: should we proc only the smallest amount of items a stack can have, FALSE by default
  * * stack_proc_ref: the proc we call on successful item proc_ref call with item as an argument
  */
-/atom/movable/item_stack/proc/proc_all_items(proc_ref, args_list, stack_proc_ref)
-	// Copying contents since the stack gets qdel() if not enough items are present
-	var/list/stack_contents = contents.Copy()
+/atom/movable/item_stack/proc/proc_all_items(proc_ref, args_list, do_part = FALSE, stack_proc_ref)
+	var/list/stack_contents
+	if(do_part)
+		stack_contents = contents.Copy(1, min(length(contents), ITEM_STACK_QDEL_THRESHOLD))
+	else
+		stack_contents = contents.Copy()
+
 	for(var/obj/item/item as anything in stack_contents)
 		var/item_call_result = call(item, proc_ref)(arglist(args_list))
 		if(item_call_result && stack_proc_ref)
@@ -391,7 +409,7 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 // fire_act all items
 /atom/movable/item_stack/fire_act(exposed_temperature, exposed_volume)
 	. = ..()
-	proc_all_items(TYPE_PROC_REF(/atom, fire_act), args, PROC_REF(handle_burning_overlay))
+	proc_all_items(TYPE_PROC_REF(/atom, fire_act), args, TRUE, PROC_REF(handle_burning_overlay))
 
 // blob_vore_act all items
 /atom/movable/item_stack/blob_vore_act(obj/structure/blob/special/core/voring_core)
@@ -411,7 +429,7 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 // ex_act all items
 /atom/movable/item_stack/ex_act(severity, target)
 	. = ..()
-	proc_all_items(TYPE_PROC_REF(/atom, ex_act), args)
+	proc_all_items(TYPE_PROC_REF(/atom, ex_act), args, TRUE)
 
 // emp_act all items
 /atom/movable/item_stack/emp_act(severity)
@@ -421,7 +439,7 @@ GLOBAL_DATUM_INIT(item_stack_manager, /datum/item_stack_manager, new)
 // acid_act all items
 /atom/movable/item_stack/acid_act(acidpwr, acid_volume)
 	. = ..()
-	proc_all_items(TYPE_PROC_REF(/atom, acid_act), args)
+	proc_all_items(TYPE_PROC_REF(/atom, acid_act), args, TRUE)
 
 // fart_act all items
 /atom/movable/item_stack/fart_act(mob/living/user)

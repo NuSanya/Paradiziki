@@ -329,6 +329,13 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 
 	GLOB.item_stack_manager.handle_turf_stacking(src)
 
+/obj/item/forceMove(atom/destination)
+	. = ..()
+	if(!.)
+		return
+
+	GLOB.item_stack_manager.handle_turf_stacking(src)
+
 /obj/item/proc/add_eatable_component()
 	AddComponent(/datum/component/eatable)
 
@@ -715,16 +722,15 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/g
 	item_flags &= ~IN_INVENTORY
 	mouse_opacity = initial(mouse_opacity)
 	remove_outline()
-
-	GLOB.item_stack_manager.handle_turf_stacking(src)
-
 	SEND_SIGNAL(src, COMSIG_ITEM_DROPPED, user, slot)
+
 	var/drop_sound = get_drop_sound()
 	if(!silent && !(item_flags & ABSTRACT) && drop_sound)
 		var/chosen_sound = drop_sound
 		if(islist(drop_sound) && length(drop_sound))
 			chosen_sound = pick(drop_sound)
 		playsound(src, chosen_sound, DROP_SOUND_VOLUME, channel = CHANNEL_INTERACTION_SOUNDS, ignore_walls = FALSE)
+
 	return TRUE
 
 /**
