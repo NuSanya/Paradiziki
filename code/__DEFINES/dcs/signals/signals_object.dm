@@ -348,3 +348,8 @@
 
 /// Called after placing item on table. (mob/user, obj/structure/table)
 #define COMSIG_ITEM_PLACED_ON_TABLE "item_placed_on_table"
+
+/// Sent on object extinquish (/obj/proc/extinguish())
+#define COMSIG_OBJ_EXTINGUISH "obj_extinguish"
+/// Sent on object acid processing (/obj/proc/acid_processing())
+#define COMSIG_OBJ_ACID_PROCESSING "obj_acid_processing"
