@@ -412,9 +412,7 @@
 /area/shuttle/escape)
 "bx" = (
 /obj/item/twohanded/required/kirbyplants,
-/obj/structure/extinguisher_cabinet{
-	pixel_x = 28
-	},
+/obj/structure/extinguisher_cabinet/directional/east,
 /turf/simulated/floor/plasteel{
 	icon_state = "neutralcorner"
 	},
@@ -635,8 +633,7 @@
 /obj/machinery/cell_charger,
 /obj/item/stock_parts/cell/high,
 /obj/machinery/light/small{
-	dir = 8;
-	tag = "icon-bulb1 (WEST)"
+	dir = 8
 	},
 /turf/simulated/floor/plasteel{
 	dir = 1;
@@ -660,10 +657,6 @@
 "cb" = (
 /obj/item/twohanded/required/kirbyplants,
 /turf/simulated/floor/plasteel,
-/area/shuttle/escape)
-"cc" = (
-/obj/structure/extinguisher_cabinet,
-/turf/simulated/wall/shuttle/onlyselfsmooth,
 /area/shuttle/escape)
 "cd" = (
 /obj/item/radio/intercom/directional/west,
@@ -690,9 +683,7 @@
 	},
 /area/shuttle/escape)
 "cf" = (
-/obj/structure/extinguisher_cabinet{
-	pixel_x = -28
-	},
+/obj/structure/extinguisher_cabinet/directional/west,
 /obj/machinery/recharge_station,
 /turf/simulated/floor/plasteel{
 	dir = 1;
@@ -702,15 +693,13 @@
 "cg" = (
 /turf/simulated/floor/plasteel{
 	dir = 4;
-	icon_state = "browncorner";
-	tag = "icon-browncorner (EAST)"
+	icon_state = "browncorner"
 	},
 /area/shuttle/escape)
 "ch" = (
 /turf/simulated/floor/plasteel{
 	dir = 1;
-	icon_state = "browncorner";
-	tag = "icon-browncorner (EAST)"
+	icon_state = "browncorner"
 	},
 /area/shuttle/escape)
 "ci" = (
@@ -756,7 +745,7 @@
 /turf/simulated/floor/plasteel,
 /area/shuttle/escape)
 "cn" = (
-/obj/structure/sign/greencross,
+/obj/structure/sign/medbay/greencross,
 /turf/simulated/wall/shuttle/onlyselfsmooth,
 /area/shuttle/escape)
 "co" = (
@@ -781,22 +770,18 @@
 "cs" = (
 /turf/simulated/floor/plasteel{
 	dir = 1;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (NORTH)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "ct" = (
-/obj/structure/extinguisher_cabinet{
-	pixel_x = 28
-	},
+/obj/structure/extinguisher_cabinet/directional/east,
 /obj/machinery/light/small{
 	dir = 4;
 	pixel_y = 8
 	},
 /turf/simulated/floor/plasteel{
 	dir = 6;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (SOUTHEAST)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "cu" = (
@@ -818,8 +803,7 @@
 /obj/machinery/iv_drip,
 /turf/simulated/floor/plasteel{
 	dir = 4;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (EAST)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "cx" = (
@@ -829,14 +813,12 @@
 /obj/item/reagent_containers/iv_bag/bloodsynthetic/oxygenis,
 /turf/simulated/floor/plasteel{
 	dir = 4;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (EAST)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "cy" = (
 /turf/simulated/floor/plasteel{
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "cz" = (
@@ -852,8 +834,7 @@
 	},
 /turf/simulated/floor/plasteel{
 	dir = 5;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (NORTHEAST)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "cA" = (
@@ -916,8 +897,28 @@
 "cH" = (
 /turf/simulated/wall/shuttle,
 /area/shuttle/escape)
+"kj" = (
+/obj/structure/chair/comfy/shuttle{
+	dir = 4
+	},
+/obj/structure/extinguisher_cabinet/directional/west,
+/turf/simulated/floor/plasteel{
+	dir = 1;
+	icon_state = "bot"
+	},
+/area/shuttle/escape)
 "wB" = (
 /turf/simulated/wall/shuttle/onlyselfsmooth,
+/area/shuttle/escape)
+"Cj" = (
+/obj/structure/chair/comfy/shuttle{
+	dir = 8
+	},
+/obj/structure/extinguisher_cabinet/directional/east,
+/turf/simulated/floor/plasteel{
+	dir = 1;
+	icon_state = "bot"
+	},
 /area/shuttle/escape)
 "Ow" = (
 /turf/simulated/wall/shuttle/onlyselfsmooth/nodiagonal,
@@ -1033,11 +1034,11 @@ ba
 bQ
 bQ
 bQ
-bQ
+Cj
 bQ
 ba
 bQ
-bQ
+Cj
 bQ
 bQ
 bQ
@@ -1064,11 +1065,11 @@ ba
 bR
 bW
 bY
-cc
+wB
 bR
 ba
 bY
-cc
+wB
 bR
 bX
 bY
@@ -1095,11 +1096,11 @@ ba
 bP
 bP
 bP
-bP
+kj
 bP
 ba
 bP
-bP
+kj
 bP
 bP
 bP
@@ -1157,11 +1158,11 @@ ba
 bQ
 bQ
 bQ
-bQ
+Cj
 bQ
 ba
 bQ
-bQ
+Cj
 bQ
 bQ
 bQ
@@ -1188,11 +1189,11 @@ ba
 bR
 bX
 bY
-cc
+wB
 bR
 ba
 bY
-cc
+wB
 bR
 bW
 bY
@@ -1219,11 +1220,11 @@ ba
 bP
 bP
 bP
-bP
+kj
 bP
 ba
 bP
-bP
+kj
 bP
 bP
 bP

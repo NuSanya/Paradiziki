@@ -218,10 +218,8 @@
 	dir = 4
 	},
 /obj/structure/cable,
-/obj/machinery/power/apc/noalarm{
-	keep_preset_name = 1;
-	name = "Hallway APC";
-	pixel_y = -24
+/obj/machinery/power/apc/noalarm/directional/south{
+	keep_preset_name = 1
 	},
 /turf/simulated/floor/plasteel/airless,
 /area/ruin/onehalf/hallway)
@@ -364,11 +362,8 @@
 /obj/item/healthanalyzer,
 /obj/item/reagent_containers/iv_bag/bloodsynthetic/oxygenis,
 /obj/item/reagent_containers/iv_bag/bloodsynthetic/oxygenis,
-/obj/machinery/power/apc/noalarm{
-	dir = 4;
-	keep_preset_name = 1;
-	name = "Crew Quarters APC";
-	pixel_x = 27
+/obj/machinery/power/apc/noalarm/directional/east{
+	keep_preset_name = 1
 	},
 /turf/simulated/floor/plasteel{
 	icon_state = "white"
@@ -378,11 +373,8 @@
 /obj/structure/cable{
 	icon_state = "0-8"
 	},
-/obj/machinery/power/apc/noalarm{
-	dir = 1;
-	keep_preset_name = 1;
-	name = "Mining Drone Bay APC";
-	pixel_y = 26
+/obj/machinery/power/apc/noalarm/directional/north{
+	keep_preset_name = 1
 	},
 /obj/effect/decal/warning_stripes/north,
 /turf/simulated/floor/plasteel,
@@ -417,7 +409,6 @@
 /area/ruin/onehalf/hallway)
 "be" = (
 /obj/structure/disposalpipe/broken{
-	tag = "icon-pipe-b (EAST)";
 	dir = 4
 	},
 /obj/item/stack/cable_coil/cut{
@@ -460,7 +451,6 @@
 /area/ruin/onehalf/hallway)
 "bi" = (
 /obj/structure/disposalpipe/broken{
-	tag = "icon-pipe-b (EAST)";
 	dir = 4
 	},
 /obj/effect/mapping_helpers/turfs/damage,
@@ -675,11 +665,8 @@
 /obj/structure/cable{
 	icon_state = "0-4"
 	},
-/obj/machinery/power/apc/noalarm{
-	dir = 1;
-	keep_preset_name = 1;
-	name = "Bridge APC";
-	pixel_y = 26
+/obj/machinery/power/apc/noalarm/directional/north{
+	keep_preset_name = 1
 	},
 /turf/simulated/floor/plasteel,
 /area/ruin/onehalf/bridge)
@@ -807,7 +794,6 @@
 	dir = 4
 	},
 /obj/item/shard{
-	tag = "icon-small";
 	icon_state = "small"
 	},
 /turf/space,
@@ -834,7 +820,6 @@
 /area/ruin/onehalf/bridge)
 "cq" = (
 /obj/structure/chair{
-	tag = "icon-chair (WEST)";
 	dir = 8
 	},
 /turf/simulated/floor/plasteel,
@@ -844,7 +829,6 @@
 /area/ruin/onehalf/bridge)
 "cs" = (
 /obj/structure/chair{
-	tag = "icon-chair (NORTH)";
 	dir = 1
 	},
 /turf/simulated/floor/plasteel,
@@ -893,7 +877,6 @@
 "cy" = (
 /obj/structure/lattice,
 /obj/item/shard{
-	tag = "icon-medium";
 	icon_state = "medium"
 	},
 /turf/space,
@@ -954,11 +937,9 @@
 "cH" = (
 /obj/structure/lattice,
 /obj/structure/disposalpipe/broken{
-	tag = "icon-pipe-b (NORTH)";
 	dir = 1
 	},
 /obj/structure/disposalpipe/broken{
-	tag = "icon-pipe-b (WEST)";
 	dir = 8
 	},
 /turf/space,
@@ -1000,7 +981,6 @@
 /area/ruin/onehalf/bridge)
 "cN" = (
 /obj/structure/chair/comfy/black{
-	tag = "icon-comfychair (EAST)";
 	dir = 4
 	},
 /turf/simulated/floor/plasteel,
@@ -1156,7 +1136,6 @@
 	icon_state = "4-8"
 	},
 /obj/item/shard{
-	tag = "icon-medium";
 	icon_state = "medium"
 	},
 /turf/space,

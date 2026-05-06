@@ -586,6 +586,8 @@
 	var/mutable_appearance/signed_up_overlay
 	/// MA for maptext overlay showing how many polls are stacked together
 	var/mutable_appearance/stacks_overlay
+	/// MA for maptext overlay showing how many candidates are signed up to a poll
+	var/mutable_appearance/candidates_num_overlay
 	/// If set, on Click() it'll register the player as a candidate
 	var/datum/candidate_poll/poll
 
@@ -598,6 +600,9 @@
 	QDEL_NULL(time_left_overlay)
 	QDEL_NULL(signed_up_overlay)
 	QDEL_NULL(stacks_overlay)
+	QDEL_NULL(candidates_num_overlay)
+	if(poll)
+		poll.alert_buttons -= src
 	poll = null
 	return ..()
 
@@ -608,7 +613,7 @@
 			return PROCESS_KILL
 		cut_overlay(time_left_overlay)
 		time_left_overlay = new
-		time_left_overlay.maptext = MAPTEXT("<span style='font-family: \"Small Fonts\"; font-weight: bold; font-size: 32px; color: [(timeleft <= 10 SECONDS) ? "red" : "white"];'>[CEILING(timeleft / 10, 1)]</span>")
+		time_left_overlay.maptext = MAPTEXT("<span style='font-family: \"Small Fonts\"; font-weight: bold; font-size: 32px; color: [(timeleft <= 10 SECONDS) ? "red" : "white"];'>[ceil(timeleft / 10)]</span>")
 		time_left_overlay.transform = time_left_overlay.transform.Translate(4, 16)
 		time_left_overlay.layer = FLOAT_LAYER_TIME
 		add_overlay(time_left_overlay)
@@ -658,6 +663,15 @@
 		add_overlay(signed_up_overlay)
 	else
 		cut_overlay(signed_up_overlay)
+
+/atom/movable/screen/alert/notify_action/proc/update_candidates_number_overlay()
+	cut_overlay(candidates_num_overlay)
+	if(!poll || !length(poll.signed_up))
+		return
+	candidates_num_overlay = new
+	candidates_num_overlay.maptext = MAPTEXT("<span style='text-align: right; color: aqua'>[length(poll.signed_up)]</span>")
+	candidates_num_overlay.transform = candidates_num_overlay.transform.Translate(-4, 2)
+	add_overlay(candidates_num_overlay)
 
 /atom/movable/screen/alert/notify_action/proc/display_stacks(stacks = 1)
 	cut_overlay(stacks_overlay)

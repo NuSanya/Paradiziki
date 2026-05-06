@@ -128,7 +128,7 @@
 /obj/item/stock_parts/cell/examine(mob/user)
 	. = ..()
 
-	. += span_notice("<b>Максимальная мощность:</b> [display_power(maxcharge)].")
+	. += span_notice("<b>Максимальная мощность:</b> [display_power(maxcharge, FALSE)].")
 
 	if(rigged)
 		. += span_notice("Судя по всему, химический элемент был модифицирован.")
@@ -140,7 +140,7 @@
 	return FIRELOSS
 
 /obj/item/stock_parts/cell/attackby(obj/item/I, mob/user, params)
-	if(istype(I, /obj/item/reagent_containers/syringe))
+	if(issyringe(I))
 		add_fingerprint(user)
 		var/obj/item/reagent_containers/syringe/syringe = I
 		if(syringe.mode != 1)	// injecting
@@ -208,10 +208,8 @@
 	ex_act(EXPLODE_DEVASTATE)
 
 /obj/item/stock_parts/cell/proc/get_electrocute_damage()
-	if(charge >= 1000)
-		return clamp(20 + round(charge / 25000), 20, 195) + rand(-5, 5)
-	else
-		return 0
+	// Wouldn't want it to consider more energy than whatever is actually in the cell if for some strange reason someone set the STANDARD_CELL_CHARGE to below 1kJ.
+	return ELECTROCUTE_DAMAGE(charge / max(0.001 * STANDARD_CELL_CHARGE, 1))
 
 // MARK: Cell variants
 /obj/item/stock_parts/cell/empty/New()
@@ -486,6 +484,9 @@
 
 /obj/item/stock_parts/cell/laser/gatling
 	maxcharge = 9000
+
+/obj/item/stock_parts/cell/laser/tesla_cannon
+	maxcharge = STANDARD_CELL_CHARGE * 0.5
 
 /obj/item/stock_parts/cell/secborg
 	name = "security borg power cell"

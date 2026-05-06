@@ -122,8 +122,8 @@
 	base_cooldown = 120 SECONDS
 	clothes_req = FALSE
 
-	selection_activated_message	= span_notice("Ваш разум становится холодным. Нажмите на цель, чтобы произнести заклинание.")
-	selection_deactivated_message = span_notice("Ваш разум возвращается в нормальное состояние.")
+	selection_activated_message	= span_notice_alt("Ваш разум становится холодным. Нажмите на цель, чтобы произнести заклинание.")
+	selection_deactivated_message = span_notice_alt("Ваш разум возвращается в нормальное состояние.")
 
 	var/list/compatible_mobs = list(/mob/living/carbon/human)
 
@@ -255,7 +255,7 @@
 			revert_cast()
 			return FALSE
 
-		if(istype(limb,/obj/item/organ/external/chest))
+		if(ischest(limb))
 			// Bullshit, but prevents being able to instagib someone.
 			to_chat(user, span_warning("Вы пытаетесь уместить туловище у себя во рту, но у вас ничего не получается!"))
 			revert_cast()
@@ -312,7 +312,7 @@
 
 /obj/effect/proc_holder/spell/leap/cast(list/targets, mob/living/user = usr)
 	var/failure = FALSE
-	if(ismob(user.loc) || user.incapacitated(INC_IGNORE_RESTRAINED) || user.buckled)
+	if(ismob(user.loc) || user.incapacitated(IGNORE_RESTRAINTS) || user.buckled)
 		to_chat(user, span_warning("Вы не можете прыгнуть прямо сейчас!"))
 		return
 	var/turf/turf_to_check = get_turf(user)
@@ -399,8 +399,8 @@
 
 	clothes_req = FALSE
 
-	selection_activated_message	= span_notice("Ваше тело становится нестабильным.")
-	selection_deactivated_message = span_notice("Ваше тело возвращается в норму.")
+	selection_activated_message	= span_notice_alt("Ваше тело становится нестабильным.")
+	selection_deactivated_message = span_notice_alt("Ваше тело возвращается в норму.")
 
 	action_icon_state = "genetic_poly"
 	need_active_overlay = TRUE
@@ -486,9 +486,6 @@
 		if(M.fire_stacks)
 			pain_condition -= 0.5
 			thoughts = "поглощен[GEND_A_O_Y(M)] огнем"
-
-		if(M.radiation)
-			pain_condition -= 0.25
 
 		switch(pain_condition)
 			if(0.81 to INFINITY)

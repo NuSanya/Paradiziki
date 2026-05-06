@@ -20,6 +20,8 @@
 	var/opened = TRUE // FALSE if it needed to be opened first
 
 /obj/item/reagent_containers/food/snacks/add_initial_reagents()
+	if(tastes)
+		tastes = string_assoc_list(tastes)
 	if(tastes && length(tastes))
 		if(list_reagents)
 			for(var/rid in list_reagents)
@@ -93,7 +95,7 @@
 	bitecount++
 	On_Consume(target, user)
 
-/obj/item/reagent_containers/food/snacks/afterattack(obj/target, mob/user, proximity, params)
+/obj/item/reagent_containers/food/snacks/afterattack(atom/target, mob/user, proximity_flag, list/modifiers, status)
 	return
 
 /obj/item/reagent_containers/food/snacks/examine(mob/user)

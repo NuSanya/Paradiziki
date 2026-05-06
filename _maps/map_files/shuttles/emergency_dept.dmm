@@ -301,7 +301,7 @@
 	},
 /area/shuttle/escape)
 "bb" = (
-/obj/structure/sign/greencross,
+/obj/structure/sign/medbay/greencross,
 /turf/simulated/wall/shuttle/onlyselfsmooth,
 /area/shuttle/escape)
 "bc" = (
@@ -345,8 +345,7 @@
 	},
 /turf/simulated/floor/plasteel{
 	dir = 5;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (NORTHEAST)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "bg" = (
@@ -457,8 +456,7 @@
 /obj/machinery/light,
 /turf/simulated/floor/plasteel{
 	dir = 4;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (EAST)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "by" = (
@@ -567,6 +565,7 @@
 /obj/machinery/light{
 	dir = 8
 	},
+/obj/structure/extinguisher_cabinet/directional/west,
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -578,6 +577,7 @@
 /obj/machinery/light{
 	dir = 4
 	},
+/obj/structure/extinguisher_cabinet/directional/east,
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -627,6 +627,7 @@
 /obj/machinery/light{
 	dir = 8
 	},
+/obj/structure/extinguisher_cabinet/directional/west,
 /turf/simulated/floor/shuttle{
 	icon_state = "floor5"
 	},
@@ -695,10 +696,6 @@
 	icon_state = "floor2"
 	},
 /area/shuttle/escape)
-"cc" = (
-/obj/structure/extinguisher_cabinet,
-/turf/simulated/wall/shuttle/onlyselfsmooth,
-/area/shuttle/escape)
 "cd" = (
 /obj/machinery/door/airlock/research/glass{
 	name = "Escape Shuttle Research";
@@ -716,6 +713,7 @@
 /obj/machinery/light{
 	dir = 4
 	},
+/obj/structure/extinguisher_cabinet/directional/east,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "bot"
@@ -731,8 +729,7 @@
 /obj/machinery/iv_drip,
 /turf/simulated/floor/plasteel{
 	dir = 4;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (EAST)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "cA" = (
@@ -792,8 +789,7 @@
 /obj/item/reagent_containers/iv_bag/bloodsynthetic/oxygenis,
 /turf/simulated/floor/plasteel{
 	dir = 4;
-	icon_state = "whiteblue";
-	tag = "icon-whiteblue (EAST)"
+	icon_state = "whiteblue"
 	},
 /area/shuttle/escape)
 "IB" = (
@@ -1016,7 +1012,7 @@ ba
 ca
 IB
 bY
-cc
+VF
 bR
 bX
 bY
@@ -1202,7 +1198,7 @@ ba
 ca
 IB
 bY
-cc
+VF
 bR
 bX
 bY

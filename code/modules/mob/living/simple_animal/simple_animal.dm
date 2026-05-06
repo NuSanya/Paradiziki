@@ -10,6 +10,7 @@
 
 	hud_type = /datum/hud/simple_animal
 	abstract_type = /mob/living/simple_animal
+	interaction_flags_mouse_drop = NEED_HANDS
 	var/icon_living = ""
 	var/icon_dead = ""
 	var/icon_resting = ""
@@ -192,6 +193,19 @@
 	if(pcollar)
 		pcollar = new(src)
 		regenerate_icons()
+	if(LAZYLEN(speak))
+		speak = string_list(speak)
+	if(LAZYLEN(speak_emote))
+		speak_emote = string_list(speak_emote)
+	if(LAZYLEN(emote_hear))
+		emote_hear = string_list(emote_hear)
+	if(LAZYLEN(emote_see))
+		emote_see = string_list(emote_see)
+	if(LAZYLEN(loot))
+		loot = string_list(loot)
+	damage_coeff = string_assoc_list(damage_coeff)
+	if(LAZYLEN(atmos_requirements))
+		atmos_requirements = string_assoc_list(atmos_requirements)
 	if(footstep_type)
 		AddElement(/datum/element/footstep, footstep_type)
 	add_strippable_element()
@@ -425,9 +439,11 @@
 	status_tab_data[++status_tab_data.len] = list("Здоровье:", "[round((health / maxHealth) * 100)]%")
 
 /mob/living/simple_animal/proc/drop_loot()
-	if(length(loot))
-		for(var/i in loot)
-			new i(loc)
+	if(!length(loot))
+		return
+	for(var/item in loot)
+		new item(drop_location())
+	loot = null
 
 /mob/living/simple_animal/death(gibbed)
 	// Only execute the below if we successfully died
@@ -459,6 +475,9 @@
 		ADD_TRAIT(src, TRAIT_UNDENSE, SIMPLE_MOB_DEATH_TRAIT)
 
 /mob/living/simple_animal/proc/CanAttack(atom/the_target)
+	if(!isatom(the_target))
+		stack_trace("Invalid target in CanAttack(): [the_target]")
+		return FALSE
 	if(see_invisible < the_target.invisibility)
 		return FALSE
 	if(ismob(the_target))

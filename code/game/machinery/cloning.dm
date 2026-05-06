@@ -28,6 +28,7 @@ GLOBAL_LIST_INIT(cloner_biomass_items, list(\
 	icon_state = "pod_idle"
 	req_access = list(ACCESS_MEDICAL) //For premature unlocking.
 
+	interaction_flags_mouse_drop = NEED_DEXTERITY
 	var/mob/living/carbon/human/occupant
 	var/heal_level //The clone is released once its health reaches this level.
 	var/obj/machinery/computer/cloning/connected = null //So we remember the connected clone machine.
@@ -244,7 +245,7 @@ GLOBAL_LIST_INIT(cloner_biomass_items, list(\
 	playsound(loc, pick('sound/goonstation/voice/male_scream.ogg', 'sound/goonstation/voice/female_scream.ogg'), 100, TRUE)
 	mess = TRUE
 	update_icon()
-	connected_message("<font face=\"REBUFFED\" color=#600A0A>Если ты снова попытаешься украсть у Меня, то Я приду за тобой лично.</font>")
+	connected_message(span_warning("Если ты снова попытаешься украсть у Меня, то Я приду за тобой лично!"))
 
 //Start growing a human clone in the pod!
 /obj/machinery/clonepod/proc/growclone(datum/dna2/record/R)
@@ -438,7 +439,7 @@ GLOBAL_LIST_INIT(cloner_biomass_items, list(\
 			var/obj/item/reagent_containers/spray/cleaner/cleaner = I
 			if(cleaner.reagents.total_volume >= cleaner.amount_per_transfer_from_this)
 				cleaning = TRUE
-		else if(istype(I, /obj/item/soap))
+		else if(issoap(I))
 			cleaning = TRUE
 		if(!cleaning)
 			return ..()

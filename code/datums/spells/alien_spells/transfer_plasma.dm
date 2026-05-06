@@ -3,8 +3,8 @@
 	desc = "Transfers plasma to a nearby alien"
 	hand_path = "/obj/item/melee/touch_attack/alien/transfer_plasma"
 	action_icon_state = "alien_transfer"
-	on_gain_message = span_noticealien("You vomit some plasma in your hand and prepare to transfer it.")
-	on_withdraw_message = span_noticealien("You decide not to use plasma for now...")
+	on_gain_message = span_noticealien_alt("You vomit some plasma in your hand and prepare to transfer it.")
+	on_withdraw_message = span_noticealien_alt("You decide not to use plasma for now...")
 
 /obj/effect/proc_holder/spell/touch/alien_spell/transfer_plasma/Click(mob/living/carbon/user = usr)
 	if(HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
@@ -56,11 +56,11 @@
 		owner.adjust_alien_plasma(plasma_amount)
 	return ..()
 
-/obj/item/melee/touch_attack/alien/transfer_plasma/afterattack(atom/target, mob/living/carbon/user, proximity, params)
+/obj/item/melee/touch_attack/alien/transfer_plasma/afterattack(atom/target, mob/user, proximity_flag, list/modifiers, status)
 	if(target == user)
 		return ..()
 
-	if(!proximity || !isalien(target) || !iscarbon(user) || user.incapacitated() || HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
+	if(!proximity_flag || !isalien(target) || !iscarbon(user) || user.incapacitated() || HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
 		return
 
 	var/mob/living/carbon/transfering_to = target

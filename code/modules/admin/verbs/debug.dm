@@ -1,6 +1,6 @@
 ADMIN_VERB(toggle_game_debug, R_DEBUG, "Debug-Game", "Toggles game debugging.", ADMIN_CATEGORY_DEBUG)
-	GLOB.debug2 = !GLOB.debug2
-	var/message = "toggled debugging [(GLOB.debug2 ? "ON" : "OFF")]"
+	GLOB.debugging_enabled = !GLOB.debugging_enabled
+	var/message = "toggled debugging [(GLOB.debugging_enabled ? "ON" : "OFF")]"
 	message_admins("[key_name_admin(user)] [message].")
 	log_admin("[key_name(user)] [message].")
 	BLACKBOX_LOG_ADMIN_VERB("Toggle Debug Two")
@@ -574,12 +574,22 @@ ADMIN_VERB_ONLY_CONTEXT_MENU(select_equipment, R_EVENT, "Select Equipment", mob/
 			if(tgui_alert(user, "Нужно ли выбрасывать вещи из карманов? Выбор \"Нет\" удалит их.", "Выбор экипировки существа", "Да", "Нет") == "Нет")
 				delete_pocket = TRUE
 
-	for(var/obj/item/I in H.get_equipped_items(delete_pocket))
+	for(var/obj/item/I in H.get_equipped_items(delete_pocket ? INCLUDE_POCKETS : NONE))
 		qdel(I)
 	if(dresscode != "Naked")
 		H.equipOutfit(dresscode)
 	else	// We have regenerate_icons() proc in the end of equipOutfit(), so don't need to call it two times.
 		H.regenerate_icons()
+		// Grey translator fix for admin equip
+	if(isgrey(H))
+		var/obj/item/organ/internal/cyberimp/mouth/translator/grey_retraslator/retranslator = new
+		retranslator.insert(H)
+
+		if(HAS_TRAIT(H, TRAIT_WINGDINGS))
+			var/obj/item/translator_chip/wingdings/chip = new
+			retranslator.install_chip(H, chip, ignore_lid = TRUE)
+			to_chat(H, span_notice("В связи с вашим недугом, у вас уже установлен чип Вингдингс."))
+
 	log_and_message_admins(span_notice("changed the equipment of [key_name_admin(M)] to [dresscode]."))
 	BLACKBOX_LOG_ADMIN_VERB("Select Equipment")
 
@@ -653,12 +663,12 @@ ADMIN_VERB(start_singulo, R_DEBUG, "Start Singularity", "Sets up the singularity
 				S.energy = 800
 				break
 
-	for(var/obj/machinery/power/rad_collector/Rad in SSmachines.get_by_type(/obj/machinery/power/rad_collector))
+	for(var/obj/machinery/power/energy_accumulator/rad_collector/Rad in SSmachines.get_by_type(/obj/machinery/power/energy_accumulator/rad_collector))
 		if(Rad.anchored)
 			if(!Rad.loaded_tank)
 				var/obj/item/tank/internals/plasma/Plasma = new/obj/item/tank/internals/plasma(Rad)
 				Plasma.air_contents.set_toxins(70)
-				Rad.drainratio = 0
+				Rad.drain_ratio = 0
 				Rad.loaded_tank = Plasma
 				Plasma.loc = Rad
 
@@ -775,60 +785,6 @@ ADMIN_VERB(toggle_medal_disable, R_DEBUG, "Toggle Medal Disable", "Toggles the s
 
 	log_and_message_admins("[SSachievements.achievements_enabled? "disabled" : "enabled"] the medal hub lockout.")
 	BLACKBOX_LOG_ADMIN_VERB("Toggle Medal Disable")
-
-ADMIN_VERB_VISIBILITY(view_pingstat, ADMIN_VERB_VISIBLITY_FLAG_HOST)
-ADMIN_VERB(view_pingstat, R_HOST, "View Pingstat", "Open the Pingstat Report.", ADMIN_CATEGORY_DEBUG)
-	var/msg = ""
-	var/color
-	msg += "<table border='1'><tr>"
-	msg += "<th>Player</th>"
-	msg += "<th>Quality</th>"
-	msg += "<th>Ping</th>"
-	msg += "<th>AvgPing</th>"
-	msg += "<th>Url</th>"
-	msg += "<th>IP</th>"
-	msg += "<th>Country</th>"
-	msg += "<th>CountryCode</th>"
-	msg += "<th>Region</th>"
-	msg += "<th>Region Name</th>"
-	msg += "<th>City</th>"
-	msg += "<th>Timezone</th>"
-	msg += "<th>ISP</th>"
-	msg += "<th>Mobile</th>"
-	msg += "<th>Proxy</th>"
-	msg += "<th>Status</th>"
-
-	msg += "</tr>"
-	for(var/client/C in GLOB.clients)
-		msg += "<tr>"
-
-		msg += "<td>[key_name_admin(C.mob)]</td>"
-		color = "rgb([C.lastping], [255 - clamp(text2num(C.lastping), 0, 255)], 0)"
-		msg += "<td bgcolor='[color]' >&nbsp;</td>"
-		msg += "<td><b>[C.lastping]<b></td>"
-		msg += "<td><b>[round(C.avgping,1)]<b></td>"
-		msg += "<td>[C.url]</td>"
-
-		if(C.geoip.status != "updated")
-			C.geoip.try_update_geoip(C, C.address)
-		msg += "<td>[C.geoip.ip]</td>"
-		msg += "<td>[C.geoip.country]</td>"
-		msg += "<td>[C.geoip.countryCode]</td>"
-		msg += "<td>[C.geoip.region]</td>"
-		msg += "<td>[C.geoip.regionName]</td>"
-		msg += "<td>[C.geoip.city]</td>"
-		msg += "<td>[C.geoip.timezone]</td>"
-		msg += "<td>[C.geoip.isp]</td>"
-		msg += "<td>[C.geoip.mobile]</td>"
-		msg += "<td>[C.geoip.proxy]</td>"
-		msg += "<td>[C.geoip.status]</td>"
-
-		msg += "</tr>"
-
-	msg += "</table>"
-	var/datum/browser/popup = new(user, "pingstat_report", "Pingstat Report", 1500, 600)
-	popup.set_content(msg)
-	popup.open(FALSE)
 
 ADMIN_VERB(display_overlay_log, R_DEBUG, "Display Overlay Log", "Display SSoverlays log of everything that's passed through it.", ADMIN_CATEGORY_DEBUG)
 	render_stats(SSoverlays.stats, user)

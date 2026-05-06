@@ -738,8 +738,7 @@
 /area/syndicate_depot/core)
 "ce" = (
 /obj/machinery/light/small{
-	dir = 4;
-	tag = "icon-bulb1 (EAST)"
+	dir = 4
 	},
 /turf/simulated/floor/mineral/silver,
 /area/syndicate_depot/core)
@@ -984,9 +983,7 @@
 /area/syndicate_depot/core)
 "cJ" = (
 /obj/structure/cable,
-/obj/machinery/power/apc/noalarm{
-	dir = 4;
-	pixel_x = 24;
+/obj/machinery/power/apc/noalarm/directional/east{
 	req_access = list(150)
 	},
 /turf/simulated/floor/plasteel{
@@ -1148,10 +1145,7 @@
 	},
 /area/syndicate_depot/core)
 "de" = (
-/obj/machinery/power/apc/noalarm{
-	dir = 4;
-	pixel_x = 24
-	},
+/obj/machinery/power/apc/noalarm/directional/east,
 /obj/structure/cable,
 /turf/simulated/floor/plating/airless,
 /area/syndicate_depot/outer)

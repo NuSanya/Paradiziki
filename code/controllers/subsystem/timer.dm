@@ -437,7 +437,8 @@ SUBSYSTEM_DEF(timer)
 	if(callBack?.object && callBack.object != GLOBAL_PROC && callBack.object.active_timers)
 		callBack.object.active_timers -= src
 		UNSETEMPTY(callBack.object.active_timers)
-
+	callBack.object = null
+	LAZYCLEARLIST(callBack?.arguments)
 	callBack = null
 
 	if(flags & TIMER_STOPPABLE)
@@ -662,7 +663,7 @@ ADMIN_VERB(debug_timers, R_DEBUG|R_VIEWRUNTIMES, "Debug Timers", "Shows currentl
 			be supported and may refuse to run or run with a 0 wait")
 
 	if(flags & TIMER_CLIENT_TIME) // REALTIMEOFDAY has a resolution of 1 decisecond
-		wait = max(CEILING(wait, 1), 1) // so if we use tick_lag timers may be inserted in the "past"
+		wait = max(ceil(wait), 1) // so if we use tick_lag timers may be inserted in the "past"
 	else
 		wait = max(CEILING(wait, world.tick_lag), world.tick_lag)
 

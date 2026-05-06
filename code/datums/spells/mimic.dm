@@ -5,7 +5,7 @@
 	human_req = FALSE
 	base_cooldown = 3 SECONDS
 	action_icon_state = "genetic_morph"
-	selection_activated_message = span_sinister("Кликните на цель, чтобы запомнить её форму. Кликните на себя, чтобы изменить свою форму.")
+	selection_activated_message = span_sinister_alt("Кликните на цель, чтобы запомнить её форму. Кликните на себя, чтобы изменить свою форму.")
 	create_attack_logs = FALSE
 	action_icon_state = "morph_mimic"
 	need_active_overlay = TRUE
@@ -133,7 +133,7 @@
 	user.create_log(MISC_LOG, "Mimicked into [user]")
 
 	if(!selected_form)
-		RegisterSignal(user, COMSIG_PARENT_EXAMINE, PROC_REF(examine_override))
+		RegisterSignal(user, COMSIG_ATOM_EXAMINE, PROC_REF(examine_override))
 		RegisterSignal(user, COMSIG_MOB_DEATH, PROC_REF(on_death))
 
 	selected_form = form
@@ -167,7 +167,7 @@
 	if(show_message)
 		show_restore_form_message(user, old_name, "[user.declent_ru(GENITIVE)]")
 
-	UnregisterSignal(user, list(COMSIG_PARENT_EXAMINE, COMSIG_MOB_DEATH))
+	UnregisterSignal(user, list(COMSIG_ATOM_EXAMINE, COMSIG_MOB_DEATH))
 
 /obj/effect/proc_holder/spell/mimic/proc/show_restore_form_message(mob/user, old_name, new_name)
 	user.visible_message(span_warning("[old_name] дёргается и искажается, быстро превращаясь в [new_name]!"), \

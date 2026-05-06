@@ -14,12 +14,8 @@
 "ay" = (
 /obj/item/trash/raisins,
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/atmospherics/unary/vent_scrubber{
-	dir = 2;
-	name = "standard air scrubber";
-	on = 1;
-	scrub_N2O = 1;
-	scrub_Toxins = 1
+/obj/machinery/atmospherics/unary/vent_scrubber/on{
+	dir = 2
 	},
 /turf/simulated/floor/plating,
 /area/maintenance/livingcomplex)
@@ -276,7 +272,6 @@
 	dir = 4
 	},
 /obj/structure/sign/poster/contraband/commando{
-	pixel_y = 0;
 	pixel_x = 32
 	},
 /turf/simulated/floor/carpet/royalblack,
@@ -490,7 +485,6 @@
 /area/template_noop)
 "mN" = (
 /obj/structure/sign/poster/contraband/commando{
-	pixel_y = 0;
 	pixel_x = -32
 	},
 /obj/effect/decal/cleanable/dirt,
@@ -514,11 +508,7 @@
 /turf/simulated/floor/plating,
 /area/maintenance/livingcomplex)
 "nG" = (
-/obj/machinery/power/apc/worn_out{
-	cell_type = 0;
-	dir = 8;
-	pixel_x = -26
-	},
+/obj/machinery/power/apc/worn_out/directional/west,
 /obj/structure/cable{
 	icon_state = "0-4"
 	},
@@ -526,7 +516,7 @@
 /turf/simulated/floor/plating,
 /area/maintenance/livingcomplex)
 "nL" = (
-/obj/structure/largecrate/cow,
+/obj/structure/closet/crate/large/cow,
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/pod,
 /area/maintenance/abandonedwarehouse)
@@ -537,9 +527,7 @@
 /turf/simulated/floor/carpet/royalblue,
 /area/maintenance/livingcomplex)
 "ot" = (
-/obj/structure/extinguisher_cabinet{
-	pixel_x = 26
-	},
+/obj/structure/extinguisher_cabinet/directional/east,
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/pod,
 /area/maintenance/abandonedwarehouse)
@@ -581,8 +569,7 @@
 	pixel_x = -8
 	},
 /turf/simulated/floor/wood{
-	icon_state = "wood-broken7";
-	tag = "icon-wood-broken7"
+	icon_state = "wood-broken7"
 	},
 /area/maintenance/livingcomplex)
 "pm" = (
@@ -619,8 +606,7 @@
 	pixel_x = -17
 	},
 /turf/simulated/floor/wood{
-	icon_state = "wood-broken7";
-	tag = "icon-wood-broken7"
+	icon_state = "wood-broken7"
 	},
 /area/maintenance/livingcomplex)
 "qq" = (
@@ -939,21 +925,15 @@
 	},
 /obj/effect/decal/warning_stripes/southeastcorner,
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/power/apc{
-	pixel_y = -26
-	},
+/obj/machinery/power/apc/directional/south,
 /obj/structure/cable{
 	icon_state = "0-4"
 	},
 /turf/simulated/floor/pod,
 /area/maintenance/abandonedwarehouse)
 "yN" = (
-/obj/machinery/atmospherics/unary/vent_scrubber{
-	dir = 4;
-	name = "standard air scrubber";
-	on = 1;
-	scrub_N2O = 1;
-	scrub_Toxins = 1
+/obj/machinery/atmospherics/unary/vent_scrubber/on{
+	dir = 4
 	},
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/pod,
@@ -1012,9 +992,7 @@
 /turf/simulated/floor/pod,
 /area/maintenance/abandonedwarehouse)
 "AQ" = (
-/obj/structure/extinguisher_cabinet{
-	pixel_x = -26
-	},
+/obj/structure/extinguisher_cabinet/directional/west,
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/reagent_dispensers/watertank,
 /turf/simulated/floor/pod,
@@ -1024,9 +1002,7 @@
 	dir = 8;
 	layer = 2.9
 	},
-/obj/item/clothing/gloves/color/latex/nitrile{
-	pixel_y = 0
-	},
+/obj/item/clothing/gloves/color/latex/nitrile,
 /obj/item/clothing/accessory/stethoscope,
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/pod,
@@ -1171,7 +1147,6 @@
 	nightshift_enabled = 1
 	},
 /obj/structure/sign/poster/contraband/commando{
-	pixel_y = 0;
 	pixel_x = 32
 	},
 /turf/simulated/floor/carpet/black,
@@ -1273,7 +1248,6 @@
 /obj/machinery/door_control{
 	id = "oldcargo";
 	name = "Abandoned Warehouse Access Control";
-	pixel_y = 0;
 	req_access = list(31);
 	pixel_x = 24
 	},
@@ -1437,10 +1411,7 @@
 	dir = 4
 	},
 /obj/machinery/light_construct,
-/obj/machinery/firealarm{
-	dir = 1;
-	pixel_y = -26
-	},
+/obj/machinery/firealarm/directional/south,
 /turf/simulated/floor/carpet/royalblue,
 /area/maintenance/livingcomplex)
 "Mv" = (
@@ -1474,12 +1445,8 @@
 /area/maintenance/livingcomplex)
 "Nr" = (
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/atmospherics/unary/vent_scrubber{
-	dir = 1;
-	name = "standard air scrubber";
-	on = 1;
-	scrub_N2O = 1;
-	scrub_Toxins = 1
+/obj/machinery/atmospherics/unary/vent_scrubber/on{
+	dir = 1
 	},
 /turf/simulated/floor/plating,
 /area/maintenance/livingcomplex)
@@ -1591,18 +1558,11 @@
 /turf/simulated/floor/plating,
 /area/maintenance/livingcomplex)
 "RG" = (
-/obj/machinery/atmospherics/unary/vent_scrubber{
-	dir = 8;
-	name = "standard air scrubber";
-	on = 1;
-	scrub_N2O = 1;
-	scrub_Toxins = 1
+/obj/machinery/atmospherics/unary/vent_scrubber/on{
+	dir = 8
 	},
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/firealarm{
-	dir = 1;
-	pixel_y = -26
-	},
+/obj/machinery/firealarm/directional/south,
 /turf/simulated/floor/pod,
 /area/maintenance/abandonedwarehouse)
 "RY" = (
@@ -1697,8 +1657,7 @@
 "UH" = (
 /obj/effect/decal/cleanable/dust,
 /turf/simulated/floor/wood{
-	icon_state = "wood-broken6";
-	tag = "icon-wood-broken6"
+	icon_state = "wood-broken6"
 	},
 /area/maintenance/livingcomplex)
 "UO" = (

@@ -67,7 +67,7 @@
 	GLOB.minor_announcement.announce(
 		message = "Отчёт был загружен и распечатан на всех консолях связи.",
 		new_title = ANNOUNCE_SECRETMSG_RU,
-		new_sound = 'sound/AI/commandreport.ogg'
+		new_sound = SSstation.announcer.get_rand_report_sound()
 	)
 
 /datum/station_state
@@ -103,7 +103,7 @@
 				src.r_wall += 1
 
 		for(var/obj/O in T.contents)
-			if(istype(O, /obj/structure/window))
+			if(is_window(O))
 				src.window += 1
 			else if(istype(O, /obj/structure/grille))
 				var/obj/structure/grille/GR = O

@@ -752,7 +752,7 @@
 	if(is_reagentcontainer(I))  // Syringe stuff (and other reagent containers now too)
 		add_fingerprint(user)
 		var/obj/item/reagent_containers/reagent_source = I
-		var/is_syringe = istype(reagent_source, /obj/item/reagent_containers/syringe)
+		var/is_syringe = issyringe(reagent_source)
 		if(is_syringe)
 			var/obj/item/reagent_containers/syringe/syringe = reagent_source
 			if(syringe.mode != 1)
@@ -1069,7 +1069,7 @@
 ///Diona Nymph Related Procs///
 
 /obj/machinery/hydroponics/attack_animal(mob/living/user)
-	if(istype(user, /mob/living/simple_animal/diona))
+	if(isnymph(user))
 		if(weedlevel > 0)
 			user.adjust_nutrition(weedlevel * 15)
 			adjustWeeds(-10)

@@ -2,8 +2,8 @@
 	name = "atmoalter"
 	use_power = NO_POWER_USE
 	max_integrity = 250
-	armor = list(MELEE = 0, BULLET = 0, LASER = 0, ENERGY = 100, BOMB = 0, BIO = 100, RAD = 100, FIRE = 60, ACID = 30)
-	interaction_flags_click = NEED_HANDS | ALLOW_RESTING | ALLOW_SILICON_REACH
+	armor = list(MELEE = 0, BULLET = 0, LASER = 0, ENERGY = 100, BOMB = 0, BIO = 100, FIRE = 60, ACID = 30)
+	interaction_flags_click = NEED_HANDS | ALLOW_RESTING | ALLOW_SILICON_REACH | NEED_DEXTERITY
 	var/datum/gas_mixture/air_contents
 
 	var/obj/machinery/atmospherics/unary/portables_connector/connected_port

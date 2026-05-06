@@ -76,7 +76,7 @@ GLOBAL_VAR_INIT(captain_auth_access, ACCESS_CAPTAIN)
 	else
 		if(message)
 			to_chat(user, span_warning("Доступ запрещён."))
-			playsound(src, pick('sound/machines/button.ogg', 'sound/machines/button_alternate.ogg', 'sound/machines/button_meloboom.ogg'), 20)
+			playsound(src, SFX_BUTTON_DENIED, 20)
 		return COMM_AUTHENTICATION_NONE
 
 /obj/machinery/computer/communications/proc/change_security_level(new_level, force)
@@ -104,7 +104,7 @@ GLOBAL_VAR_INIT(captain_auth_access, ACCESS_CAPTAIN)
 	if(action == "auth")
 		if(!ishuman(ui.user))
 			to_chat(ui.user, span_warning("Доступ запрещён."))
-			playsound(src, pick('sound/machines/button.ogg', 'sound/machines/button_alternate.ogg', 'sound/machines/button_meloboom.ogg'), 20)
+			playsound(src, SFX_BUTTON_DENIED, 20)
 			return FALSE
 		// Logout function.
 		if(authenticated != COMM_AUTHENTICATION_NONE)
@@ -388,7 +388,7 @@ GLOBAL_VAR_INIT(captain_auth_access, ACCESS_CAPTAIN)
 				GLOB.major_announcement.announce(
 					message = params["text"],
 					new_title = ANNOUNCE_CCMSG_RU,
-					new_sound = 'sound/AI/commandreport.ogg',
+					new_sound = SSstation.announcer.get_rand_report_sound(),
 					new_subtitle = params["subtitle"]
 				)
 				print_command_report(params["text"], params["subtitle"])
@@ -441,7 +441,7 @@ GLOBAL_VAR_INIT(captain_auth_access, ACCESS_CAPTAIN)
 	GLOB.minor_announcement.announce(
 		message = "Отчёт был загружен и распечатан на всех консолях связи.",
 		new_title = ANNOUNCE_SECRETMSG_RU,
-		new_sound = 'sound/AI/commandreport.ogg'
+		new_sound = SSstation.announcer.get_rand_report_sound(),
 	)
 
 /obj/machinery/computer/communications/emag_act(user as mob)

@@ -28,6 +28,9 @@ GLOBAL_LIST_EMPTY(apcs)
 GLOBAL_LIST_EMPTY(air_alarms)
 GLOBAL_LIST_EMPTY(power_monitors)
 GLOBAL_LIST_EMPTY(all_vent_pumps)
+GLOBAL_LIST_EMPTY(pumps_by_tag)
+GLOBAL_LIST_EMPTY(sensors_by_tag)
+GLOBAL_LIST_EMPTY(injectors_by_tag)
 
 GLOBAL_LIST_EMPTY(navbeacons)											//list of all bot nagivation beacons, used for patrolling.
 GLOBAL_LIST_EMPTY(deliverybeacons)										//list of all MULEbot delivery beacons.
@@ -70,3 +73,4 @@ GLOBAL_LIST_EMPTY(pod_styles_by_type)
 GLOBAL_LIST_EMPTY(loot_tiers)
 
 GLOBAL_LIST_EMPTY(design_names_cached)
+GLOBAL_LIST_EMPTY(design_descs_cached)

@@ -30,7 +30,7 @@
 			if(T.loc.icon_state)
 				atoms += new /obj/effect/appearance_clone(newT, T.loc)
 			for(var/atom/A in T.contents)
-				if(istype(A, /atom/movable/lighting_object))
+				if(is_light(A))
 					continue
 				if(!A.invisibility || (see_ghosts && isobserver(A)))
 					atoms += new /obj/effect/appearance_clone(newT, A)
@@ -42,7 +42,7 @@
 		for(var/turf/T in turfs)
 			atoms += T
 			for(var/atom/movable/A in T)
-				if(flashing_lights && istype(A, /atom/movable/lighting_object))
+				if(flashing_lights && is_light(A))
 					continue //Do not apply lighting, making whole image full bright.
 				if(A.invisibility)
 					if(!(see_ghosts && isobserver(A)))
@@ -66,12 +66,12 @@
 		sorted.Insert(j+1, c)
 		CHECK_TICK
 
-	var/xcomp = FLOOR(psize / 2, 1) - 15
-	var/ycomp = FLOOR(psize / 2, 1) - 15
+	var/xcomp = floor(psize / 2) - 15
+	var/ycomp = floor(psize / 2) - 15
 
 	if(!skip_normal) //these are not clones
 		for(var/atom/A in sorted)
-			if(istype(A, /atom/movable/lighting_object))
+			if(is_light(A))
 				continue //Lighting objects render last, need to be above all atoms and turfs displayed
 			var/xo = (A.x - center.x) * ICON_SIZE_X + A.pixel_x + xcomp
 			var/yo = (A.y - center.y) * ICON_SIZE_Y + A.pixel_y + ycomp
@@ -102,7 +102,7 @@
 						img.Scale(base_w * abs(decompose.scale_x), base_h * decompose.scale_y)
 						if(decompose.scale_x < 0)
 							img.Flip(EAST)
-						xo -= base_w * (decompose.scale_x - SIGN(decompose.scale_x)) / 2 * SIGN(decompose.scale_x)
+						xo -= base_w * (decompose.scale_x - sign(decompose.scale_x)) / 2 * sign(decompose.scale_x)
 						yo -= base_h * (decompose.scale_y - 1) / 2
 					// Rotation
 					if(decompose.rotation != 0)
