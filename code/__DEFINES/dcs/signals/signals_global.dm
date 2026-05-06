@@ -45,3 +45,6 @@
 
 /// job subsystem has spawned and equipped a new mob
 #define COMSIG_GLOB_JOB_AFTER_SPAWN "!job_after_spawn"
+
+/// Swarmer core was destroyed
+#define COMSIG_GLOB_SWARMER_CORE_DESTROYED "!swarmer_core_destroy"

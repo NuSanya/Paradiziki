@@ -4,7 +4,6 @@
 /datum/keybinding/living/can_use(client/user)
 	return isliving(user.mob)
 
-
 /datum/keybinding/living/intent
 	/// The intent to switch to.
 	var/intent
@@ -12,16 +11,10 @@
 /datum/keybinding/living/intent/down(client/user)
 	. = ..()
 	if(.)
-		return .
+		return
+
 	var/mob/living/mob = user.mob
 	mob.a_intent_change(intent)
-
-	// For change dir to mouse dir
-	if(intent == INTENT_HARM && (user.prefs.toggles3 & PREFTOGGLE_3_FACING_TO_MOUSE))
-		mob.face_mouse = TRUE
-	else
-		mob.face_mouse = FALSE
-
 	return TRUE
 
 /datum/keybinding/living/intent/help
@@ -29,18 +22,15 @@
 	intent = INTENT_HELP
 	keys = list("1")
 
-
 /datum/keybinding/living/intent/disarm
 	name = "Disarm Intent (нажать)"
 	intent = INTENT_DISARM
 	keys = list("2")
 
-
 /datum/keybinding/living/intent/grab
 	name = "Grab Intent (нажать)"
 	intent = INTENT_GRAB
 	keys = list("3")
-
 
 /datum/keybinding/living/intent/harm
 	name = "Harm Intent (нажать)"

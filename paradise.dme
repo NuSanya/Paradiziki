@@ -280,6 +280,7 @@
 #include "code\__DEFINES\dcs\signals\signals_strength.dm"
 #include "code\__DEFINES\dcs\signals\signals_subsystem.dm"
 #include "code\__DEFINES\dcs\signals\signals_supplypod.dm"
+#include "code\__DEFINES\dcs\signals\signals_swarmer.dm"
 #include "code\__DEFINES\dcs\signals\signals_terror_spider.dm"
 #include "code\__DEFINES\dcs\signals\signals_tgui.dm"
 #include "code\__DEFINES\dcs\signals\signals_transform.dm"
