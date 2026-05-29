@@ -196,7 +196,7 @@
 	var/isonshuttle = istype(loc, /area/shuttle)
 	for(var/turf/T in range(1, src))
 		var/area/A = get_area(T)
-		if(isspaceturf(T) || (!isonshuttle && (istype(A, /area/shuttle) || isspacearea(A)) || (isonshuttle && !istype(A, /area/shuttle)))
+		if(isspaceturf(T) || (!isonshuttle && (istype(A, /area/shuttle) || isspacearea(A))) || (isonshuttle && !istype(A, /area/shuttle)))
 			to_chat(S, span_warning("Разрушение этого объекта может привести к разгерметизации. Прерываю."))
 			S.GiveTarget(null)
 			return TRUE
