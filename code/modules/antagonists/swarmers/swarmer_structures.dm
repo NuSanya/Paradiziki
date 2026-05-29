@@ -628,7 +628,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 
 /obj/structure/swarmer/repair_station/Destroy(force)
 	go_out()
-	if(isprocessing)
+	if(datum_flags & DF_ISPROCESSING)
 		STOP_PROCESSING(SSobj, src)
 	return ..()
 
@@ -788,7 +788,7 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 
 /obj/structure/swarmer/acp_turret/Destroy(force)
 	QDEL_NULL(proximity_monitor)
-	if(isprocessing)
+	if(datum_flags & DF_ISPROCESSING)
 		STOP_PROCESSING(SSobj, src)
 	return ..()
 
@@ -807,9 +807,8 @@ GLOBAL_LIST_EMPTY(swarmer_objects)
 	if(!isliving(entity) || isswarmer(entity))
 		return
 	processing_targets[entity] = TRUE // Associative for performance
-	if(!isprocessing)
+	if(datum_flags & DF_ISPROCESSING)
 		START_PROCESSING(SSobj, src)
-
 
 // Handles checking if targets are in range and calls the attack
 /obj/structure/swarmer/acp_turret/process()
