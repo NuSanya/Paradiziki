@@ -901,7 +901,7 @@
 /obj/projectile/beam/disabler/swarmer/sabotage/proc/handle_energygun(obj/item/gun/energy/gun)
 	var/obj/item/gun_module/sibyl/sibyl_mod = gun.sibyl_mod
 	if(sibyl_mod)
-		sibyl_mod.lock(silent = TRUE)
+		sibyl_mod.lock()
 		return
 	// This sets mode to non-lethal
 	gun.select_fire()
