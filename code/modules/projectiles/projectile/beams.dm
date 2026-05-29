@@ -899,12 +899,13 @@
  * tries setting the mode to disabler, if present.
  */
 /obj/projectile/beam/disabler/swarmer/sabotage/proc/handle_energygun(obj/item/gun/energy/gun)
-	var/obj/item/sibyl_system_mod/sibyl_mod = gun.sibyl_mod
+	var/obj/item/gun_module/sibyl/sibyl_mod = gun.sibyl_mod
 	if(sibyl_mod)
 		sibyl_mod.lock(silent = TRUE)
 		return
 	// This sets mode to non-lethal
 	gun.select_fire()
+
 /**
  * Proc used to handle projectile gun sabotaging.
  *
